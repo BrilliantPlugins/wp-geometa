@@ -1,14 +1,13 @@
 <?php
 
 /**
- * WP-Geo enables Geo data for WordPress
+ * WP-GeoQuery enables Geo metadata for WordPress
  *
- * Plugin Name: WP-Geo
+ * Plugin Name: WP-GeoQuery
  * Author: Michael Moore
  * Author URI: http://cimbura.com
  * Version: 0.0.1
  */
-
 require_once(__DIR__ . '/geoPHP/geoPHP.inc');
 
 class WP_GeoQuery {
@@ -307,8 +306,11 @@ class WP_GeoQuery {
 		return json_encode($ret);
 	}
 
+	/**
+	 * Turn our geo_query queries into meta_query objects
+	 * Also, cache the subquery in this object so we can 
+	 */
 	function pre_get_posts($query){
-
 		if(!is_array($query->query['geo_query'])){
 			return;
 		}
@@ -321,7 +323,7 @@ class WP_GeoQuery {
 
 		$meta_query = $query->get('meta_query');
 
-		/*
+		/**
 		 * For each geo_query we'll construct a meta_query which 
 		 * will join the meta_geo table to the meta table 
 		 */
@@ -348,6 +350,9 @@ class WP_GeoQuery {
 		$query->set('meta_query', $meta_query);
 	}
 
+	/**
+	 * WP_Metq_Query helpfully addslashes and single-quotes our subquery, so we're going to take it back now
+	 */
 	function get_meta_sql($sql,$queries,$type,$primary_table,$primary_id_column,$context) {
 		// Find our geoquery key again. Gotta love the quadrupal backslashes...
 		if(preg_match("|\\\\'(geoquery-[^=]+)\\\\'=\\\\'\\1\\\\'|",$sql['where'],$matches)){
