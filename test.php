@@ -28,4 +28,4 @@ update_post_meta(48,'single',$single_feature,false);
 
 // Test delete
 // delete_post_meta(48, 'test');
-delete_post_meta(48,'single');
+// delete_post_meta(48,'single');

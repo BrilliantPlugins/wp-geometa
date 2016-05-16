@@ -133,6 +133,9 @@ class WP_GeoQuery {
 				add_action( "{$action}_{$type}_meta", array($this,"{$action}_{$type}_meta"),10,4); 
 			}
 		}
+
+		add_action( 'pre_get_posts', array($this,'pre_get_posts'));
+		add_action( 'get_meta_sql', array($this,'get_meta_sql'),10,6);
 	}
 
 	/**
@@ -300,6 +303,40 @@ class WP_GeoQuery {
 		}
 
 		return json_encode($ret);
+	}
+
+	function pre_get_posts($query){
+
+		if(!is_array($query->query['geo_query'])){
+			return;
+		}
+
+		if(!is_array($query->meta_query)){
+			$query->meta_query = array();
+		}
+
+		$newMeta = array();
+
+		$meta_query = $query->get('meta_query');
+
+		/*
+		 * For each geo_query we'll construct a meta_query which 
+		 * will join the meta_geo table to the meta table 
+		 */
+		foreach($query->query['geo_query'] as $geo_query){
+			$meta_query[] = array(array(
+				'key' => $geo_query['key'],
+				'compare' => 'in',
+				'value' => "(SELECT meta.meta_value FROM wp_postmeta_geo geo , wp_postmeta meta WHERE ST_INTERSECTS(geo.meta_value,ST_GeomFromText('POINT(-93.5 45)',4326)) AND geo.fk_meta_id=meta.meta_id)"
+			));
+		}
+
+		$query->set('meta_query', $meta_query);
+	}
+
+	function get_meta_sql($sql,$queries,$type,$primary_table,$primary_id_column,$context) {
+		$val = "(SELECT meta.meta_value FROM wp_postmeta_geo geo , wp_postmeta meta WHERE ST_INTERSECTS(geo.meta_value,ST_GeomFromText('POINT(-93.5 45)',4326)) AND geo.fk_meta_id=meta.meta_id)";
+		$sql['where'] = str_replace("'$val'",$val,$sql);
 	}
 }
 
