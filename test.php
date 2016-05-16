@@ -4,7 +4,7 @@ require_once(__DIR__ . '/../../../wp-load.php');
 require_once('./wp-geoquery.php');
 
 // Test table creation
-// activate_wp_brilliant_geo();
+activate_wp_brilliant_geo();
 
 // $wpgeo = WP_GeoQuery::get_instance();
 // $wpgeo->uninstall();

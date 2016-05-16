@@ -9,12 +9,12 @@ $q = new WP_Query( array(
 		array(
 			'key' => 'single',
 			'compare' => 'ST_INTERSECTS',
-			'value' => "ST_GeomFromText('POINT(-93.5 45)',4326)"
+			'value' => '{"type":"Feature","geometry":{"type":"Point","coordinates":[-93.5,45]}}',
 		)
 	)
 ));
 
-print_r($q);
+print $q->last_query . "\n";
 
 while($q->have_posts() ) {
 	$q->the_post();

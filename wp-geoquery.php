@@ -24,6 +24,8 @@ class WP_GeoQuery {
 
 	private static $_instance = null;
 
+	public $placeholders = array();
+
 	/**
 	 * Get the singleton instance.
 	 */
@@ -324,10 +326,22 @@ class WP_GeoQuery {
 		 * will join the meta_geo table to the meta table 
 		 */
 		foreach($query->query['geo_query'] as $geo_query){
+			$geometry = $this->metaval_to_geom($geo_query['value']);
+
+			if($geometry === false){
+				continue;
+			}
+
+			$uniqid = uniqid('geoquery-');
+			$subquery = "(SELECT CAST(meta.meta_value AS CHAR) FROM wp_postmeta_geo geo , wp_postmeta meta WHERE {$geo_query['compare']}(geo.meta_value,ST_GeomFromText('{$geometry}'," . $this->srid . ")) AND geo.fk_meta_id=meta.meta_id AND '$uniqid'='$uniqid')";
+
+			$this->query_cache[$uniqid] = $subquery;
+
 			$meta_query[] = array(array(
+				'geo_query_uuid' => $uniqid, // We're going to add this in so we can re-find our query in get_meta_sql so we can remove the quotes that WP_Meta_Query adds
 				'key' => $geo_query['key'],
 				'compare' => 'in',
-				'value' => "(SELECT meta.meta_value FROM wp_postmeta_geo geo , wp_postmeta meta WHERE ST_INTERSECTS(geo.meta_value,ST_GeomFromText('POINT(-93.5 45)',4326)) AND geo.fk_meta_id=meta.meta_id)"
+				'value' => array($subquery) // Wrap in an array so it doesn't get implode("','",explode(' '))'ed
 			));
 		}
 
@@ -335,8 +349,13 @@ class WP_GeoQuery {
 	}
 
 	function get_meta_sql($sql,$queries,$type,$primary_table,$primary_id_column,$context) {
-		$val = "(SELECT meta.meta_value FROM wp_postmeta_geo geo , wp_postmeta meta WHERE ST_INTERSECTS(geo.meta_value,ST_GeomFromText('POINT(-93.5 45)',4326)) AND geo.fk_meta_id=meta.meta_id)";
-		$sql['where'] = str_replace("'$val'",$val,$sql);
+		// Find our geoquery key again. Gotta love the quadrupal backslashes...
+		if(preg_match("|\\\\'(geoquery-[^=]+)\\\\'=\\\\'\\1\\\\'|",$sql['where'],$matches)){
+			$val = $this->query_cache[$matches[1]];
+			$valslashed = addslashes($val);
+			$sql['where'] = str_replace("('$valslashed')",$val,$sql['where']);
+		}
+		return $sql;
 	}
 }
 
