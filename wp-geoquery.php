@@ -227,7 +227,6 @@ class WP_GeoQuery {
 
 		$sql = $wpdb->prepare($q,array($object_id,$meta_id,$meta_key,$meta_value));
 
-		print "\n\n$sql\n\n";
 		return $wpdb->query($sql);
 	}
 
@@ -240,7 +239,6 @@ class WP_GeoQuery {
 
 		$sql = $wpdb->prepare($q,array($meta_value,$meta_id));
 
-		print "\n\n$sql\n\n";
 		return $wpdb->query($sql);
 	}
 
@@ -253,9 +251,12 @@ class WP_GeoQuery {
 		$meta_ids = (array) $meta_ids;
 
 		$meta_ids = array_filter($meta_ids,'is_numeric');
-		$sql = "DELETE FROM {$wpdb->prefix}{$target}meta_geo WHERE fk_meta_id IN (" . implode(',',$meta_ids) . ")";
 
-		print "\n\n$sql\n\n";
+		if(empty($meta_ids)) {
+			return;
+		}
+
+		$sql = "DELETE FROM {$wpdb->prefix}{$target}meta_geo WHERE fk_meta_id IN (" . implode(',',$meta_ids) . ")";
 
 		return $wpdb->query($sql);
 	}
