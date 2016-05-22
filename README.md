@@ -35,7 +35,7 @@ WP_GeoMeta creates parallel geo meta tables for all supported object types with 
 spatial column type for the meta_value column. These tables are named 
 wp_postmeta_geo, etc.
 
-WP_GeoMeta handles (added|updated|deleted)_(post|comment|user)_meta actions and
+WP_GeoMeta handles (added|updated|deleted)_(post|comment|term||user)_meta actions and
 detects when GeoJSON is being set or updated in postmeta and stores a parallel
 geometrey value in the geo meta table. 
 
@@ -45,7 +45,7 @@ the only offical EPSG for GeoJSON 2.0.
 
 The EPSG will be able to be overridden with a filter.
 
-We won't add a filter for get_(post|comment|user)_meta, so that the user will get
+We won't add a filter for get_(post|comment|term|user)_meta, so that the user will get
 whatever they put into the meta table in the first place, including the non-spatial
 properties of the GeoJSON.
 
@@ -71,3 +71,9 @@ spatial indexes until 5.7.
 Rants
 -----
 Can you believe that MySQL doesn't have ST_TRANSFORM and doesn't use the SRID?
+
+
+Todo
+----
+ * Populate geo tables on activation with any existing geojson values
+ * Where do errors go / who sees them? Eg. inside added_meta callback

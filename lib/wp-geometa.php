@@ -1,6 +1,9 @@
 <?php
 /*
-
+ * This class handles saving and fetching geo metadata
+ *
+ *
+ *
 TODO: write wrappers for get_post_meta which lets users
 st_buffer and such when fetching geo data
 
@@ -8,18 +11,14 @@ Note: ST_Buffer etc. going to work well with EPSG:4326. Maybe we should have get
 use ST_Transform(ST_Buffer(ST_Transform(%geometry%,/some UTM code/),/distance/),4326)
 
 get_geo_post_meta should return GeoJSON
-
 */
 
-class WP_GeoMeta {
-	// A GeoJSON and WKT reader/write (GeoPHP classes);
-	public $geojson;
-	public $geowkt; 
-
+class WP_GeoMeta extends WP_GeoUtil {
+	// What kind of meta are we handling?
 	public $meta_types = array('comment','post','term','user'); // Missing site and term meta
-	public $meta_actions = array('added','updated','deleted'); // We can ignore get, since we would just return the GeoJSON anyways
 
-	private $srid = 4326;
+	// What kind of meta actions are we handling?
+	public $meta_actions = array('added','updated','deleted'); // We can ignore get, since we would just return the GeoJSON anyways
 
 	private static $_instance = null;
 
@@ -32,12 +31,6 @@ class WP_GeoMeta {
 		}
 
 		return self::$_instance;
-	}
-
-	function __construct(){
-		$this->setup_filters();
-		$this->geojson = new GeoJSON();
-		$this->geowkt = new WKT();
 	}
 
 	/**
@@ -145,9 +138,6 @@ class WP_GeoMeta {
 				add_action( "{$action}_{$type}_meta", array($this,"{$action}_{$type}_meta"),10,4); 
 			}
 		}
-
-		add_action( 'pre_get_posts', array($this,'pre_get_posts'));
-		add_action( 'get_meta_sql', array($this,'get_meta_sql'),10,6);
 	}
 
 	/**
@@ -170,83 +160,6 @@ class WP_GeoMeta {
 				array_unshift($arguments,$type);
 				return call_user_func_array(array($this,"{$action}_meta"),$arguments);
 			}
-		}
-	}
-
-	/**
-	 * We're going to support single GeoJSON features and FeatureCollections in either string, object or array format
-	 */
-	function metaval_to_geom($metaval = ''){
-		// Let other plugins support non GeoJSON geometry
-		$maybe_geom = apply_filters('wpgq_metaval_to_geom', $metaval);
-		if($this->is_geom($maybe_geom)){
-			return $maybe_geom;
-		}
-
-		// Exit early if we're a non-GeoJSON string
-		if(is_string($metaval)){
-		   	if(strpos($metaval,'{') === FALSE || strpos($metaval,'Feature') === FALSE || strpos($metaval,'geometry') === FALSE){
-				return false;
-			} else {
-				$metaval = json_decode($metaval,true);
-			}
-		}
-
-		// If it's an object, cast it to an array for consistancy
-		if(is_object($metaval)){
-			$metaval = (array)$metaval;
-		}
-
-		// Ok, we've got an array, sniff it to see if it smells like GoeJSON
-		//if(is_array($metaval)){
-		//	if(
-		//		!array_key_exists('type',$metaval) || 
-		//		($metaval['type'] != 'FeatureCollection' && $metaval['type'] != 'Feature') ||
-		//		(!is_array($metaval['geometry']) && !is_array($metaval['features']))
-		//	){
-		//		return false;
-		//	}
-		//}
-
-		$metaval = $this->merge_geojson($metaval);
-
-		if($metaval === false){
-			return;
-		}
-
-		// Convert GeoJSON to WKT
-		try {
-			$geom = $this->geojson->read((string)$metaval);
-			if(is_null($geom)){
-				return false;
-			}
-		} catch (Exception $e){
-			return false;
-		}
-
-		$wkt = new wkt();
-		try {
-			return $this->geowkt->write($geom);
-		} catch (Exception $e){
-			return false;
-		}
-	}
-
-	/**
-	 * Check if a value is in WKT, which is our DB-ready format
-	 *
-	 * @return bool
-	 */
-	function is_geom($maybe_geom){
-		try {
-			$what = $this->geowkt->read((string)$maybe_geom);
-			if($what !== null){
-				return true;
-			} else {
-				return false;
-			}
-		} Catch (Exception $e) {
-			return false;
 		}
 	}
 
@@ -292,51 +205,5 @@ class WP_GeoMeta {
 		$sql = "DELETE FROM {$wpdb->prefix}{$target}meta_geo WHERE fk_meta_id IN (" . implode(',',$meta_ids) . ")";
 
 		return $wpdb->query($sql);
-	}
-
-	/**
-	 * Merge one or more pieces of geojson together. Each item could be a FeatureCollection
-	 * or an individual feature. 
-	 *
-	 * All pieces will be combined to make a single FeatureCollection
-	 *
-	 * If only one piece is sent, then it will be converted into a FeatureCollection if
-	 * it isn't already.
-	 *
-	 * @param as many geojson or geojson fragments as you want
-	 *
-	 * @return A FeatureCollection GeoJSON array
-	 */
-	static function merge_geojson(){
-		$fragments = func_get_args();
-
-		$ret = array(
-			'type' => 'FeatureCollection',
-			'features' => array()
-		);
-
-		foreach($fragments as $fragment){
-			if(is_object($fragment)){
-				$fragment = (array)$fragment;
-			} else if(is_string($fragment)){
-				$fragment = json_decode($fragment,TRUE);
-			}
-
-			if(!array_key_exists('type',$fragment)){
-				return false;
-			}
-
-			if($fragment['type'] == 'FeatureCollection' && is_array($fragment['features'])){
-				$ret['features'] += $fragment['features'];
-			} else if($fragment['type'] == 'Feature') {
-				$ret['features'][] = $fragment;
-			}
-		}
-
-		if(empty($ret['features'])){
-			return false;
-		}
-
-		return json_encode($ret);
 	}
 }

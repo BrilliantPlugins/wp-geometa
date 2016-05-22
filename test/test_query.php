@@ -1,7 +1,7 @@
 <?php
 
-require_once(__DIR__ . '/../../../wp-load.php');
-require_once('./wp-geoquery.php');
+require_once(__DIR__ . '/../../../../wp-load.php');
+require_once('./../wp-geoquery.php');
 
 $q = new WP_Query( array(
 	'geo_query' => array(
@@ -13,9 +13,11 @@ $q = new WP_Query( array(
 	)
 ));
 
-print $q->last_query . "\n";
+print "\n\n" . $q->request . "\n\n";
 
 while($q->have_posts() ) {
 	$q->the_post();
 	echo the_title();
 }
+
+print "\n";

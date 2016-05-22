@@ -12,6 +12,7 @@
  * Version: 0.0.1
  */
 require_once(__DIR__ . '/lib/geoPHP/geoPHP.inc');
+require_once(__DIR__ . '/lib/wp-geoutil.php');
 require_once(__DIR__ . '/lib/wp-geoquery.php');
 require_once(__DIR__ . '/lib/wp-geometa.php');
 

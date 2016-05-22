@@ -1,6 +1,15 @@
 <?php
 
-class WP_GeoQuery {
+/**
+ * This class handles query interception and
+ * modification in order to handle geo queries
+ */
+
+class WP_GeoQuery extends WP_GeoUtil {
+	/**
+	 * We need to track query string replacements across
+	 * two callbacks so we can make the spatial query stuff work
+	 */
 	public $placeholders = array();
 
 	private static $_instance = null;
@@ -14,6 +23,14 @@ class WP_GeoQuery {
 		}
 
 		return self::$_instance;
+	}
+
+	/**
+	 * Set up the filters that will listen to meta being added and removed
+	 */
+	function setup_filters() {
+		add_action( 'pre_get_posts', array($this,'pre_get_posts'));
+		add_action( 'get_meta_sql', array($this,'get_meta_sql'),10,6);
 	}
 
 	/**
