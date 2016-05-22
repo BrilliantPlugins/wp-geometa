@@ -1,3 +1,6 @@
 [submodule "geoPHP"]
-	path = geoPHP
+	path = lib/geoPHP
 	url = https://github.com/phayes/geoPHP.git
+[submodule "proj4php"]
+	path = lib/proj4php
+	url = https://github.com/proj4php/proj4php

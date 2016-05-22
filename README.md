@@ -21,50 +21,53 @@ support for spatial query operations within WP_Query.
 Game Plan / Current Status
 --------------------------
 
-WP_GeoQuery creates parallel geo meta tables for all supported object types with a 
+*Upated: May 21, 2016*
+
+Two classes: WP_GeoQuery and WP_GeoMeta
+
+* WP_GeoMeta will just worry about getting and setting meta values as GeoJSON (or GeoJSON fragments)
+* WP_GeoQuery will worry about intercepting WP_Query requests and making them into spatial queries
+
+
+### WP_GeoMeta
+
+WP_GeoMeta creates parallel geo meta tables for all supported object types with a 
 spatial column type for the meta_value column. These tables are named 
 wp_postmeta_geo, etc.
 
-WP_GeoQuery handles (added|updated|deleted)_(post|comment|user)_meta actions and
+WP_GeoMeta handles (added|updated|deleted)_(post|comment|user)_meta actions and
 detects when GeoJSON is being set or updated in postmeta and stores a parallel
 geometrey value in the geo meta table. 
 
-Data will be stored in EPSG:4326 since WordPress is web software and the data will 
-be used to produce web maps. 4326 is also the most common format for GeoJSON, and 
-for now we will assume that any GeoJSON we detect is in EPSG:4326.
+By default data will be stored in EPSG:4326 since WordPress is web software and the data will 
+probably be used to produce web maps. 4326 is also the most common format for GeoJSON and possibly
+the only offical EPSG for GeoJSON 2.0.
+
+The EPSG will be able to be overridden with a filter.
 
 We won't add a filter for get_(post|comment|user)_meta, so that the user will get
-whatever they put into the meta table in the first place. 
+whatever they put into the meta table in the first place, including the non-spatial
+properties of the GeoJSON.
 
-The next step is to add filters which will allow WP_Query to handle spatial queries. 
+### WP_GeoQuery
+
+WP_GeoQuery will use actions and filters to detect if WP_Query has a 'geo_query' 
+argument which it would then construct into an appropriate meta_query. 
+
+WP_GeoQuery should support spatial relation functions [documented here](https://dev.mysql.com/doc/refman/5.6/en/spatial-relation-functions-object-shapes.html)
 
 
 Server Requirements
 -------------------
 
-Using WP_GeoQuery requires MySQL 5.4 or higher or MariaDB 5.3.3 or higher.
+Can we safely require MySQL 5.6? It brought a LOT of new spatial functionality?
 
-Tables are created as MyISAM tables because InnoDB tables don't (didn't?) support
-spatial indexes. 
+MySQL 5.4 did technically have spatial support though. 
 
-
-Very Likely Problems
---------------------
-
-Older versions of MySQL used the bounding box for ST_Intersect and other queries [instead 
-of the actual geometry](https://www.percona.com/blog/2013/10/21/using-the-new-mysql-spatial-functions-5-6-for-geo-enabled-applications/).
-
-Ideally we'll work around that at some point, but let's get things working for people with 
-up to date installs of MySQL first, and then work backwards.
+Tables are created as MyISAM tables because InnoDB tables don't support
+spatial indexes until 5.7.
 
 
-Ideal WP_Query Support
-------------------------
-
-Since everything is stored in a meta table, ideally developers would be able to perform
-meta queries, but with spatial operands instead of just =, LIKE, etc. 
-
-We should also support the _orderby_ and _fields_ WP_Query arguments, both of which should
-support ST_BUFFER, ST_DISTANCE and any other arbitrary spatial function which MySQL supports.
-
-Some/all of this support might be implemented in a pre_get_posts filter? I'm not certain yet.
+Rants
+-----
+Can you believe that MySQL doesn't have ST_TRANSFORM and doesn't use the SRID?
