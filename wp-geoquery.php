@@ -21,6 +21,6 @@ WP_GeoQuery::get_instance();
 
 register_activation_hook(__FILE__, 'activate_wp_brilliant_geo');
 function activate_wp_brilliant_geo(){
-	$wpgeo = WP_GeoQuery::get_instance();
+	$wpgeo = WP_GeoMeta::get_instance();
 	$wpgeo->create_geo_table();
 }

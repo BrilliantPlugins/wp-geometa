@@ -16,9 +16,7 @@ class WP_GeoMeta {
 	public $geojson;
 	public $geowkt; 
 
-
-
-	public $meta_types = array('comment','post','user'); // Missing site and term meta
+	public $meta_types = array('comment','post','term','user'); // Missing site and term meta
 	public $meta_actions = array('added','updated','deleted'); // We can ignore get, since we would just return the GeoJSON anyways
 
 	private $srid = 4326;
@@ -60,7 +58,7 @@ class WP_GeoMeta {
 			"ALTER TABLE {$wpdb->postmeta}_geo ADD SPATIAL INDEX(meta_value);",
 			"ALTER TABLE {$wpdb->commentmeta}_geo ADD SPATIAL INDEX(meta_value);",
 			"ALTER TABLE {$wpdb->termmeta}_geo ADD SPATIAL INDEX(meta_value);",
-			"ALTER TABLE {$wpdb->prefix}wpgq_utm ADD SPATIAL INDEX(geom);",
+			"ALTER TABLE {$wpdb->usermeta}_geo ADD SPATIAL INDEX(meta_value);",
 		);
 
 		// Only MyISAM supports spatial indexes, at least in MySQL older versions
@@ -101,12 +99,16 @@ class WP_GeoMeta {
 		KEY meta_key (meta_key($max_index_length))
 		) ENGINE=MyISAM $charset_collate;
 
-		CREATE TABLE {$wpdb->prefix}wpgq_utm (
-		id bigint(20) unsigned NOT NULL auto_increment,
-		epsg bigint(20) unsigned NOT NULL default '0',
-		geom GEOMETRYCOLLECTION NOT NULL,
-		PRIMARY KEY  (id)
-		) ENGINE MyISAM $charset_collate;
+		CREATE TABLE {$wpdb->usermeta}_geo (
+		umeta_id bigint(20) unsigned NOT NULL auto_increment,
+		user_id bigint(20) unsigned NOT NULL default '0',
+		meta_key varchar(255) default NULL,
+		meta_value GEOMETRYCOLLECTION NOT NULL,
+		PRIMARY KEY  (umeta_id),
+		KEY user_id (user_id),
+		KEY meta_key (meta_key($max_index_length))
+		) ENGINE=MyISAM $charset_collate;
+
 		";
 
 		// TODO: dbDelta has a problem with SPATIAL INDEX
@@ -115,10 +117,6 @@ class WP_GeoMeta {
 		foreach($indexes as $index){
 			$wpdb->query($index);
 		}
-
-		// Load UTM Zones
-		$wpdb->query("TRUNCATE {$wpdb->prefix}wpgq_utm");
-		$this->load_utm_data();
 	}
 
 	/**
@@ -129,6 +127,7 @@ class WP_GeoMeta {
 		$drops[] = "DROP TABLE {$wpdb->postmeta}_geo";
 		$drops[] = "DROP TABLE {$wpdb->commentmeta}_geo";
 		$drops[] = "DROP TABLE {$wpdb->termmeta}_geo";
+		$drops[] = "DROP TABLE {$wpdb->usermeta}_geo";
 		foreach($drops as $drop){
 			$wpdb->query($drop);
 		}
@@ -155,6 +154,7 @@ class WP_GeoMeta {
 	 * Handle all the variations of add/update/delete post/user/comment
 	 */
 	function __call($name,$arguments) {
+		$a = 1 + 1;
 		if(preg_match('/^(' . implode('|',$this->meta_actions) . ')_(' . implode('|',$this->meta_types) . ')_meta$/',$name,$matches)){
 			$action = $matches[1];
 			$type = $matches[2];
