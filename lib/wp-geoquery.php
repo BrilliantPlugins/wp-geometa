@@ -30,7 +30,9 @@ class WP_GeoQuery extends WP_GeoUtil {
 	 * Set up the filters that will listen to meta being added and removed
 	 */
 	function setup_filters() {
-		add_action( 'pre_get_posts', array($this,'pre_get_posts'));
+		add_action( 'pre_get_posts', array($this,'pre_get'));
+		add_action( 'pre_get_users', array($this,'pre_get'));
+		add_action( 'pre_get_comments', array($this,'pre_get'));
 		add_action( 'get_meta_sql', array($this,'get_meta_sql'),10,6);
 	}
 
@@ -38,24 +40,48 @@ class WP_GeoQuery extends WP_GeoUtil {
 	 * Turn our geo_meta queries into meta_query objects
 	 * Also, cache the subquery in this object so we can 
 	 */
-	function pre_get_posts($query){
-		if(!is_array($query->query['geo_meta'])){
-			return;
-		}
+	function pre_get($query){
+		global $wpdb;
 
-		if(!is_array($query->meta_query)){
-			$query->meta_query = array();
+		if(!is_array($query->query_vars['geo_meta'])){
+			return;
 		}
 
 		$newMeta = array();
 
-		$meta_query = $query->get('meta_query');
+		if(!($query->meta_query instanceof WP_Meta_Query)){
+			$query->meta_query = new WP_Meta_Query();
+		}
+
+		$meta_queries = $query->meta_query->queries;
+		if(!is_array($meta_queries)){
+			$meta_queries = array();
+		}
+
+
+		// Find the right tablename
+		$meta_pkey = 'meta_id';
+		if($query instanceof WP_User_Query){
+			$meta_pkey = 'umeta_id';
+			$metatable = $wpdb->usermeta;
+		} else if ($query instanceof WP_Query){
+			$metatable = $wpdb->postmeta;
+		} else if ($query instanceof WP_Comment_Query){
+			$metatable = $wpdb->commentmeta;
+		} else if (false){
+			$metatable = $wpdb->termmeta;
+		} else {
+			return;
+		}
+
+		$geotable = $metatable . '_geo';
+
 
 		/**
 		 * For each geo_meta we'll construct a meta_query which 
 		 * will join the meta_geo table to the meta table 
 		 */
-		foreach($query->query['geo_meta'] as $geo_meta){
+		foreach($query->query_vars['geo_meta'] as $geo_meta){
 			$geometry = $this->metaval_to_geom($geo_meta['value']);
 
 			if($geometry === false){
@@ -63,18 +89,18 @@ class WP_GeoQuery extends WP_GeoUtil {
 			}
 
 			$uniqid = uniqid('geoquery-');
-			$subquery = "(SELECT CAST(meta.meta_value AS CHAR) FROM wp_postmeta_geo geo , wp_postmeta meta WHERE {$geo_meta['compare']}(geo.meta_value,ST_GeomFromText('{$geometry}'," . $this->srid . ")) AND geo.fk_meta_id=meta.meta_id AND '$uniqid'='$uniqid')";
+			$subquery = "(SELECT CAST(meta.meta_value AS CHAR) FROM $geotable geo , $metatable meta WHERE {$geo_meta['compare']}(geo.meta_value,ST_GeomFromText('{$geometry}'," . $this->srid . ")) AND geo.fk_meta_id=meta.$meta_pkey AND '$uniqid'='$uniqid')";
 
 			$this->query_cache[$uniqid] = $subquery;
 
-			$meta_query[] = array(array(
+			$meta_queries[] = array(array(
 				'key' => $geo_meta['key'],
 				'compare' => 'in',
 				'value' => array($subquery) // Wrap in an array so it doesn't get implode("','",explode(' '))'ed
 			));
 		}
 
-		$query->set('meta_query', $meta_query);
+		$query->query_vars['meta_query'] = $meta_queries;
 	}
 
 	/**

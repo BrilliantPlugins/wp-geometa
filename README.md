@@ -131,6 +131,14 @@ also include other utility functions.
 
 Server Requirements
 -------------------
+
+### WordPress
+Still determining the minimum WordPress version number.
+
+We are using the WP_Comment_Query *meta_query* argument which arrived in WordPress 3.5.
+
+
+### MySQL
 WP_GeoMeta requires MySQL 5.4, but spatial support was pretty weak before version
 5.6.1.
 
@@ -164,4 +172,7 @@ Todo
  * Buffering is a very common operation, but it doesn't work well in EPSG:4326. 
 Can we use a reverse haversine or something to determine an approximate number 
 of degrees to buffer if given a center point and a distance?
+ * Support spatial orderby
+ * Add callbacks/hooks so that other plugins with custom tables (eg. Gravity Forms) could
+store geo data in a geo way.
 

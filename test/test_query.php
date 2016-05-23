@@ -21,3 +21,6 @@ while($q->have_posts() ) {
 }
 
 print "\n";
+
+// ----------
+// https://developer.wordpress.org/reference/functions/get_terms/
