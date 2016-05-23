@@ -43,5 +43,5 @@ while($q->have_posts() ) {
 }
 
 // Test delete
-echo "Deleting test metadata\n";
-delete_post_meta($post_id_to_test,'singlegeom');
+// echo "Deleting test metadata\n";
+// delete_post_meta($post_id_to_test,'singlegeom');

@@ -6,6 +6,65 @@ The Warning
 -----------
 *WARNING*: This is pre-alpha and shouldn't be used for anything yet. 
 
+Usage
+-----
+
+See the test files for more examples. If you're going to run the tests change 
+the test object IDs to something in your database.
+
+
+Add geometry to a post:
+
+    $single_feature = '{ "type": "Feature", "geometry": {"type": "Point", "coordinates": [102.0, 0.5]}, "properties": {"prop0": "value0"} }';
+    add_post_meta(15,'singlegeom',$single_feature,false);
+
+Update the post geometry: 	
+
+    $single_feature = '{ "type": "Feature", "geometry": {"type": "Point", "coordinates": [-93.5, 45]}, "properties": {"prop0": "value0"} }';
+    update_post_meta(15,'singlegeom',$single_feature,false);
+
+
+Query posts spatially and print their titles:
+
+    $q = new WP_Query( array(
+    	'geo_meta' => array(
+    		array(
+    			'key' => 'singlegeom',
+    			'compare' => 'ST_INTERSECTS',
+    			'value' => '{"type":"Feature","geometry":{"type":"Point","coordinates":[-93.5,45]}}',
+    		)
+    	)
+    ));
+    
+    while($q->have_posts() ) {
+    	$q->the_post();
+    	print "\t* " . get_the_title() . "\n";
+    }
+
+
+Server Requirements
+-------------------
+
+### WordPress
+Probably WordPress 4.4 since we are using the meta_query parameters of get_terms 
+which was introduced in that version.
+
+### MySQL
+MySQL 5.6.1 or higher is strongly recommended. 
+
+WP_GeoMeta will probably work on MySQL 5.4, but spatial support was pretty weak 
+before version 5.6.1. 
+
+Before MySQL 5.6.1 spatial functions worked against the mininum bounding rectangle 
+instead of the actual geometry.
+
+MySQL 5.7 brough spatial indexes to InnoDB tables. Before that only MyISAM tables
+supported spatial indexes. Anything else required a full table scan. 
+
+If you are using MySQL 5.7, good for you, and consider converting your geo tables
+to InnoDB! (and let me know how it goes).
+
+
 The Problems
 ------------
 ### GIS + WordPress = ???
@@ -127,36 +186,6 @@ back into the post_meta parameter where it.
 An additional class, WP_GeoUtil, currently exists in the test code. It currently
 contains some common functions that both WP_GeoQuery and WP_GeoMeta use. It may
 also include other utility functions.
-
-
-Server Requirements
--------------------
-
-### WordPress
-Still determining the minimum WordPress version number.
-
-We are using the meta_query parameters of get_terms which was introduced in 
-WordPress 4.4.
-
-### MySQL
-WP_GeoMeta requires MySQL 5.4, but spatial support was pretty weak before version
-5.6.1.
-
-MySQL 5.4 did technically have spatial support, but the spatial functions were
-pretty limited because they worked against the mininum bounding rectangle instead
-of the actual geometry. 
-
-MySQL 5.6.1 brought real OpenGIS functions and is probably the minimal useful
-version.
-
- * https://dev.mysql.com/doc/refman/5.6/en/spatial-relation-functions-object-shapes.html
-
-MySQL 5.7 brough spatial indexes to InnoDB tables. Before that only MyISAM tables
-supported spatial indexes. Anything else required a full table scan.
-
-If you are using MySQL 5.7, good for you, and consider converting your geo tables
-to InnoDB! (and let me know how it goes).
-
 
 Rants
 -----
