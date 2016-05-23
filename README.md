@@ -135,8 +135,8 @@ Server Requirements
 ### WordPress
 Still determining the minimum WordPress version number.
 
-We are using the WP_Comment_Query *meta_query* argument which arrived in WordPress 3.5.
-
+We are using the meta_query parameters of get_terms which was introduced in 
+WordPress 4.4.
 
 ### MySQL
 WP_GeoMeta requires MySQL 5.4, but spatial support was pretty weak before version
