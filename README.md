@@ -175,4 +175,5 @@ of degrees to buffer if given a center point and a distance?
  * Support spatial orderby
  * Add callbacks/hooks so that other plugins with custom tables (eg. Gravity Forms) could
 store geo data in a geo way.
+ * Check if spatial index is present before creating it on activation
 
