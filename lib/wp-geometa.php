@@ -13,6 +13,7 @@ use ST_Transform(ST_Buffer(ST_Transform(%geometry%,/some UTM code/),/distance/),
 get_geo_post_meta should return GeoJSON
 */
 
+require_once(__DIR__ . '/wp-geoutil.php');
 class WP_GeoMeta extends WP_GeoUtil {
 	// What kind of meta are we handling?
 	public $meta_types = array('comment','post','term','user'); // Missing site and term meta
@@ -95,13 +96,14 @@ class WP_GeoMeta extends WP_GeoUtil {
 		CREATE TABLE {$wpdb->usermeta}_geo (
 		umeta_id bigint(20) unsigned NOT NULL auto_increment,
 		user_id bigint(20) unsigned NOT NULL default '0',
+		fk_meta_id bigint(20) unsigned NOT NULL default '0',
 		meta_key varchar(255) default NULL,
 		meta_value GEOMETRYCOLLECTION NOT NULL,
 		PRIMARY KEY  (umeta_id),
 		KEY user_id (user_id),
+		KEY fk_meta_id (fk_meta_id),
 		KEY meta_key (meta_key($max_index_length))
 		) ENGINE=MyISAM $charset_collate;
-
 		";
 
 		// TODO: dbDelta has a problem with SPATIAL INDEX

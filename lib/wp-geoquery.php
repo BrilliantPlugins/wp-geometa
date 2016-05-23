@@ -5,6 +5,7 @@
  * modification in order to handle geo queries
  */
 
+require_once(__DIR__ . '/wp-geoutil.php');
 class WP_GeoQuery extends WP_GeoUtil {
 	/**
 	 * We need to track query string replacements across
@@ -34,11 +35,11 @@ class WP_GeoQuery extends WP_GeoUtil {
 	}
 
 	/**
-	 * Turn our geo_query queries into meta_query objects
+	 * Turn our geo_meta queries into meta_query objects
 	 * Also, cache the subquery in this object so we can 
 	 */
 	function pre_get_posts($query){
-		if(!is_array($query->query['geo_query'])){
+		if(!is_array($query->query['geo_meta'])){
 			return;
 		}
 
@@ -51,24 +52,23 @@ class WP_GeoQuery extends WP_GeoUtil {
 		$meta_query = $query->get('meta_query');
 
 		/**
-		 * For each geo_query we'll construct a meta_query which 
+		 * For each geo_meta we'll construct a meta_query which 
 		 * will join the meta_geo table to the meta table 
 		 */
-		foreach($query->query['geo_query'] as $geo_query){
-			$geometry = $this->metaval_to_geom($geo_query['value']);
+		foreach($query->query['geo_meta'] as $geo_meta){
+			$geometry = $this->metaval_to_geom($geo_meta['value']);
 
 			if($geometry === false){
 				continue;
 			}
 
 			$uniqid = uniqid('geoquery-');
-			$subquery = "(SELECT CAST(meta.meta_value AS CHAR) FROM wp_postmeta_geo geo , wp_postmeta meta WHERE {$geo_query['compare']}(geo.meta_value,ST_GeomFromText('{$geometry}'," . $this->srid . ")) AND geo.fk_meta_id=meta.meta_id AND '$uniqid'='$uniqid')";
+			$subquery = "(SELECT CAST(meta.meta_value AS CHAR) FROM wp_postmeta_geo geo , wp_postmeta meta WHERE {$geo_meta['compare']}(geo.meta_value,ST_GeomFromText('{$geometry}'," . $this->srid . ")) AND geo.fk_meta_id=meta.meta_id AND '$uniqid'='$uniqid')";
 
 			$this->query_cache[$uniqid] = $subquery;
 
 			$meta_query[] = array(array(
-				'geo_query_uuid' => $uniqid, // We're going to add this in so we can re-find our query in get_meta_sql so we can remove the quotes that WP_Meta_Query adds
-				'key' => $geo_query['key'],
+				'key' => $geo_meta['key'],
 				'compare' => 'in',
 				'value' => array($subquery) // Wrap in an array so it doesn't get implode("','",explode(' '))'ed
 			));

@@ -1,10 +1,10 @@
 <?php
 
 require_once(__DIR__ . '/../../../../wp-load.php');
-require_once('./../wp-geoquery.php');
+require_once('./../wp-geometa.php');
 
 $q = new WP_Query( array(
-	'geo_query' => array(
+	'geo_meta' => array(
 		array(
 			'key' => 'single',
 			'compare' => 'ST_INTERSECTS',

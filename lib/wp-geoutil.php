@@ -3,6 +3,8 @@
 /**
  * This class has geo utils that users and WP_Geo* classes might need
  */
+
+require_once(__DIR__ . '/geoPHP/geoPHP.inc');
 class WP_GeoUtil {
 	// A GeoJSON and WKT reader/write (GeoPHP classes);
 	protected $geojson;
