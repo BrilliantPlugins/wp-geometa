@@ -19,8 +19,13 @@ GIS and WordPress should become better friends.
 
 ### GIS + Developers = ???
 GIS isn't hard, but it's different. WordPress developers don't need or want to 
-learn yet another thing. WordPress admins have even less desire to learn something
-new.
+learn yet another thing for just one project. WordPress admins have even less 
+desire to dig into the murky details of GIS.
+
+WordPress isn't hard, but it's different. GIS developers don't need or want to
+learn yet another thing for just one project. GIS admins have even less desire 
+to dig into the murky details of WordPress.
+
 
 The Goal
 --------
@@ -123,15 +128,26 @@ An additional class, WP_GeoUtil, currently exists in the test code. It currently
 contains some common functions that both WP_GeoQuery and WP_GeoMeta use. It may
 also include other utility functions.
 
+
 Server Requirements
 -------------------
+WP_GeoMeta requires MySQL 5.4, but spatial support was pretty weak before version
+5.6.1.
 
-Can we safely require MySQL 5.6? It brought a LOT of new spatial functionality?
+MySQL 5.4 did technically have spatial support, but the spatial functions were
+pretty limited because they worked against the mininum bounding rectangle instead
+of the actual geometry. 
 
-MySQL 5.4 did technically have spatial support though. 
+MySQL 5.6.1 brought real OpenGIS functions and is probably the minimal useful
+version.
 
-Tables are created as MyISAM tables because InnoDB tables don't support
-spatial indexes until 5.7.
+ * https://dev.mysql.com/doc/refman/5.6/en/spatial-relation-functions-object-shapes.html
+
+MySQL 5.7 brough spatial indexes to InnoDB tables. Before that only MyISAM tables
+supported spatial indexes. Anything else required a full table scan.
+
+If you are using MySQL 5.7, good for you, and consider converting your geo tables
+to InnoDB! (and let me know how it goes).
 
 
 Rants
