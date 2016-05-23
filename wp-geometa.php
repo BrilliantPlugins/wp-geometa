@@ -21,5 +21,5 @@ WP_GeoQuery::get_instance();
 register_activation_hook(__FILE__, 'activate_wp_geometa');
 function activate_wp_geometa(){
 	$wpgeo = WP_GeoMeta::get_instance();
-	$wpgeo->create_geo_table();
+	return $wpgeo->create_geo_table();
 }
