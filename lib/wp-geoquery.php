@@ -118,7 +118,15 @@ class WP_GeoQuery extends WP_GeoUtil {
 			}
 
 			$uniqid = uniqid('geoquery-');
-			$subquery = "(SELECT CAST(meta.meta_value AS CHAR) FROM $geotable geo , $metatable meta WHERE {$geo_meta['compare']}(geo.meta_value,ST_GeomFromText('{$geometry}'," . $this->srid . ")) AND geo.fk_meta_id=meta.$meta_pkey AND '$uniqid'='$uniqid')";
+
+			// TODO: Make this a prepare
+			// TODO: Whitelist compare
+			$subquery = "(
+				SELECT CAST(meta.meta_value AS CHAR) 
+				FROM $geotable geo , $metatable meta 
+				WHERE {$geo_meta['compare']}(geo.meta_value,ST_GeomFromText('{$geometry}'," . $this->srid . ")) 
+				AND geo.fk_meta_id=meta.$meta_pkey AND '$uniqid'='$uniqid'
+				)";
 
 			$this->query_cache[$uniqid] = $subquery;
 
@@ -135,8 +143,8 @@ class WP_GeoQuery extends WP_GeoUtil {
 	/**
 	 * WP_Metq_Query helpfully addslashes and single-quotes our subquery, so we're going to take it back now
 	 */
+	// TODO: Can we *only* build the sub-query here? 
 	function get_meta_sql($sql,$queries,$type,$primary_table,$primary_id_column,$context) {
-		$a = 1 + 1;
 		// Find our geoquery key again. Gotta love the quadrupal backslashes...
 		if(preg_match("|\\\\'(geoquery-[^=]+)\\\\'=\\\\'\\1\\\\'|",$sql['where'],$matches)){
 			$val = $this->query_cache[$matches[1]];

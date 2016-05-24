@@ -10,9 +10,11 @@ class WP_GeoUtil {
 	protected $geojson;
 	protected $geowkt; 
 
+	// EPSG:4326 is the web mercator project, such as is used by Google Maps
+	// @see https://en.wikipedia.org/wiki/World_Geodetic_System
 	protected $srid = 4326;
 
-	function __construct(){
+	protected function __construct(){
 		$this->setup_filters();
 		$this->geojson = new GeoJSON();
 		$this->geowkt = new WKT();
@@ -37,7 +39,7 @@ class WP_GeoUtil {
 	 *
 	 * @return A FeatureCollection GeoJSON array
 	 */
-	static function merge_geojson(){
+	public static function merge_geojson(){
 		$fragments = func_get_args();
 
 		$ret = array(

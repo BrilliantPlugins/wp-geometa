@@ -205,4 +205,14 @@ of degrees to buffer if given a center point and a distance?
  * Add callbacks/hooks so that other plugins with custom tables (eg. Gravity Forms) could
 store geo data in a geo way.
  * Check if spatial index is present before creating it on activation
+ * Add filter to let users/devs explicitly define meta keys to filter on w/constant to enable the filter
+ * Lat/Lng migration tool or plugin that detects coord pairs
+ * Document and create safe list of known relation/compare functions -- Be clear about 5.4/5.5/5.6/5.7 w/ filter
+ * Conform to WP coding standards
+ * Explicitly set visibility on properties and methods
+ * Consider pre-running Geom queryies, then modifying WP_Query to add 'posts_in' -- do we do an intersect with the existing posts_in args? 
 
+
+ Quotes
+ -----
+  * "The ACF of Geo Queries" -- Nick

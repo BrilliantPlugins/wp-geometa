@@ -146,7 +146,7 @@ class WP_GeoMeta extends WP_GeoUtil {
 	 * Handle all the variations of add/update/delete post/user/comment
 	 */
 	function __call($name,$arguments) {
-		$a = 1 + 1;
+		// Try exploding on underscore then using switch or something
 		if(preg_match('/^(' . implode('|',$this->meta_actions) . ')_(' . implode('|',$this->meta_types) . ')_meta$/',$name,$matches)){
 			$action = $matches[1];
 			$type = $matches[2];
