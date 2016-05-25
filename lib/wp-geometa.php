@@ -47,12 +47,18 @@ class WP_GeoMeta extends WP_GeoUtil {
 		$charset_collate = $wpdb->get_charset_collate();
 		$max_index_length = 191;
 
-		// TODO: Check if indexes exist and don't re-add them
-		$indexes = array(
-			"ALTER TABLE {$wpdb->postmeta}_geo ADD SPATIAL INDEX(meta_value);",
-			"ALTER TABLE {$wpdb->commentmeta}_geo ADD SPATIAL INDEX(meta_value);",
-			"ALTER TABLE {$wpdb->termmeta}_geo ADD SPATIAL INDEX(meta_value);",
-			"ALTER TABLE {$wpdb->usermeta}_geo ADD SPATIAL INDEX(meta_value);",
+		$drop_indexes = array(
+			"DROP INDEX meta_val_spatial_idx ON {$wpdb->postmeta}_geo",
+			"DROP INDEX meta_val_spatial_idx ON {$wpdb->commentmeta}_geo",
+			"DROP INDEX meta_val_spatial_idx ON {$wpdb->termmeta}_geo",
+			"DROP INDEX meta_val_spatial_idx ON {$wpdb->usermeta}_geo",
+		);
+
+		$add_indexes = array(
+			"CREATE SPATIAL INDEX meta_val_spatial_idx ON {$wpdb->postmeta}_geo (meta_value);",
+			"CREATE SPATIAL INDEX meta_val_spatial_idx ON {$wpdb->commentmeta}_geo (meta_value);",
+			"CREATE SPATIAL INDEX meta_val_spatial_idx ON {$wpdb->termmeta}_geo (meta_value);",
+			"CREATE SPATIAL INDEX meta_val_spatial_idx ON {$wpdb->usermeta}_geo (meta_value);",
 		);
 
 		// Only MyISAM supports spatial indexes, at least in MySQL older versions
@@ -109,7 +115,18 @@ class WP_GeoMeta extends WP_GeoUtil {
 		// TODO: dbDelta has a problem with SPATIAL INDEX
 		dbDelta( $geotables );
 
-		foreach($indexes as $index){
+		$suppress = $wpdb->suppress_errors(true);
+		$errors = $wpdb->show_errors(false);
+
+		foreach($drop_indexes as $index){
+			$wpdb->query($index);
+		}
+
+		$wpdb->suppress_errors($suppress);
+		$wpdb->show_errors($errors);
+
+
+		foreach($add_indexes as $index){
 			$wpdb->query($index);
 		}
 	}
@@ -170,7 +187,7 @@ class WP_GeoMeta extends WP_GeoUtil {
 	 */
 	function added_meta($target,$meta_id,$object_id,$meta_key,$meta_value){
 		global $wpdb;
-		$q = "INSERT INTO {$wpdb->prefix}{$target}meta_geo ({$target}_id,fk_meta_id,meta_key,meta_value) VALUES ";
+		$q = "INSERT INTO " . _get_meta_table($target) . "_geo ({$target}_id,fk_meta_id,meta_key,meta_value) VALUES ";
 		$q .= " (%d,%d,%s,GeomFromText(%s," . $this->srid . "))";
 
 		$sql = $wpdb->prepare($q,array($object_id,$meta_id,$meta_key,$meta_value));
@@ -183,7 +200,7 @@ class WP_GeoMeta extends WP_GeoUtil {
 	 */
 	function updated_meta($target,$meta_id,$object_id,$meta_key,$meta_value){
 		global $wpdb;
-		$q = "UPDATE {$wpdb->prefix}{$target}meta_geo SET meta_value=GeomFromText(%s," . $this->srid . ") WHERE fk_meta_id=(%d)";
+		$q = "UPDATE " . _get_meta_table( $target ) . "_ge SET meta_value=GeomFromText(%s," . $this->srid . ") WHERE fk_meta_id=(%d)";
 
 		$sql = $wpdb->prepare($q,array($meta_value,$meta_id));
 
@@ -204,8 +221,42 @@ class WP_GeoMeta extends WP_GeoUtil {
 			return;
 		}
 
-		$sql = "DELETE FROM {$wpdb->prefix}{$target}meta_geo WHERE fk_meta_id IN (" . implode(',',$meta_ids) . ")";
+		$sql = "DELETE FROM " . _get_meta_table($target) . "_geo WHERE fk_meta_id IN (" . implode(',',$meta_ids) . ")";
 
 		return $wpdb->query($sql);
+	}
+
+	/**
+	 * Repopulate
+	 */
+	function populate_geo_tables() {
+		global $wpdb;
+
+		foreach($this->meta_types as $meta_type){
+			$metatable = _get_meta_table($meta_type);
+			$geotable = $metatable . "_geo";
+
+			$meta_pkey = 'meta_id';
+			if($meta_type == 'user'){
+				$meta_pkey = 'umeta_id';
+			}
+
+			$truncate = "TRUNCATE $geotable";
+			$wpdb->query($truncate);
+			$maxid = -1;
+			do {
+				$q = "SELECT * FROM $metatable WHERE meta_value LIKE '%{%Feature%geometry%}%' AND $meta_pkey > $maxid LIMIT 100";
+				$res = $wpdb->get_results($q,ARRAY_A);
+				$found_rows = count($res);
+
+				foreach($res as $row){
+					$geometry = $this->metaval_to_geom($row['meta_value']);
+					if($geometry){
+						$this->added_meta($meta_type,$row[$meta_pkey],$row[$meta_type . '_id'],$row['meta_key'],$geometry);
+					}
+					$maxid = $row[$meta_pkey];
+				}
+			} while ($found_rows);
+		}
 	}
 }

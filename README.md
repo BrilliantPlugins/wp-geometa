@@ -194,7 +194,6 @@ Can you believe that MySQL doesn't have ST_TRANSFORM and doesn't use the SRID?
 
 Todo
 ----
- * Populate geo tables on activation with any existing geojson values
  * Where do errors go / who sees them? Eg. inside added_meta callback
  * Replace geoPHP with something small and focused. All we're using it for is GeoJSON to WKT conversion.
  * Patch dbDelta to handle spatial indexes in CREATE TABLE statements
@@ -204,16 +203,25 @@ of degrees to buffer if given a center point and a distance?
  * Support spatial orderby
  * Add callbacks/hooks so that other plugins with custom tables (eg. Gravity Forms) could
 store geo data in a geo way.
- * Check if spatial index is present before creating it on activation
  * Add filter to let users/devs explicitly define meta keys to filter on w/constant to enable the filter
  * Lat/Lng migration tool or plugin that detects coord pairs
- * Document and create safe list of known relation/compare functions -- Be clear about 5.4/5.5/5.6/5.7 w/ filter
  * Conform to WP coding standards
  * Explicitly set visibility on properties and methods
- * Consider pre-running Geom queryies, then modifying WP_Query to add 'posts_in' -- do we do an intersect with the existing posts_in args? 
  * Add support for https://github.com/krandalf75/MySQL-Spatial-UDF/blob/master/README.md
 
+Changes
+-------
+
+### 0.0.2 
+ * Improved meta query capabilities. Now support sub queries, and uses standard meta-query syntax
+ * Whitelist of known spatial functions in meta_query args. Allowed args set by detecting MySQL capabilities.
+ * We now delete the spatial index on activation so that we don't end up with duplicate spatial keys
+ * Populate geo tables on activation with any existing geojson values
+
+### 0.0.1
+ * Initial Release
 
  Quotes
  -----
   * "The ACF of Geo Queries" -- Nick
+  * "No matter where you go, there you are"

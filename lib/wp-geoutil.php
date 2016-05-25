@@ -14,39 +14,43 @@ class WP_GeoUtil {
 	// @see https://en.wikipedia.org/wiki/World_Geodetic_System
 	protected $srid = 4326;
 
-	var $known_spatial_functions = array(
-		'two_geoms_return_bool' => array(
-			'MBRCoveredBy',
-			'Contains',
-			'Crosses',
-			'Disjoint',
-			'Equals',
-			'Intersects',
-			'MBRContains',
-			'MBRDisjoint',
-			'MBREqual',
-			'MBREquals',
-			'MBRIntersects',
-			'MBROverlaps',
-			'MBRTouches',
-			'MBRWithin',
-			'Overlaps',
-			'ST_Contains',
-			'ST_Crosses',
-			'ST_Difference',
-			'ST_Disjoint',
-			'ST_Equals',
-			'ST_Intersects',
-			'ST_Overlaps',
-			'ST_Touches',
-			'ST_Within',
-			'Touches',
-			'Within',
-			'ST_SymDifference',
-			'ST_Union',
-			'NeverWork',
-		)
+	// This is a list of all known spatial functions in MySQL 5.4 to 5.7.6
+	// We will test for capabilities by checking if the function exists instead of 
+	// checking function names.
+	var $all_funcs = array(
+		'Contains', 'Crosses', 'Disjoint', 'Equals', 'Intersects',
+		'MBRContains', 'MBRCoveredBy', 'MBRDisjoint', 'MBREqual', 'MBREquals',
+		'MBRIntersects', 'MBROverlaps', 'MBRTouches', 'MBRWithin', 'Overlaps',
+		'ST_Contains', 'ST_Crosses', 'ST_Difference', 'ST_Disjoint', 'ST_Equals',
+		'ST_Intersects', 'ST_Overlaps', 'ST_SymDifference', 'ST_Touches', 'ST_Union',
+		'ST_Within', 'Touches', 'Within', 'Distance', 'GeometryCollection',
+		'ST_Distance', 'ST_Distance_Sphere', 'ST_Intersection', 'IsClosed', 'IsEmpty',
+		'IsSimple', 'ST_IsClosed', 'ST_IsEmpty', 'ST_IsSimple', 'ST_IsValid',
+		'AsBinary', 'AsText', 'AsWKB', 'AsWKT', 'ConvexHull',
+		'Dimension', 'Envelope', 'GeometryType', 'SRID', 'ST_AsBinary',
+		'ST_AsGeoJSON', 'ST_AsText', 'ST_AsWKB', 'ST_AsWKT', 'ST_ConvexHull',
+		'ST_Envelope', 'ST_GeoHash', 'ST_GeometryType', 'ST_Length', 'ST_SRID',
+		'ST_Validate', 'ST_GeomFromGeoJSON', 'Point', 'LineFromWKB', 'LineStringFromWKB',
+		'ST_LineFromWKB', 'ST_LineStringFromWKB', 'LineFromText', 'LineStringFromText', 'ST_LineFromText',
+		'ST_LineStringFromText', 'MultiLineString', 'Polygon', 'MLineFromWKB', 'MultiLineStringFromWKB',
+		'MLineFromText', 'MultiLineStringFromText', 'MPointFromWKB', 'MultiPointFromWKB', 'MPointFromText',
+		'MultiPointFromText', 'GeomCollFromWKB', 'GeometryCollectionFromWKB', 'GeometryFromWKB', 'GeomFromWKB',
+		'MPolyFromWKB', 'MultiPolygonFromWKB', 'ST_GeomCollFromWKB', 'ST_GeometryCollectionFromWKB', 'ST_GeometryFromWKB',
+		'GeomCollFromText', 'GeometryCollectionFromText', 'GeometryFromText', 'GeomFromText', 'MPolyFromText',
+		'MultiPolygonFromText', 'ST_GeomCollFromText', 'ST_GeometryCollectionFromText', 'ST_GeometryFromText', 'PointFromWKB',
+		'ST_PointFromWKB', 'PointFromText', 'ST_PointFromText', 'LineString', 'MultiPoint',
+		'PolyFromWKB', 'PolygonFromWKB', 'ST_GeomFromWKB', 'ST_PolyFromWKB', 'ST_PolygonFromWKB',
+		'PolyFromText', 'PolygonFromText', 'ST_GeomFromText', 'ST_PolyFromText', 'ST_PolygonFromText',
+		'MultiPolygon', 'ST_LatFromGeoHash', 'ST_LongFromGeoHash', 'ST_PointFromGeoHash', 'EndPoint',
+		'GLength', 'NumPoints', 'PointN', 'ST_EndPoint', 'ST_NumPoints',
+		'ST_PointN', 'ST_StartPoint', 'StartPoint', 'NumGeometries', 'NumInteriorRings',
+		'ST_Centroid', 'ST_ExteriorRing', 'ST_NumGeometries', 'ST_NumInteriorRings', 'ST_InteriorRingN',
+		'ST_GeometryN', 'GeometryN', 'InteriorRingN', 'ST_Y', 'X',
+		'Y', 'ST_X', 'ST_Buffer_Strategy', 'Area', 'Centroid',
+		'ExteriorRing', 'ST_Area', 'ST_Simplify', 'Buffer', 'ST_Buffer',
 	);
+
+	var $found_funcs = array();
 
 	var $supported_spatial_functions = array();
 
@@ -191,20 +195,36 @@ class WP_GeoUtil {
 	}
 
 
-	function get_capabilities() {
+	/**
+	 * Fetch the found capabilities from the database
+	 *
+	 * If no capabilites are found, then generate them by running
+	 * queries with each SQL function and seeing what the error 
+	 * message says
+	 */
+	function get_capabilities($retest = false) {
 		global $wpdb;
 
-		$geom1 = 'POINT (25 15)';
-		$geom2 = 'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))';
+		if(!empty($this->found_funcs) && !$retest){
+			return $this->found_funcs;
+		}
+
+		if(!$retest){
+			$this->found_funcs = get_option('geometa_capabilities',array());
+			if(!empty($this->found_funcs)){
+				return $this->found_funcs;
+			}
+		}
 
 		$suppress = $wpdb->suppress_errors(true);
 		$errors = $wpdb->show_errors(false);
 
-		foreach($this->known_spatial_functions['two_geoms_return_bool'] as $func){
-			$q = "SELECT $func(GeomFromText(%s,%d),GeomFromText(%s,%d)) AS worked";
-			$sql = $wpdb->prepare($q,array($geom1,$this->srid,$geom2,$this->srid));
-			if($wpdb->query($sql) !== false){
-				$this->supported_spatial_functions['two_geoms_return_bool'][] = $func;	
+		foreach($this->all_funcs as $func){
+			$q = "SELECT $func() AS worked";
+			$wpdb->query($q);
+
+			if(strpos($wpdb->last_error,'Incorrect parameter count') !== FALSE || strpos($wpdb->last_error,'You have an error in your SQL syntax') !== FALSE){
+				$this->found_funcs[] = $func;
 			}
 		}
 
@@ -212,6 +232,9 @@ class WP_GeoUtil {
 		$wpdb->suppress_errors($suppress);
 		$wpdb->show_errors($errors);
 
-		print_r($this->supported_spatial_functions['two_geoms_return_bool']);
+		$this->found_funcs = array_map('strtolower',$this->found_funcs);
+
+		update_option('geometa_capabilities',$this->found_funcs, false);
+		return $this->found_funcs;
 	}
 }

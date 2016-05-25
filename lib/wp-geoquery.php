@@ -8,34 +8,6 @@
 require_once(__DIR__ . '/wp-geoutil.php');
 class WP_GeoQuery extends WP_GeoUtil {
 
-	private $allowed_comparisons = array(
-			'contains',
-			'crosses',
-			'disjoint',
-			'equals',
-			'intersects',
-			'mbrcontains',
-			'mbrcoveredby',
-			'mbrdisjoint',
-			'mbrequal',
-			'mbrequals',
-			'mbrintersects',
-			'mbroverlaps',
-			'mbrtouches',
-			'mbrwithin',
-			'overlaps',
-			'st_contains',
-			'st_crosses',
-			'st_difference',
-			'st_disjoint',
-			'st_equals',
-			'st_intersects',
-			'st_overlaps',
-			'st_touches',
-			'st_within',
-			'touches',
-			'within',
-		);
 	/**
 	 * We need to track query string replacements across
 	 * two callbacks so we can make the spatial query stuff work
@@ -106,7 +78,7 @@ class WP_GeoQuery extends WP_GeoUtil {
 				$sql = $this->get_meta_sql($sql,$meta_query,$type,$primary_table,$primary_id_column,$context, $depth + 1);
 			}
 
-			if(!in_array(strtolower($meta_query['compare']),$this->allowed_comparisons)){
+			if(!in_array(strtolower($meta_query['compare']),$this->get_capabilities())){
 				continue;
 			}
 

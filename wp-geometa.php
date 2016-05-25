@@ -10,6 +10,7 @@
  * Author: Michael Moore
  * Author URI: http://cimbura.com
  * Version: 0.0.1
+ * Code Name: Emilio Lizardo
  */
 require_once(__DIR__ . '/lib/wp-geoquery.php');
 require_once(__DIR__ . '/lib/wp-geometa.php');
@@ -21,5 +22,6 @@ WP_GeoQuery::get_instance();
 register_activation_hook(__FILE__, 'activate_wp_geometa');
 function activate_wp_geometa(){
 	$wpgeo = WP_GeoMeta::get_instance();
-	return $wpgeo->create_geo_table();
+	$wpgeo->create_geo_table();
+	$wpgeo->populate_geo_tables();
 }
