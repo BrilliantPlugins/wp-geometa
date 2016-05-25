@@ -24,7 +24,7 @@ update_comment_meta($comment_id_to_test,'singlegeom',$single_feature,false);
 print "Running WP_Query with geo_meta argument\n";
 $q = new WP_comment_Query;
 $comments = $q->query( array(
-	'geo_meta' => array(
+	'meta_query' => array(
 		array(
 			'key' => 'singlegeom',
 			'compare' => 'ST_INTERSECTS',

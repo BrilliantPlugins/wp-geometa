@@ -33,7 +33,7 @@ update_term_meta($term_id_to_test,'singlegeom',$single_feature,false);
  */
 $terms = get_terms( array(
 	'hide_empty' => false,
-	'geo_meta' => array(
+	'meta_query' => array(
 		array(
 			'key' => 'singlegeom',
 			'compare' => 'ST_INTERSECTS',

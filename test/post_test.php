@@ -17,6 +17,9 @@ print "Adding geometry metadata to post $post_id_to_test\n";
 $single_feature = '{ "type": "Feature", "geometry": {"type": "Point", "coordinates": [102.0, 0.5]}, "properties": {"prop0": "value0"} }';
 add_post_meta($post_id_to_test,'singlegeom',$single_feature,false);
 
+add_post_meta(1,'pickle','dill',false);
+add_post_meta(48,'pickle','dill',false);
+
 
 print "Updating geometry metadata in post $post_id_to_test\n";
 $single_feature = '{ "type": "Feature", "geometry": {"type": "Point", "coordinates": [-93.5, 45]}, "properties": {"prop0": "value0"} }';
@@ -24,11 +27,25 @@ update_post_meta($post_id_to_test,'singlegeom',$single_feature,false);
 
 print "Running WP_Query with geo_meta argument\n";
 $q = new WP_Query( array(
-	'geo_meta' => array(
+	'meta_query' => array(
+		'relation' => 'OR',
 		array(
-			'key' => 'singlegeom',
-			'compare' => 'ST_INTERSECTS',
-			'value' => '{"type":"Feature","geometry":{"type":"Point","coordinates":[-93.5,45]}}',
+			'key' => 'pickle',
+			'compare' => '=',
+			'value' => 'sweet',
+		),
+		array(
+			'relation' => 'AND',
+			array(
+				'key' => 'singlegeom',
+				'compare' => 'ST_INTERSECTS',
+				'value' => '{"type":"Feature","geometry":{"type":"Point","coordinates":[-93.5,45]}}',
+			),
+			array(
+				'key' => 'pickle',
+				'compare' => '=',
+				'value' => 'dill',
+			),
 		)
 	)
 ));
@@ -45,3 +62,5 @@ while($q->have_posts() ) {
 // Test delete
 // echo "Deleting test metadata\n";
 // delete_post_meta($post_id_to_test,'singlegeom');
+// delete_post_meta(1,'pickle');
+// delete_post_meta(48,'pickle');

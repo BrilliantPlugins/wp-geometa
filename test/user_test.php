@@ -24,7 +24,7 @@ update_user_meta($user_id_to_test,'singlegeom',$single_feature,false);
 
 print "Running WP_Query with geo_meta argument\n";
 $q = new WP_User_Query( array(
-	'geo_meta' => array(
+	'meta_query' => array(
 		array(
 			'key' => 'singlegeom',
 			'compare' => 'ST_INTERSECTS',
@@ -45,5 +45,5 @@ foreach($authors as $author){
 }
 
 // Test delete
-echo "Deleting test metadata\n";
-delete_user_meta($user_id_to_test,'singlegeom');
+// echo "Deleting test metadata\n";
+// delete_user_meta($user_id_to_test,'singlegeom');
