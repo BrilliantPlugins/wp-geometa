@@ -9,7 +9,32 @@ require_once(__DIR__ . '/wp-geoutil.php');
 class WP_GeoQuery extends WP_GeoUtil {
 
 	private $allowed_comparisons = array(
-		'st_intersects'
+			'contains',
+			'crosses',
+			'disjoint',
+			'equals',
+			'intersects',
+			'mbrcontains',
+			'mbrcoveredby',
+			'mbrdisjoint',
+			'mbrequal',
+			'mbrequals',
+			'mbrintersects',
+			'mbroverlaps',
+			'mbrtouches',
+			'mbrwithin',
+			'overlaps',
+			'st_contains',
+			'st_crosses',
+			'st_difference',
+			'st_disjoint',
+			'st_equals',
+			'st_intersects',
+			'st_overlaps',
+			'st_touches',
+			'st_within',
+			'touches',
+			'within',
 		);
 	/**
 	 * We need to track query string replacements across
@@ -34,6 +59,18 @@ class WP_GeoQuery extends WP_GeoUtil {
 	 * Set up the filters that will listen to meta being added and removed
 	 */
 	function setup_filters() {
+		global $wpdb;
+		$version = $wpdb->db_version();
+		if(version_compare('5.4.0',$wpdb->db_version(),'>=')){
+
+		} else if(version_compare('5.6.1',$wpdb->db_version(),'>=')){
+
+		} else if(version_compare('5.7',$wpdb->db_version(),'>=')){
+
+		} else {
+
+		}
+
 		add_action( 'get_meta_sql', array($this,'get_meta_sql'),10,6);
 	}
 
@@ -82,7 +119,7 @@ class WP_GeoQuery extends WP_GeoUtil {
 			$search_string = "( $metatable.meta_key = %s AND CAST($metatable.meta_value AS CHAR) = %s )";
 			$search_string = $wpdb->prepare($search_string,array($meta_query['key'],$meta_query['value']));
 
-			$replace_string = "( $metatable.$meta_key IN ( SELECT fk_meta_id FROM {$geotable} WHERE (meta_key=%s AND {$meta_query['compare']}($geotable.meta_value,ST_GeomFromText(%s,%d))) ) )";
+			$replace_string = "( $metatable.$meta_key IN ( SELECT fk_meta_id FROM {$geotable} WHERE (meta_key=%s AND {$meta_query['compare']}($geotable.meta_value,GeomFromText(%s,%d))) ) )";
 			$replace_string = $wpdb->prepare($replace_string,array($meta_query['key'],$geometry,$this->srid));
 
 			$sql['where'] = str_replace($search_string, $replace_string, $sql['where']);

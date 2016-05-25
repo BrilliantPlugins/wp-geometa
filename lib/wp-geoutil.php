@@ -14,6 +14,58 @@ class WP_GeoUtil {
 	// @see https://en.wikipedia.org/wiki/World_Geodetic_System
 	protected $srid = 4326;
 
+	var $known_spatial_functions = array(
+		'two_geoms_return_bool' => array(
+			'MBRCoveredBy',
+			'Contains',
+			'Crosses',
+			'Disjoint',
+			'Equals',
+			'Intersects',
+			'MBRContains',
+			'MBRDisjoint',
+			'MBREqual',
+			'MBREquals',
+			'MBRIntersects',
+			'MBROverlaps',
+			'MBRTouches',
+			'MBRWithin',
+			'Overlaps',
+			'ST_Contains',
+			'ST_Crosses',
+			'ST_Difference',
+			'ST_Disjoint',
+			'ST_Equals',
+			'ST_Intersects',
+			'ST_Overlaps',
+			'ST_Touches',
+			'ST_Within',
+			'Touches',
+			'Within',
+			'ST_SymDifference',
+			'ST_Union',
+			'NeverWork',
+		)
+	);
+
+	var $supported_spatial_functions = array();
+
+	private static $_instance = null;
+
+
+	/**
+	 * Get the singleton instance.
+	 */
+	public static function get_instance() {
+		if ( is_null( self::$_instance ) ) {
+			self::$_instance = new self;
+		}
+
+		return self::$_instance;
+	}
+
+
+
 	protected function __construct(){
 		$this->setup_filters();
 		$this->geojson = new GeoJSON();
@@ -136,5 +188,30 @@ class WP_GeoUtil {
 		} Catch (Exception $e) {
 			return false;
 		}
+	}
+
+
+	function get_capabilities() {
+		global $wpdb;
+
+		$geom1 = 'POINT (25 15)';
+		$geom2 = 'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))';
+
+		$suppress = $wpdb->suppress_errors(true);
+		$errors = $wpdb->show_errors(false);
+
+		foreach($this->known_spatial_functions['two_geoms_return_bool'] as $func){
+			$q = "SELECT $func(GeomFromText(%s,%d),GeomFromText(%s,%d)) AS worked";
+			$sql = $wpdb->prepare($q,array($geom1,$this->srid,$geom2,$this->srid));
+			if($wpdb->query($sql) !== false){
+				$this->supported_spatial_functions['two_geoms_return_bool'][] = $func;	
+			}
+		}
+
+		// Re set the error settings
+		$wpdb->suppress_errors($suppress);
+		$wpdb->show_errors($errors);
+
+		print_r($this->supported_spatial_functions['two_geoms_return_bool']);
 	}
 }

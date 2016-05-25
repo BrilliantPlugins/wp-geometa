@@ -211,6 +211,7 @@ store geo data in a geo way.
  * Conform to WP coding standards
  * Explicitly set visibility on properties and methods
  * Consider pre-running Geom queryies, then modifying WP_Query to add 'posts_in' -- do we do an intersect with the existing posts_in args? 
+ * Add support for https://github.com/krandalf75/MySQL-Spatial-UDF/blob/master/README.md
 
 
  Quotes

@@ -171,7 +171,7 @@ class WP_GeoMeta extends WP_GeoUtil {
 	function added_meta($target,$meta_id,$object_id,$meta_key,$meta_value){
 		global $wpdb;
 		$q = "INSERT INTO {$wpdb->prefix}{$target}meta_geo ({$target}_id,fk_meta_id,meta_key,meta_value) VALUES ";
-		$q .= " (%d,%d,%s,ST_GeomFromText(%s," . $this->srid . "))";
+		$q .= " (%d,%d,%s,GeomFromText(%s," . $this->srid . "))";
 
 		$sql = $wpdb->prepare($q,array($object_id,$meta_id,$meta_key,$meta_value));
 
@@ -183,7 +183,7 @@ class WP_GeoMeta extends WP_GeoUtil {
 	 */
 	function updated_meta($target,$meta_id,$object_id,$meta_key,$meta_value){
 		global $wpdb;
-		$q = "UPDATE {$wpdb->prefix}{$target}meta_geo SET meta_value=ST_GeomFromText(%s," . $this->srid . ") WHERE fk_meta_id=(%d)";
+		$q = "UPDATE {$wpdb->prefix}{$target}meta_geo SET meta_value=GeomFromText(%s," . $this->srid . ") WHERE fk_meta_id=(%d)";
 
 		$sql = $wpdb->prepare($q,array($meta_value,$meta_id));
 
