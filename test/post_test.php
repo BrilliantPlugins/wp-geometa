@@ -60,7 +60,7 @@ while($q->have_posts() ) {
 }
 
 // Test delete
-// echo "Deleting test metadata\n";
-// delete_post_meta($post_id_to_test,'singlegeom');
-// delete_post_meta(1,'pickle');
-// delete_post_meta(48,'pickle');
+echo "Deleting test metadata\n";
+delete_post_meta($post_id_to_test,'singlegeom');
+delete_post_meta(1,'pickle');
+delete_post_meta(48,'pickle');
