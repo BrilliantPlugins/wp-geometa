@@ -1,19 +1,33 @@
 <?php
-
 /**
  * This class handles query interception and
  * modification in order to handle geo queries
+ *
+ * @package WP_GeoMeta
  */
 
-require_once(__DIR__ . '/wp-geoutil.php');
+require_once( __DIR__ . '/wp-geoutil.php' );
+
+/**
+ * WP_GeoQuery adds spatial query functionality to WP_Meta_Query, allowing
+ * for spatial queries from within WP_Query, WP_User_Query, WP_Comment_Query and get_terms
+ * when used in conjunction with WP_GeoMeta.
+ */
 class WP_GeoQuery extends WP_GeoUtil {
 
 	/**
 	 * We need to track query string replacements across
 	 * two callbacks so we can make the spatial query stuff work
+	 *
+	 * @var $placeholders;
 	 */
 	public $placeholders = array();
 
+	/**
+	 * The singleton holder
+	 *
+	 * @var $_instance
+	 */
 	private static $_instance = null;
 
 	/**
@@ -32,18 +46,7 @@ class WP_GeoQuery extends WP_GeoUtil {
 	 */
 	function setup_filters() {
 		global $wpdb;
-		$version = $wpdb->db_version();
-		if(version_compare('5.4.0',$wpdb->db_version(),'>=')){
-
-		} else if(version_compare('5.6.1',$wpdb->db_version(),'>=')){
-
-		} else if(version_compare('5.7',$wpdb->db_version(),'>=')){
-
-		} else {
-
-		}
-
-		add_action( 'get_meta_sql', array($this,'get_meta_sql'),10,6);
+		add_action( 'get_meta_sql', array( $this, 'get_meta_sql' ),10,6 );
 	}
 
 	/**
@@ -51,52 +54,62 @@ class WP_GeoQuery extends WP_GeoUtil {
 	 * So we're going to look for any cases where the meta compare operator is in our list of
 	 * known spatial comparisons, then build a compare string with =, which we'll look for
 	 * and replace with our actual spatial query
+	 *
+	 * @param array  $clauses The query JOIN and WHERE clauses.
+	 * @param array  $queries The array of meta queries.
+	 * @param string $type The type of meta we're dealing with.
+	 * @param string $primary_table The main table for the meta.
+	 * @param string $primary_id_column The primary key for the main table.
+	 * @param object $context The main query object.
+	 * @param int    $depth How deep have we recursed.
 	 */
-	function get_meta_sql($sql,$queries,$type,$primary_table,$primary_id_column,$context,$depth = 0) {
+	function get_meta_sql( $clauses, $queries, $type, $primary_table, $primary_id_column, $context, $depth = 0 ) {
 		global $wpdb;
 
 		$metatable = _get_meta_table( $type );
+
+		if ( ! $table ) {
+			return false;
+		}
+
 		$geotable = $metatable . '_geo';
 
-		if($depth > 0){
+		if ( $depth > 0 ) {
 			$metatable = 'mt' . $depth;
 		}
 
-		$meta_key = 'meta_id';
-		if($type == 'user') {
-			$meta_key = 'umeta_id';
-		}
-		
+		$id_column = 'user' === $meta_type ? 'umeta_id' : 'meta_id';
+
 		$conditions = array();
-		foreach($queries as $k => $meta_query){
-			if(!is_array($meta_query)){
+		foreach ( $queries as $k => $meta_query ) {
+			if ( ! is_array( $meta_query ) ) {
 				continue;
 			}
 
-			// not a first-order clause
-			if(!array_key_exists('key',$meta_query) && !array_key_exists('value',$meta_query)){
-				$sql = $this->get_meta_sql($sql,$meta_query,$type,$primary_table,$primary_id_column,$context, $depth + 1);
+			// Not a first-order clause. Recurse!
+			if ( ! array_key_exists( 'key',$meta_query ) && ! array_key_exists( 'value',$meta_query ) ) {
+				$clauses = $this->get_meta_sql( $clauses,$meta_query,$type,$primary_table,$primary_id_column,$context, $depth + 1 );
 			}
 
-			if(!in_array(strtolower($meta_query['compare']),$this->get_capabilities())){
+			if ( ! in_array( strtolower( $meta_query['compare'] ),$this->get_capabilities() ) ) {
 				continue;
 			}
 
-			$geometry = $this->metaval_to_geom($meta_query['value']);
+			$geometry = $this->metaval_to_geom( $meta_query['value'] );
 
-			if(empty($geometry)){
+			if ( empty( $geometry ) ) {
 				continue;
 			}
 
-			$search_string = "( $metatable.meta_key = %s AND CAST($metatable.meta_value AS CHAR) = %s )";
-			$search_string = $wpdb->prepare($search_string,array($meta_query['key'],$meta_query['value']));
+			$search_string = "( $metatable.id_column = %s AND CAST($metatable.meta_value AS CHAR) = %s )";
+			$search_string = $wpdb->prepare( $search_string, array( $meta_query['key'], $meta_query['value'] ) ); // @codingStandardsIgnoreLine
 
-			$replace_string = "( $metatable.$meta_key IN ( SELECT fk_meta_id FROM {$geotable} WHERE (meta_key=%s AND {$meta_query['compare']}($geotable.meta_value,GeomFromText(%s,%d))) ) )";
-			$replace_string = $wpdb->prepare($replace_string,array($meta_query['key'],$geometry,$this->srid));
+			$replace_string = "( $metatable.$id_column IN ( SELECT fk_meta_id FROM {$geotable} WHERE (meta_key=%s AND {$meta_query['compare']}($geotable.meta_value,GeomFromText(%s,%d))) ) )";
+			$replace_string = $wpdb->prepare( $replace_string,array( $meta_query['key'], $geometry, $this->srid ) ); // @codingStandardsIgnoreLine
 
-			$sql['where'] = str_replace($search_string, $replace_string, $sql['where']);
+			$clauses['where'] = str_replace( $search_string, $replace_string, $clauses['where'] );
 		}
 
-		return $sql;
+		return $clauses;
 	}
 }
