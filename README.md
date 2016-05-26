@@ -164,14 +164,17 @@ beginning.
 Since *pre_get_posts* is intimidating and since querying with spatial queries is a 
 bit funky, WP_GeoQuery will handle that part for the user. 
 
-It will implement a new WP_Query parameter, *geo_meta*, patered after the exisitng 
-*post_meta* parameter. Just like how the *post_meta* supports a set of comparison
-operations, *geo_meta* will support [spatial comparisons](https://dev.mysql.com/doc/refman/5.6/en/spatial-relation-functions-object-shapes.html). 
+WP_GeoQuery adds support to *meta_query* for known spatial comparison operations.
+It expects that the value will be a GeoJSON string (either Feature or FeatureCollection). 
+
+A partial list of [spatial comparisons is available here](https://dev.mysql.com/doc/refman/5.6/en/spatial-relation-functions-object-shapes.html). 
+
+Support in other versions of MySQL 
 
 As with WP_GeoMeta, arguments will be passed to the *geo_meta* argument as GeoJSON. 
 
     $q = new WP_Query( array(
-    	'geo_meta' => array(
+    	'meta_query' => array(
     		array(
     			'key' => 'my_shape',
     			'compare' => 'ST_INTERSECTS',
@@ -194,18 +197,22 @@ Can you believe that MySQL doesn't have ST_TRANSFORM and doesn't use the SRID?
 
 Todo
 ----
- * Where do errors go / who sees them? Eg. inside added_meta callback
- * Replace geoPHP with something small and focused. All we're using it for is GeoJSON to WKT conversion.
- * Buffering is a very common operation, but it doesn't work well in EPSG:4326. 
-Can we use a reverse haversine or something to determine an approximate number 
-of degrees to buffer if given a center point and a distance?
- * Support spatial orderby
- * Add callbacks/hooks so that other plugins with custom tables (eg. Gravity Forms) could
-store geo data in a geo way.
- * Add filter to let users/devs explicitly define meta keys to filter on w/constant to enable the filter
- * Lat/Lng migration tool or plugin that detects coord pairs
  * Conform to WP coding standards
  * Explicitly set visibility on properties and methods
+ * Where do errors go / who sees them? Eg. inside added_meta callback
+ * Support spatial orderby
+
+Future Enhancements
+-------------------
+ * Support single geometry compairson operators.
+ * Replace geoPHP with something small and focused. All we're using it for is GeoJSON to WKT conversion.
+ * Buffering is a very common operation, but it doesn't work well in EPSG:4326. 
+ * Add filter to let users/devs explicitly define meta keys to filter on w/constant to enable the filter
+ * Lat/Lng migration tool or plugin that detects coord pairs
+Can we use a reverse haversine or something to determine an approximate number 
+of degrees to buffer if given a center point and a distance?
+ * Add callbacks/hooks so that other plugins with custom tables (eg. Gravity Forms) could
+store geo data in a geo way.
  * Add support for https://github.com/krandalf75/MySQL-Spatial-UDF/blob/master/README.md
 
 Changes
