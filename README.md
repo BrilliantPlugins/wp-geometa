@@ -98,6 +98,7 @@ working in a certain way, and dealing with plugins that work within that model.
 By being WordPressy WP_GeoMeta has a better shot at being a generic foundation for 
 spatial support in WordPress. In this vein, WP_GeoMeta should be available both as 
 a standalone plugin, and as a library that other plugins can embed to ensure that 
+
 Geo support is present. 
 
 Beign WordPressy also means that this plugin should provide hooks to allow other
@@ -197,15 +198,14 @@ Can you believe that MySQL doesn't have ST_TRANSFORM and doesn't use the SRID?
 
 Todo
 ----
- * Conform to WP coding standards
  * Explicitly set visibility on properties and methods
- * Where do errors go / who sees them? Eg. inside added_meta callback
- * Support spatial orderby
 
 Future Enhancements
 -------------------
  * Support single geometry compairson operators.
+ * Support spatial orderby
  * Replace geoPHP with something small and focused. All we're using it for is GeoJSON to WKT conversion.
+ * Where do errors go / who sees them? Eg. inside added_meta callback
  * Buffering is a very common operation, but it doesn't work well in EPSG:4326. 
  * Add filter to let users/devs explicitly define meta keys to filter on w/constant to enable the filter
  * Lat/Lng migration tool or plugin that detects coord pairs
@@ -224,6 +224,7 @@ Changes
  * We now delete the spatial index on activation so that we don't end up with duplicate spatial keys
  * Populate geo tables on activation with any existing geojson values
  * Submitted ticket to dbDelta SPATIAL INDEX support: https://core.trac.wordpress.org/ticket/36948
+ * Conform to WP coding standards
 
 ### 0.0.1
  * Initial Release

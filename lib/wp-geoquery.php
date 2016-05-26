@@ -68,7 +68,7 @@ class WP_GeoQuery extends WP_GeoUtil {
 
 		$metatable = _get_meta_table( $type );
 
-		if ( ! $table ) {
+		if ( ! $metatable ) {
 			return false;
 		}
 
@@ -78,7 +78,7 @@ class WP_GeoQuery extends WP_GeoUtil {
 			$metatable = 'mt' . $depth;
 		}
 
-		$id_column = 'user' === $meta_type ? 'umeta_id' : 'meta_id';
+		$id_column = 'user' === $type ? 'umeta_id' : 'meta_id';
 
 		$conditions = array();
 		foreach ( $queries as $k => $meta_query ) {
@@ -101,7 +101,7 @@ class WP_GeoQuery extends WP_GeoUtil {
 				continue;
 			}
 
-			$search_string = "( $metatable.id_column = %s AND CAST($metatable.meta_value AS CHAR) = %s )";
+			$search_string = "( $metatable.meta_key = %s AND CAST($metatable.meta_value AS CHAR) = %s )";
 			$search_string = $wpdb->prepare( $search_string, array( $meta_query['key'], $meta_query['value'] ) ); // @codingStandardsIgnoreLine
 
 			$replace_string = "( $metatable.$id_column IN ( SELECT fk_meta_id FROM {$geotable} WHERE (meta_key=%s AND {$meta_query['compare']}($geotable.meta_value,GeomFromText(%s,%d))) ) )";
