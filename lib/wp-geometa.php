@@ -200,7 +200,7 @@ class WP_GeoMeta extends WP_GeoUtil {
 	 */
 	function updated_meta($target,$meta_id,$object_id,$meta_key,$meta_value){
 		global $wpdb;
-		$q = "UPDATE " . _get_meta_table( $target ) . "_ge SET meta_value=GeomFromText(%s," . $this->srid . ") WHERE fk_meta_id=(%d)";
+		$q = "UPDATE " . _get_meta_table( $target ) . "_geo SET meta_value=GeomFromText(%s," . $this->srid . ") WHERE fk_meta_id=(%d)";
 
 		$sql = $wpdb->prepare($q,array($meta_value,$meta_id));
 

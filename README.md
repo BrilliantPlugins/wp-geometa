@@ -196,7 +196,6 @@ Todo
 ----
  * Where do errors go / who sees them? Eg. inside added_meta callback
  * Replace geoPHP with something small and focused. All we're using it for is GeoJSON to WKT conversion.
- * Patch dbDelta to handle spatial indexes in CREATE TABLE statements
  * Buffering is a very common operation, but it doesn't work well in EPSG:4326. 
 Can we use a reverse haversine or something to determine an approximate number 
 of degrees to buffer if given a center point and a distance?
@@ -217,6 +216,7 @@ Changes
  * Whitelist of known spatial functions in meta_query args. Allowed args set by detecting MySQL capabilities.
  * We now delete the spatial index on activation so that we don't end up with duplicate spatial keys
  * Populate geo tables on activation with any existing geojson values
+ * Submitted ticket to dbDelta SPATIAL INDEX support: https://core.trac.wordpress.org/ticket/36948
 
 ### 0.0.1
  * Initial Release
