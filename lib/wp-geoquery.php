@@ -4,8 +4,15 @@
  * modification in order to handle geo queries
  *
  * @package WP_GeoMeta
+ * @link https://github.com/cimburadotcom/WP_GeoMeta
+ * @author Michael Moore / michael_m@cimbura.com / https://profiles.wordpress.org/stuporglue/
+ * @copyright Cimbura.com, 2016
+ * @license GNU GPL v2
  */
 
+/**
+ * This class extends GeoUtil
+ */
 require_once( __DIR__ . '/wp-geoutil.php' );
 
 /**
@@ -44,7 +51,7 @@ class WP_GeoQuery extends WP_GeoUtil {
 	/**
 	 * Set up the filters that will listen to meta being added and removed
 	 */
-	function setup_filters() {
+	protected function setup_filters() {
 		global $wpdb;
 		add_action( 'get_meta_sql', array( $this, 'get_meta_sql' ),10,6 );
 	}
@@ -63,7 +70,7 @@ class WP_GeoQuery extends WP_GeoUtil {
 	 * @param object $context The main query object.
 	 * @param int    $depth How deep have we recursed.
 	 */
-	function get_meta_sql( $clauses, $queries, $type, $primary_table, $primary_id_column, $context, $depth = 0 ) {
+	public function get_meta_sql( $clauses, $queries, $type, $primary_table, $primary_id_column, $context, $depth = 0 ) {
 		global $wpdb;
 
 		$metatable = _get_meta_table( $type );
@@ -91,7 +98,7 @@ class WP_GeoQuery extends WP_GeoUtil {
 				$clauses = $this->get_meta_sql( $clauses,$meta_query,$type,$primary_table,$primary_id_column,$context, $depth + 1 );
 			}
 
-			if ( ! in_array( strtolower( $meta_query['compare'] ),$this->get_capabilities() ) ) {
+			if ( ! in_array( strtolower( $meta_query['compare'] ),$this->get_capabilities(), true ) ) {
 				continue;
 			}
 

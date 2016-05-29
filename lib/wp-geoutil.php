@@ -1,10 +1,17 @@
 <?php
 /**
- * This class has geo utils that users and WP_Geo* classes might need
+ * This class has geo utils that users and WP_Geo* classes might need.
  *
  * @package WP_GeoMeta
+ * @link https://github.com/cimburadotcom/WP_GeoMeta
+ * @author Michael Moore / michael_m@cimbura.com / https://profiles.wordpress.org/stuporglue/
+ * @copyright Cimbura.com, 2016
+ * @license GNU GPL v2
  */
 
+/**
+ * Include geoPHP for this function
+ */
 require_once( __DIR__ . '/geoPHP/geoPHP.inc' );
 
 /**
@@ -38,163 +45,171 @@ class WP_GeoUtil {
 	protected $srid = 4326;
 
 	/**
-	 * This is a list of all known spatial functions in MySQL 5.4 to 5.7.6
+	 * This is a list of all known spatial functions in MySQL 5.4.2 to 5.7.6 and MariaDB 5.1 - 10.1.2
 	 * We will test for capabilities by checking if the function exists instead of
 	 * checking function names.
 	 *
 	 * @var $all_funcs
 	 */
-	var $all_funcs = array(
-		'Contains',
-	'Crosses',
-	'Disjoint',
-	'Equals',
-	'Intersects',
-		'MBRContains',
-	'MBRCoveredBy',
-	'MBRDisjoint',
-	'MBREqual',
-	'MBREquals',
-		'MBRIntersects',
-	'MBROverlaps',
-	'MBRTouches',
-	'MBRWithin',
-	'Overlaps',
-		'ST_Contains',
-	'ST_Crosses',
-	'ST_Difference',
-	'ST_Disjoint',
-	'ST_Equals',
-		'ST_Intersects',
-	'ST_Overlaps',
-	'ST_SymDifference',
-	'ST_Touches',
-	'ST_Union',
-		'ST_Within',
-	'Touches',
-	'Within',
-	'Distance',
-	'GeometryCollection',
-		'ST_Distance',
-	'ST_Distance_Sphere',
-	'ST_Intersection',
-	'IsClosed',
-	'IsEmpty',
-		'IsSimple',
-	'ST_IsClosed',
-	'ST_IsEmpty',
-	'ST_IsSimple',
-	'ST_IsValid',
-		'AsBinary',
+	public $all_funcs = array(
+		'Area',
+	'AsBinary',
 	'AsText',
 	'AsWKB',
 	'AsWKT',
+		'Boundary',
+	'Buffer',
+	'Centroid',
+	'Contains',
 	'ConvexHull',
-		'Dimension',
-	'Envelope',
+		'Crosses',
+	'Dimension',
+	'Disjoint',
+	'Distance',
+	'EndPoint',
+		'Envelope',
+	'Equals',
+	'ExteriorRing',
+	'GeomCollFromText',
+	'GeomCollFromWKB',
+		'GeometryCollection',
+	'GeometryCollectionFromText',
+	'GeometryCollectionFromWKB',
+	'GeometryFromText',
+	'GeometryFromWKB',
+		'GeometryN',
 	'GeometryType',
+	'GeomFromText',
+	'GeomFromWKB',
+	'GLength',
+		'InteriorRingN',
+	'Intersects',
+	'IsClosed',
+	'IsEmpty',
+	'IsRing',
+		'IsSimple',
+	'LineFromText',
+	'LineFromWKB',
+	'LineString',
+	'LineStringFromText',
+		'LineStringFromWKB',
+	'MBRContains',
+	'MBRCoveredBy',
+	'MBRDisjoint',
+	'MBREqual',
+		'MBREquals',
+	'MBRIntersects',
+	'MBROverlaps',
+	'MBRTouches',
+	'MBRWithin',
+		'MLineFromText',
+	'MLineFromWKB',
+	'MPointFromText',
+	'MPointFromWKB',
+	'MPolyFromText',
+		'MPolyFromWKB',
+	'MultiLineString',
+	'MultiLineStringFromText',
+	'MultiLineStringFromWKB',
+	'MultiPoint',
+		'MultiPointFromText',
+	'MultiPointFromWKB',
+	'MultiPolygon',
+	'MultiPolygonFromText',
+	'MultiPolygonFromWKB',
+		'NumGeometries',
+	'NumInteriorRings',
+	'NumPoints',
+	'Overlaps',
+	'Point',
+		'PointFromText',
+	'PointFromWKB',
+	'PointOnSurface',
+	'PointN',
+	'PolyFromText',
+		'PolyFromWKB',
+	'Polygon',
+	'PolygonFromText',
+	'PolygonFromWKB',
 	'SRID',
+		'ST_Area',
 	'ST_AsBinary',
-		'ST_AsGeoJSON',
+	'ST_AsGeoJSON',
 	'ST_AsText',
 	'ST_AsWKB',
-	'ST_AsWKT',
-	'ST_ConvexHull',
-		'ST_Envelope',
-	'ST_GeoHash',
-	'ST_GeometryType',
-	'ST_Length',
-	'ST_SRID',
-		'ST_Validate',
-	'ST_GeomFromGeoJSON',
-	'Point',
-	'LineFromWKB',
-	'LineStringFromWKB',
-		'ST_LineFromWKB',
-	'ST_LineStringFromWKB',
-	'LineFromText',
-	'LineStringFromText',
-	'ST_LineFromText',
-		'ST_LineStringFromText',
-	'MultiLineString',
-	'Polygon',
-	'MLineFromWKB',
-	'MultiLineStringFromWKB',
-		'MLineFromText',
-	'MultiLineStringFromText',
-	'MPointFromWKB',
-	'MultiPointFromWKB',
-	'MPointFromText',
-		'MultiPointFromText',
-	'GeomCollFromWKB',
-	'GeometryCollectionFromWKB',
-	'GeometryFromWKB',
-	'GeomFromWKB',
-		'MPolyFromWKB',
-	'MultiPolygonFromWKB',
-	'ST_GeomCollFromWKB',
-	'ST_GeometryCollectionFromWKB',
-	'ST_GeometryFromWKB',
-		'GeomCollFromText',
-	'GeometryCollectionFromText',
-	'GeometryFromText',
-	'GeomFromText',
-	'MPolyFromText',
-		'MultiPolygonFromText',
-	'ST_GeomCollFromText',
-	'ST_GeometryCollectionFromText',
-	'ST_GeometryFromText',
-	'PointFromWKB',
-		'ST_PointFromWKB',
-	'PointFromText',
-	'ST_PointFromText',
-	'LineString',
-	'MultiPoint',
-		'PolyFromWKB',
-	'PolygonFromWKB',
-	'ST_GeomFromWKB',
-	'ST_PolyFromWKB',
-	'ST_PolygonFromWKB',
-		'PolyFromText',
-	'PolygonFromText',
-	'ST_GeomFromText',
-	'ST_PolyFromText',
-	'ST_PolygonFromText',
-		'MultiPolygon',
-	'ST_LatFromGeoHash',
-	'ST_LongFromGeoHash',
-	'ST_PointFromGeoHash',
-	'EndPoint',
-		'GLength',
-	'NumPoints',
-	'PointN',
-	'ST_EndPoint',
-	'ST_NumPoints',
-		'ST_PointN',
-	'ST_StartPoint',
-	'StartPoint',
-	'NumGeometries',
-	'NumInteriorRings',
-		'ST_Centroid',
-	'ST_ExteriorRing',
-	'ST_NumGeometries',
-	'ST_NumInteriorRings',
-	'ST_InteriorRingN',
-		'ST_GeometryN',
-	'GeometryN',
-	'InteriorRingN',
-	'ST_Y',
-	'X',
-		'Y',
-	'ST_X',
-	'ST_Buffer_Strategy',
-	'Area',
-	'Centroid',
-		'ExteriorRing',
-	'ST_Area',
-	'ST_Simplify',
-	'Buffer',
+		'ST_AsWKT',
+	'ST_Boundary',
 	'ST_Buffer',
+	'ST_Buffer_Strategy',
+	'ST_Centroid',
+		'ST_Contains',
+	'ST_ConvexHull',
+	'ST_Crosses',
+	'ST_Difference',
+	'ST_Dimension',
+		'ST_Disjoint',
+	'ST_Distance',
+	'ST_Distance_Sphere',
+	'ST_EndPoint',
+	'ST_Envelope',
+		'ST_Equals',
+	'ST_ExteriorRing',
+	'ST_GeoHash',
+	'ST_GeomCollFromText',
+	'ST_GeomCollFromWKB',
+		'ST_GeometryCollectionFromText',
+	'ST_GeometryCollectionFromWKB',
+	'ST_GeometryFromText',
+	'ST_GeometryFromWKB',
+	'ST_GeometryN',
+		'ST_GeometryType',
+	'ST_GeomFromGeoJSON',
+	'ST_GeomFromText',
+	'ST_GeomFromWKB',
+	'ST_InteriorRingN',
+		'ST_Intersection',
+	'ST_Intersects',
+	'ST_IsClosed',
+	'ST_IsEmpty',
+	'ST_IsRing',
+		'ST_IsSimple',
+	'ST_IsValid',
+	'ST_LatFromGeoHash',
+	'ST_Length',
+	'ST_LineFromText',
+		'ST_LineFromWKB',
+	'ST_LineStringFromText',
+	'ST_LineStringFromWKB',
+	'ST_LongFromGeoHash',
+	'ST_NumGeometries',
+		'ST_NumInteriorRings',
+	'ST_NumPoints',
+	'ST_Overlaps',
+	'ST_PointFromGeoHash',
+	'ST_PointFromText',
+		'ST_PointFromWKB',
+	'ST_PointOnSurface',
+	'ST_PointN',
+	'ST_PolyFromText',
+	'ST_PolyFromWKB',
+		'ST_PolygonFromText',
+	'ST_PolygonFromWKB',
+	'ST_Relate',
+	'ST_Simplify',
+	'ST_SRID',
+		'ST_StartPoint',
+	'ST_SymDifference',
+	'ST_Touches',
+	'ST_Union',
+	'ST_Validate',
+		'ST_Within',
+	'ST_X',
+	'ST_Y',
+	'StartPoint',
+	'Touches',
+		'Within',
+	'X',
+	'Y',
 	);
 
 	/**
@@ -202,7 +217,7 @@ class WP_GeoUtil {
 	 *
 	 * @var $found_funcs
 	 */
-	var $found_funcs = array();
+	public $found_funcs = array();
 
 
 	/**
@@ -240,7 +255,7 @@ class WP_GeoUtil {
 	 * An empty function in case something else inherits from WP_GeoUtil
 	 * and doesn't provide its own setup_filters function
 	 */
-	function setup_filters() {
+	protected function setup_filters() {
 		// Go ahead. Override this.
 	}
 
@@ -295,7 +310,7 @@ class WP_GeoUtil {
 	 *
 	 * @param mixed $metaval The meta value to try to convert to WKT.
 	 */
-	function metaval_to_geom( $metaval = '' ) {
+	public function metaval_to_geom( $metaval = '' ) {
 		// Let other plugins support non GeoJSON geometry.
 		$maybe_geom = apply_filters( 'wpgq_metaval_to_geom', $metaval );
 		if ( $this->is_geom( $maybe_geom ) ) {
@@ -316,7 +331,7 @@ class WP_GeoUtil {
 			$metaval = (array) $metaval;
 		}
 
-		$metaval = $this->merge_geojson( $metaval );
+		$metaval = WP_GeoUtil::merge_geojson( $metaval );
 
 		if ( false === $metaval ) {
 			return;
@@ -347,7 +362,7 @@ class WP_GeoUtil {
 	 *
 	 * @return bool
 	 */
-	function is_geom( $maybe_geom ) {
+	public function is_geom( $maybe_geom ) {
 		try {
 			$what = $this->geowkt->read( (string) $maybe_geom );
 			if ( null !== $what ) {
@@ -370,7 +385,7 @@ class WP_GeoUtil {
 	 *
 	 * @param bool $retest Should we re-check and re-store our capabilities.
 	 */
-	function get_capabilities( $retest = false ) {
+	protected function get_capabilities( $retest = false ) {
 		global $wpdb;
 
 		if ( ! empty( $this->found_funcs ) && ! $retest ) {

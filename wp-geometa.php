@@ -30,5 +30,5 @@ register_activation_hook( __FILE__, 'activate_wp_geometa' );
 function activate_wp_geometa() {
 	$wpgeo = WP_GeoMeta::get_instance();
 	$wpgeo->create_geo_table();
-	// $wpgeo->populate_geo_tables();
+	$wpgeo->populate_geo_tables();
 }

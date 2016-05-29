@@ -1,18 +1,17 @@
 <?php
 /**
- * This class handles saving and fetching geo metadata
- *
- * TODO: write wrappers for get_post_meta which lets users
- * st_buffer and such when fetching geo data
- *
- * Note: ST_Buffer etc. going to work well with EPSG:4326. Maybe we should have get_geo_post_meta
- * use ST_Transform(ST_Buffer(ST_Transform(%geometry%,/some UTM code/),/distance/),4326)
- *
- * get_geo_post_meta should return GeoJSON
+ * This class handles creating spatial tables saving geo metadata
  *
  * @package WP_GeoMeta
+ * @link https://github.com/cimburadotcom/WP_GeoMeta
+ * @author Michael Moore / michael_m@cimbura.com / https://profiles.wordpress.org/stuporglue/
+ * @copyright Cimbura.com, 2016
+ * @license GNU GPL v2
  */
 
+/**
+ * This class extends GeoUtil
+ */
 require_once( __DIR__ . '/wp-geoutil.php' );
 
 /**
@@ -166,12 +165,9 @@ class WP_GeoMeta extends WP_GeoUtil {
 	/**
 	 * Set up the filters that will listen to meta being added and removed
 	 */
-	function setup_filters() {
+	protected function setup_filters() {
 		foreach ( $this->meta_types as $type ) {
 			foreach ( $this->meta_actions as $action ) {
-				// This adds calls like do_action( "added_{$meta_type}_meta",   $meta_id, $object_id, $meta_key, $_meta_value );.
-				// This adds calls like do_action( "updated_{$meta_type}_meta", $meta_id, $object_id, $meta_key, $_meta_value );.
-				// This adds calls like do_action( "delete_{$meta_type}_meta",  $meta_ids, $object_id, $meta_key, $_meta_value );.
 				add_action( "{$action}_{$type}_meta", array( $this, "{$action}_{$type}_meta" ),10,4 );
 			}
 		}
@@ -183,7 +179,7 @@ class WP_GeoMeta extends WP_GeoUtil {
 	 * @param String $name The name of the function we're asking for.
 	 * @param Mixed  $arguments All the function arguments.
 	 */
-	function __call( $name, $arguments ) {
+	public function __call( $name, $arguments ) {
 		$parts = explode( '_', $name );
 		if ( count( $parts ) !== 3 ) {
 			return;
@@ -193,7 +189,7 @@ class WP_GeoMeta extends WP_GeoUtil {
 		$type = $parts[1];
 		$meta_value = $parts[2];
 
-		if ( ! in_array( $action, $this->meta_actions ) || ! in_array( $type, $this->meta_types ) ) {
+		if ( ! in_array( $action, $this->meta_actions, true ) || ! in_array( $type, $this->meta_types, true ) ) {
 			return;
 		}
 
@@ -219,7 +215,7 @@ class WP_GeoMeta extends WP_GeoUtil {
 	 * @param mixed  $meta_key The key for this metadata pair.
 	 * @param mixed  $meta_value The value for this metadata pair.
 	 */
-	function added_meta( $meta_type, $meta_id, $object_id, $meta_key, $meta_value ) {
+	private function added_meta( $meta_type, $meta_id, $object_id, $meta_key, $meta_value ) {
 		global $wpdb;
 
 		if ( ! $meta_type || ! $meta_key || ! is_numeric( $object_id ) ) {
@@ -284,7 +280,7 @@ class WP_GeoMeta extends WP_GeoUtil {
 	 * @param mixed  $meta_key The key for this metadata pair.
 	 * @param mixed  $meta_value The value for this metadata pair.
 	 */
-	function updated_meta( $meta_type, $meta_id, $object_id, $meta_key, $meta_value ) {
+	private function updated_meta( $meta_type, $meta_id, $object_id, $meta_key, $meta_value ) {
 		global $wpdb;
 
 		if ( ! $meta_type || ! $meta_key || ! is_numeric( $object_id ) ) {
@@ -328,7 +324,7 @@ class WP_GeoMeta extends WP_GeoUtil {
 	 * @param mixed  $meta_key The key for this metadata pair.
 	 * @param mixed  $meta_value The value for this metadata pair.
 	 */
-	function deleted_meta( $meta_type, $meta_ids, $object_id, $meta_key, $meta_value ) {
+	private function deleted_meta( $meta_type, $meta_ids, $object_id, $meta_key, $meta_value ) {
 		global $wpdb;
 
 		if ( ! $meta_type || ! $meta_key || ! is_numeric( $object_id ) && ! $delete_all ) {
@@ -368,7 +364,7 @@ class WP_GeoMeta extends WP_GeoUtil {
 	/**
 	 * Repopulate
 	 */
-	function populate_geo_tables() {
+	public function populate_geo_tables() {
 		global $wpdb;
 
 		foreach ( $this->meta_types as $meta_type ) {

@@ -198,7 +198,6 @@ Can you believe that MySQL doesn't have ST_TRANSFORM and doesn't use the SRID?
 
 Todo
 ----
- * Explicitly set visibility on properties and methods
 
 Future Enhancements
 -------------------
@@ -225,6 +224,7 @@ Changes
  * Populate geo tables on activation with any existing geojson values
  * Submitted ticket to dbDelta SPATIAL INDEX support: https://core.trac.wordpress.org/ticket/36948
  * Conform to WP coding standards
+ * Explicitly set visibility on properties and methods
 
 ### 0.0.1
  * Initial Release
