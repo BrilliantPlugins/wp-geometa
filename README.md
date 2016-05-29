@@ -230,7 +230,7 @@ Changes
 ### 0.0.1
  * Initial Release
 
- Quotes
- -----
-  * "The ACF of Geo Queries" -- Nick
-  * "No matter where you go, there you are"
+Quotes
+-----
+ * "The ACF of Geo Queries" -- Nick
+ * "No matter where you go, there you are"
