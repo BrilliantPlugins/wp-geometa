@@ -9,7 +9,7 @@ The Warning
 Usage
 -----
 
-See the test files for more examples. If you're going to run the tests change 
+See the [test files](./test/) for more examples. If you're going to run the tests change 
 the test object IDs to something in your database.
 
 
@@ -201,6 +201,7 @@ Next Todos
  * Support single geometry compairson operators.
  * Support spatial orderby
  * Replace geoPHP with something small and focused. All we're using it for is GeoJSON to WKT conversion.
+ * Live examples
 
 Future Enhancements
 -------------------
