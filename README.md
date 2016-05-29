@@ -4,7 +4,7 @@ A WordPressy spatial foundation for WordPress.
 
 The Warning
 -----------
-*WARNING*: This is pre-alpha and shouldn't be used for anything yet. 
+*WARNING*: This is an early alpha and shouldn't be used for production yet. 
 
 Usage
 -----
@@ -27,7 +27,7 @@ Update the post geometry:
 Query posts spatially and print their titles:
 
     $q = new WP_Query( array(
-    	'geo_meta' => array(
+    	'meta_query' => array(
     		array(
     			'key' => 'singlegeom',
     			'compare' => 'ST_INTERSECTS',
@@ -172,7 +172,7 @@ A partial list of [spatial comparisons is available here](https://dev.mysql.com/
 
 Support in other versions of MySQL 
 
-As with WP_GeoMeta, arguments will be passed to the *geo_meta* argument as GeoJSON. 
+As with WP_GeoMeta, arguments will be passed to the *meta_query* argument as GeoJSON. 
 
     $q = new WP_Query( array(
     	'meta_query' => array(
@@ -196,14 +196,14 @@ Rants
 Can you believe that MySQL doesn't have ST_TRANSFORM and doesn't use the SRID?
 
 
-Todo
+Next Todos
 ----
-
-Future Enhancements
--------------------
  * Support single geometry compairson operators.
  * Support spatial orderby
  * Replace geoPHP with something small and focused. All we're using it for is GeoJSON to WKT conversion.
+
+Future Enhancements
+-------------------
  * Where do errors go / who sees them? Eg. inside added_meta callback
  * Buffering is a very common operation, but it doesn't work well in EPSG:4326. 
  * Add filter to let users/devs explicitly define meta keys to filter on w/constant to enable the filter

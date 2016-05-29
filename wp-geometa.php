@@ -8,8 +8,8 @@
  * Plugin Name: WP-GeoMeta
  * Author: Michael Moore
  * Author URI: http://cimbura.com
- * Version: 0.0.1
- * Code Name: Emilio Lizardo
+ * Version: 0.0.2
+ * Code Name: New Jersey - yeh, I can dance.
  *
  * @package WP_GeoMeta
  */
