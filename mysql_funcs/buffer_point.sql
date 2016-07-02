@@ -32,7 +32,6 @@ BEGIN
 	DECLARE degrees FLOAT; 		-- How many degrees are we around the circle
 	DECLARE polygonstring TEXT;
 	DECLARE d FLOAT;
-	DECLARE dlon FLOAT;
 	DECLARE lat FLOAT;
 	DECLARE lon FLOAT;
 	DECLARE lat1 FLOAT;
@@ -45,23 +44,24 @@ BEGIN
 	SET degrees = 0; -- our starting point for our loop
 	SET polygonstring = 'POLYGON(('; -- Our output
 
+			-- http://williams.best.vwh.net/avform.htm#LL
+			-- http://www.movable-type.co.uk/scripts/latlong.html
+			-- d is distance / earth radius
+			-- tc is slope in radians
+
 			SET d = radius / eradius;
-			SET lat1 = X(p);
-			SET lon1 = Y(p);
+			SET lat1 = RADIANS( X(p) );
+			SET lon1 = RADIANS( Y(p) );
+			SET tc = RADIANS( degrees );
 
 			SET firstlat = NULL;
 			SET firstlon = NULL;
 
 			polyloop: LOOP
 
-			-- http://williams.best.vwh.net/avform.htm#LL
-			-- d is distance in radians
-			-- tc is slope in radians
-			SET tc = RADIANS( degrees );
 
 			SET lat = ASIN( SIN( lat1 ) * COS( d ) + COS( lat1 ) * SIN( d ) * COS( tc ) );
-			SET dlon = ATAN2( SIN( tc ) * SIN( d ) * COS( lat1 ), COS( d ) - SIN( lat1 ) * SIN( lat ) );
-			SET lon = MOD( lon1 - dlon + PI(), 2 * PI() ) - PI();
+			SET lon = lon1 + ATAN2( SIN( tc ) * SIN( d ) * COS( lat1 ), COS( d ) - SIN( lat1 ) * SIN( lat ) );
 
 			SET lat = DEGREES(lat);
 			SET lon = DEGREES(lon);
@@ -82,14 +82,20 @@ BEGIN
 				LEAVE polyloop;
 			END IF;
 
-END LOOP polyloop;
+			END LOOP polyloop;
 
 
--- close the polygon with the original points and closing parens
-SET polygonstring = concat(polygonstring,firstlat, ' ', firstlon, '))');
+	-- close the polygon with the original points and closing parens
+	SET polygonstring = concat(polygonstring,firstlat, ' ', firstlon, '))');
 
 	-- Turn it into geometry and return it
 	RETURN GeomFromText(polygonstring);
 
 END$$
 DELIMITER ;
+
+
+-- wp_buffer_point_mi('POINT(45 -93)',20,8) should be roughly the same as
+-- SELECT ST_ASTEXT(ST_BUFFER(ST_GeomFromText('POINT(45 -93)',4326),0.289)); in PostGIS and
+-- which results in 
+-- "POLYGON((45.289 -93,45.2834469460365 -93.0563811030627,45.2670011848958 -93.1105955119535,45.2402947179554 -93.1605597973427,45.2043538597629 -93.2043538597629,45.1605597973427 -93.2402947179554,45.1105955119535 -93.2670011848958,45.0563811030627 -93.2834469460365,45 -93.289,44.9436188969373 -93.2834469460365,44.8894044880465 -93.2670011848958,44.8394402026573 -93.2402947179554,44.7956461402371 -93.2043538597629,44.7597052820446 -93.1605597973427,44.7329988151042 -93.1105955119535,44.7165530539635 -93.0563811030627,44.711 -93,44.7165530539635 -92.9436188969373,44.7329988151042 -92.8894044880465,44.7597052820446 -92.8394402026573,44.7956461402371 -92.7956461402371,44.8394402026573 -92.7597052820446,44.8894044880465 -92.7329988151042,44.9436188969373 -92.7165530539635,45 -92.711,45.0563811030627 -92.7165530539635,45.1105955119535 -92.7329988151042,45.1605597973427 -92.7597052820446,45.2043538597629 -92.7956461402371,45.2402947179554 -92.8394402026573,45.2670011848958 -92.8894044880465,45.2834469460365 -92.9436188969373,45.289 -93))"

@@ -19,7 +19,7 @@ require_once( __DIR__ . '/wp-geoutil.php' );
  * saves GeoJSON and adding a spatial version to the meta_geo
  * tables
  */
-class WP_GeoMeta extends WP_GeoUtil {
+class WP_GeoMeta {
 	/**
 	 * What kind of meta are we handling?
 	 *
@@ -54,6 +54,13 @@ class WP_GeoMeta extends WP_GeoUtil {
 		}
 
 		return self::$_instance;
+	}
+
+	/**
+	 * Set up our filters
+	 */
+	protected function __construct() {
+		$this->setup_filters();
 	}
 
 	/**
@@ -196,7 +203,7 @@ class WP_GeoMeta extends WP_GeoUtil {
 		if ( 'deleted' === $action ) {
 			$geometry = false;
 		} else {
-			$geometry = $this->metaval_to_geom( $arguments[3] );
+			$geometry = WP_GeoUtil::metaval_to_geom( $arguments[3] );
 			$arguments[3] = $geometry;
 		}
 
@@ -385,7 +392,7 @@ class WP_GeoMeta extends WP_GeoUtil {
 				$found_rows = count( $res );
 
 				foreach ( $res as $row ) {
-					$geometry = $this->metaval_to_geom( $row['meta_value'] );
+					$geometry = WP_GeoUtil::metaval_to_geom( $row['meta_value'] );
 					if ( $geometry ) {
 						$this->added_meta( $meta_type,$row[ $meta_pkey ],$row[ $meta_type . '_id' ],$row['meta_key'],$geometry );
 					}

@@ -26,14 +26,14 @@ class WP_GeoUtil {
 	 *
 	 * @var $geojson
 	 */
-	protected $geojson;
+	private static $geojson;
 
 	/**
 	 * A WKT writer (GeoPHP classes);.
 	 *
 	 * @var $geowkt
 	 */
-	protected $geowkt;
+	private static $geowkt;
 
 	/**
 	 * EPSG:4326 is the web mercator project, such as is used by Google Maps
@@ -42,7 +42,7 @@ class WP_GeoUtil {
 	 *
 	 * @var $srid
 	 */
-	protected $srid = 4326;
+	private static $srid;
 
 	/**
 	 * This is a list of all known spatial functions in MySQL 5.4.2 to 5.7.6 and MariaDB 5.1 - 10.1.2
@@ -53,171 +53,171 @@ class WP_GeoUtil {
 	 */
 	public $all_funcs = array(
 		'Area',
-	'AsBinary',
-	'AsText',
-	'AsWKB',
-	'AsWKT',
+		'AsBinary',
+		'AsText',
+		'AsWKB',
+		'AsWKT',
 		'Boundary',
-	'Buffer',
-	'Centroid',
-	'Contains',
-	'ConvexHull',
+		'Buffer',
+		'Centroid',
+		'Contains',
+		'ConvexHull',
 		'Crosses',
-	'Dimension',
-	'Disjoint',
-	'Distance',
-	'EndPoint',
+		'Dimension',
+		'Disjoint',
+		'Distance',
+		'EndPoint',
 		'Envelope',
-	'Equals',
-	'ExteriorRing',
-	'GeomCollFromText',
-	'GeomCollFromWKB',
+		'Equals',
+		'ExteriorRing',
+		'GeomCollFromText',
+		'GeomCollFromWKB',
 		'GeometryCollection',
-	'GeometryCollectionFromText',
-	'GeometryCollectionFromWKB',
-	'GeometryFromText',
-	'GeometryFromWKB',
+		'GeometryCollectionFromText',
+		'GeometryCollectionFromWKB',
+		'GeometryFromText',
+		'GeometryFromWKB',
 		'GeometryN',
-	'GeometryType',
-	'GeomFromText',
-	'GeomFromWKB',
-	'GLength',
+		'GeometryType',
+		'GeomFromText',
+		'GeomFromWKB',
+		'GLength',
 		'InteriorRingN',
-	'Intersects',
-	'IsClosed',
-	'IsEmpty',
-	'IsRing',
+		'Intersects',
+		'IsClosed',
+		'IsEmpty',
+		'IsRing',
 		'IsSimple',
-	'LineFromText',
-	'LineFromWKB',
-	'LineString',
-	'LineStringFromText',
+		'LineFromText',
+		'LineFromWKB',
+		'LineString',
+		'LineStringFromText',
 		'LineStringFromWKB',
-	'MBRContains',
-	'MBRCoveredBy',
-	'MBRDisjoint',
-	'MBREqual',
+		'MBRContains',
+		'MBRCoveredBy',
+		'MBRDisjoint',
+		'MBREqual',
 		'MBREquals',
-	'MBRIntersects',
-	'MBROverlaps',
-	'MBRTouches',
-	'MBRWithin',
+		'MBRIntersects',
+		'MBROverlaps',
+		'MBRTouches',
+		'MBRWithin',
 		'MLineFromText',
-	'MLineFromWKB',
-	'MPointFromText',
-	'MPointFromWKB',
-	'MPolyFromText',
+		'MLineFromWKB',
+		'MPointFromText',
+		'MPointFromWKB',
+		'MPolyFromText',
 		'MPolyFromWKB',
-	'MultiLineString',
-	'MultiLineStringFromText',
-	'MultiLineStringFromWKB',
-	'MultiPoint',
+		'MultiLineString',
+		'MultiLineStringFromText',
+		'MultiLineStringFromWKB',
+		'MultiPoint',
 		'MultiPointFromText',
-	'MultiPointFromWKB',
-	'MultiPolygon',
-	'MultiPolygonFromText',
-	'MultiPolygonFromWKB',
+		'MultiPointFromWKB',
+		'MultiPolygon',
+		'MultiPolygonFromText',
+		'MultiPolygonFromWKB',
 		'NumGeometries',
-	'NumInteriorRings',
-	'NumPoints',
-	'Overlaps',
-	'Point',
+		'NumInteriorRings',
+		'NumPoints',
+		'Overlaps',
+		'Point',
 		'PointFromText',
-	'PointFromWKB',
-	'PointOnSurface',
-	'PointN',
-	'PolyFromText',
+		'PointFromWKB',
+		'PointOnSurface',
+		'PointN',
+		'PolyFromText',
 		'PolyFromWKB',
-	'Polygon',
-	'PolygonFromText',
-	'PolygonFromWKB',
-	'SRID',
+		'Polygon',
+		'PolygonFromText',
+		'PolygonFromWKB',
+		'SRID',
 		'ST_Area',
-	'ST_AsBinary',
-	'ST_AsGeoJSON',
-	'ST_AsText',
-	'ST_AsWKB',
+		'ST_AsBinary',
+		'ST_AsGeoJSON',
+		'ST_AsText',
+		'ST_AsWKB',
 		'ST_AsWKT',
-	'ST_Boundary',
-	'ST_Buffer',
-	'ST_Buffer_Strategy',
-	'ST_Centroid',
+		'ST_Boundary',
+		'ST_Buffer',
+		'ST_Buffer_Strategy',
+		'ST_Centroid',
 		'ST_Contains',
-	'ST_ConvexHull',
-	'ST_Crosses',
-	'ST_Difference',
-	'ST_Dimension',
+		'ST_ConvexHull',
+		'ST_Crosses',
+		'ST_Difference',
+		'ST_Dimension',
 		'ST_Disjoint',
-	'ST_Distance',
-	'ST_Distance_Sphere',
-	'ST_EndPoint',
-	'ST_Envelope',
+		'ST_Distance',
+		'ST_Distance_Sphere',
+		'ST_EndPoint',
+		'ST_Envelope',
 		'ST_Equals',
-	'ST_ExteriorRing',
-	'ST_GeoHash',
-	'ST_GeomCollFromText',
-	'ST_GeomCollFromWKB',
+		'ST_ExteriorRing',
+		'ST_GeoHash',
+		'ST_GeomCollFromText',
+		'ST_GeomCollFromWKB',
 		'ST_GeometryCollectionFromText',
-	'ST_GeometryCollectionFromWKB',
-	'ST_GeometryFromText',
-	'ST_GeometryFromWKB',
-	'ST_GeometryN',
+		'ST_GeometryCollectionFromWKB',
+		'ST_GeometryFromText',
+		'ST_GeometryFromWKB',
+		'ST_GeometryN',
 		'ST_GeometryType',
-	'ST_GeomFromGeoJSON',
-	'ST_GeomFromText',
-	'ST_GeomFromWKB',
-	'ST_InteriorRingN',
+		'ST_GeomFromGeoJSON',
+		'ST_GeomFromText',
+		'ST_GeomFromWKB',
+		'ST_InteriorRingN',
 		'ST_Intersection',
-	'ST_Intersects',
-	'ST_IsClosed',
-	'ST_IsEmpty',
-	'ST_IsRing',
+		'ST_Intersects',
+		'ST_IsClosed',
+		'ST_IsEmpty',
+		'ST_IsRing',
 		'ST_IsSimple',
-	'ST_IsValid',
-	'ST_LatFromGeoHash',
-	'ST_Length',
-	'ST_LineFromText',
+		'ST_IsValid',
+		'ST_LatFromGeoHash',
+		'ST_Length',
+		'ST_LineFromText',
 		'ST_LineFromWKB',
-	'ST_LineStringFromText',
-	'ST_LineStringFromWKB',
-	'ST_LongFromGeoHash',
-	'ST_NumGeometries',
+		'ST_LineStringFromText',
+		'ST_LineStringFromWKB',
+		'ST_LongFromGeoHash',
+		'ST_NumGeometries',
 		'ST_NumInteriorRings',
-	'ST_NumPoints',
-	'ST_Overlaps',
-	'ST_PointFromGeoHash',
-	'ST_PointFromText',
+		'ST_NumPoints',
+		'ST_Overlaps',
+		'ST_PointFromGeoHash',
+		'ST_PointFromText',
 		'ST_PointFromWKB',
-	'ST_PointOnSurface',
-	'ST_PointN',
-	'ST_PolyFromText',
-	'ST_PolyFromWKB',
+		'ST_PointOnSurface',
+		'ST_PointN',
+		'ST_PolyFromText',
+		'ST_PolyFromWKB',
 		'ST_PolygonFromText',
-	'ST_PolygonFromWKB',
-	'ST_Relate',
-	'ST_Simplify',
-	'ST_SRID',
+		'ST_PolygonFromWKB',
+		'ST_Relate',
+		'ST_Simplify',
+		'ST_SRID',
 		'ST_StartPoint',
-	'ST_SymDifference',
-	'ST_Touches',
-	'ST_Union',
-	'ST_Validate',
+		'ST_SymDifference',
+		'ST_Touches',
+		'ST_Union',
+		'ST_Validate',
 		'ST_Within',
-	'ST_X',
-	'ST_Y',
-	'StartPoint',
-	'Touches',
+		'ST_X',
+		'ST_Y',
+		'StartPoint',
+		'Touches',
 		'Within',
-	'X',
-	'Y',
-	);
+		'X',
+		'Y',
+		);
 
 	/**
-	 * All the functions we detect as available in MySQL
-	 *
-	 * @var $found_funcs
-	 */
-	public $found_funcs = array();
+		* All the functions we detect as available in MySQL
+		*
+		* @var $found_funcs
+		*/
+	private static $found_funcs = array();
 
 
 	/**
@@ -234,30 +234,14 @@ class WP_GeoUtil {
 	public static function get_instance() {
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self;
+			self::$geojson = new GeoJSON();
+			self::$geowkt = new WKT();
+			self::$srid = apply_filters( 'wp_geoquery_srid', 4326 );
 		}
 
 		return self::$_instance;
 	}
 
-	/**
-	 * The constructor. Also called by WP_GeoQuery and WP_GeoMeta
-	 * since they don't have their own and inherit from WP_GeoUtil.
-	 */
-	protected function __construct() {
-		$this->setup_filters();
-		$this->geojson = new GeoJSON();
-		$this->geowkt = new WKT();
-
-		$this->srid = apply_filters( 'wp_geoquery_srid',$this->srid );
-	}
-
-	/**
-	 * An empty function in case something else inherits from WP_GeoUtil
-	 * and doesn't provide its own setup_filters function
-	 */
-	protected function setup_filters() {
-		// Go ahead. Override this.
-	}
 
 	/**
 	 * Merge one or more pieces of geojson together. Each item could be a FeatureCollection
@@ -288,7 +272,7 @@ class WP_GeoUtil {
 			}
 
 			if ( ! array_key_exists( 'type',$fragment ) ) {
-				return false;
+				continue;
 			}
 
 			if ( 'FeatureCollection' === $fragment['type'] && is_array( $fragment['features'] ) ) {
@@ -310,10 +294,10 @@ class WP_GeoUtil {
 	 *
 	 * @param mixed $metaval The meta value to try to convert to WKT.
 	 */
-	public function metaval_to_geom( $metaval = '' ) {
+	public static function metaval_to_geom( $metaval = '' ) {
 		// Let other plugins support non GeoJSON geometry.
 		$maybe_geom = apply_filters( 'wpgq_metaval_to_geom', $metaval );
-		if ( $this->is_geom( $maybe_geom ) ) {
+		if ( self::is_geom( $maybe_geom ) ) {
 			return $maybe_geom;
 		}
 
@@ -331,7 +315,7 @@ class WP_GeoUtil {
 			$metaval = (array) $metaval;
 		}
 
-		$metaval = WP_GeoUtil::merge_geojson( $metaval );
+		$metaval = self::merge_geojson( $metaval );
 
 		if ( false === $metaval ) {
 			return;
@@ -339,7 +323,7 @@ class WP_GeoUtil {
 
 		// Convert GeoJSON to WKT.
 		try {
-			$geom = $this->geojson->read( (string) $metaval );
+			$geom = self::$geojson->read( (string) $metaval );
 			if ( is_null( $geom ) ) {
 				return false;
 			}
@@ -349,7 +333,7 @@ class WP_GeoUtil {
 
 		$wkt = new wkt();
 		try {
-			return $this->geowkt->write( $geom );
+			return self::$geowkt->write( $geom );
 		} catch (Exception $e) {
 			return false;
 		}
@@ -362,9 +346,9 @@ class WP_GeoUtil {
 	 *
 	 * @return bool
 	 */
-	public function is_geom( $maybe_geom ) {
+	public static function is_geom( $maybe_geom ) {
 		try {
-			$what = $this->geowkt->read( (string) $maybe_geom );
+			$what = self::$geowkt->read( (string) $maybe_geom );
 			if ( null !== $what ) {
 				return true;
 			} else {
@@ -385,29 +369,29 @@ class WP_GeoUtil {
 	 *
 	 * @param bool $retest Should we re-check and re-store our capabilities.
 	 */
-	protected function get_capabilities( $retest = false ) {
+	public static function get_capabilities( $retest = false ) {
 		global $wpdb;
 
-		if ( ! empty( $this->found_funcs ) && ! $retest ) {
-			return $this->found_funcs;
+		if ( ! empty( self::$found_funcs ) && ! $retest ) {
+			return self::$found_funcs;
 		}
 
 		if ( ! $retest ) {
-			$this->found_funcs = get_option( 'geometa_capabilities',array() );
-			if ( ! empty( $this->found_funcs ) ) {
-				return $this->found_funcs;
+			self::$found_funcs = get_option( 'geometa_capabilities',array() );
+			if ( ! empty( self::$found_funcs ) ) {
+				return self::$found_funcs;
 			}
 		}
 
 		$suppress = $wpdb->suppress_errors( true );
 		$errors = $wpdb->show_errors( false );
 
-		foreach ( $this->all_funcs as $func ) {
+		foreach ( self::$all_funcs as $func ) {
 			$q = "SELECT $func() AS worked";
 			$wpdb->query( $q ); // @codingStandardsIgnoreLine
 
 			if ( strpos( $wpdb->last_error,'Incorrect parameter count' ) !== false || strpos( $wpdb->last_error,'You have an error in your SQL syntax' ) !== false ) {
-				$this->found_funcs[] = $func;
+				self::$found_funcs[] = $func;
 			}
 		}
 
@@ -415,9 +399,31 @@ class WP_GeoUtil {
 		$wpdb->suppress_errors( $suppress );
 		$wpdb->show_errors( $errors );
 
-		$this->found_funcs = array_map( 'strtolower',$this->found_funcs );
+		self::$found_funcs = array_map( 'strtolower',self::$found_funcs );
 
-		update_option( 'geometa_capabilities',$this->found_funcs, false );
-		return $this->found_funcs;
+		update_option( 'geometa_capabilities',self::$found_funcs, false );
+		return self::$found_funcs;
+	}
+
+	/**
+	 * Buffer a point by miles
+	 */
+	public static function buffer_point_mi($geojson, $radius, $segments = 8) {
+		global $wpdb;
+		$point = self::metaval_to_geom( $geojson );
+
+		$q = "SELECT AsText(wp_buffer_point_mi(GeomFromText(%s),%f,%d))";
+		$sql = $wpdb->prepare($q, array( $point, $radius, $segments ));
+		$buffered = $wpdb->get_var($sql);
+
+		return $buffered;
+	}
+
+	/**
+	 * Get the srid
+	 */
+	public static function get_srid() {
+		return self::$srid;
 	}
 }
+WP_GeoUtil::get_instance();

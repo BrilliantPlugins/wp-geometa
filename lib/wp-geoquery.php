@@ -20,7 +20,7 @@ require_once( __DIR__ . '/wp-geoutil.php' );
  * for spatial queries from within WP_Query, WP_User_Query, WP_Comment_Query and get_terms
  * when used in conjunction with WP_GeoMeta.
  */
-class WP_GeoQuery extends WP_GeoUtil {
+class WP_GeoQuery {
 
 	/**
 	 * We need to track query string replacements across
@@ -46,6 +46,13 @@ class WP_GeoQuery extends WP_GeoUtil {
 		}
 
 		return self::$_instance;
+	}
+
+	/**
+	 * Set up our filters
+	 */
+	protected function __construct() {
+		$this->setup_filters();
 	}
 
 	/**
@@ -98,11 +105,11 @@ class WP_GeoQuery extends WP_GeoUtil {
 				$clauses = $this->get_meta_sql( $clauses,$meta_query,$type,$primary_table,$primary_id_column,$context, $depth + 1 );
 			}
 
-			if ( ! in_array( strtolower( $meta_query['compare'] ),$this->get_capabilities(), true ) ) {
+			if ( ! in_array( strtolower( $meta_query['compare'] ),WP_GeoUtil::get_capabilities(), true ) ) {
 				continue;
 			}
 
-			$geometry = $this->metaval_to_geom( $meta_query['value'] );
+			$geometry = WP_GeoUtil::metaval_to_geom( $meta_query['value'] );
 
 			if ( empty( $geometry ) ) {
 				continue;
@@ -112,7 +119,7 @@ class WP_GeoQuery extends WP_GeoUtil {
 			$search_string = $wpdb->prepare( $search_string, array( $meta_query['key'], $meta_query['value'] ) ); // @codingStandardsIgnoreLine
 
 			$replace_string = "( $metatable.$id_column IN ( SELECT fk_meta_id FROM {$geotable} WHERE (meta_key=%s AND {$meta_query['compare']}($geotable.meta_value,GeomFromText(%s,%d))) ) )";
-			$replace_string = $wpdb->prepare( $replace_string,array( $meta_query['key'], $geometry, $this->srid ) ); // @codingStandardsIgnoreLine
+			$replace_string = $wpdb->prepare( $replace_string,array( $meta_query['key'], $geometry, WP_GeoUtil::get_srid() ) ); // @codingStandardsIgnoreLine
 
 			$clauses['where'] = str_replace( $search_string, $replace_string, $clauses['where'] );
 		}
