@@ -31,47 +31,21 @@ BEGIN
 	DECLARE step FLOAT; 		-- Our step value for the loop
 	DECLARE degrees FLOAT; 		-- How many degrees are we around the circle
 	DECLARE polygonstring TEXT;
-	DECLARE d FLOAT;
-	DECLARE lat FLOAT;
-	DECLARE lon FLOAT;
-	DECLARE lat1 FLOAT;
-	DECLARE lon1 FLOAT;
-	DECLARE firstlat FLOAT;
-	DECLARE firstlon FLOAT;
-	DECLARE tc FLOAT;
+	DECLARE firstcoords VARCHAR(100);
+	DECLARE curcoords VARCHAR(100);
 
 	SET step = 360 / segments; -- our loop increment value
 	SET degrees = 0; -- our starting point for our loop
 	SET polygonstring = 'POLYGON(('; -- Our output
 
-			-- http://williams.best.vwh.net/avform.htm#LL
-			-- http://www.movable-type.co.uk/scripts/latlong.html
-			-- d is distance / earth radius
-			-- tc is slope in radians
-
-			SET d = radius / eradius;
-			SET lat1 = RADIANS( X(p) );
-			SET lon1 = RADIANS( Y(p) );
-			SET tc = RADIANS( degrees );
-
-			SET firstlat = NULL;
-			SET firstlon = NULL;
-
 			polyloop: LOOP
 
+			SET curcoords = wp_point_bearing_distance_coord_pair( p, degrees, radius, eradius);
 
-			SET lat = ASIN( SIN( lat1 ) * COS( d ) + COS( lat1 ) * SIN( d ) * COS( tc ) );
-			SET lon = lon1 + ATAN2( SIN( tc ) * SIN( d ) * COS( lat1 ), COS( d ) - SIN( lat1 ) * SIN( lat ) );
-
-			SET lat = DEGREES(lat);
-			SET lon = DEGREES(lon);
-
-			-- If this is the first point, keep the lat/lon so we can close the polygon
-			SET firstlat = IFNULL(firstlat, lat);
-			SET firstlon = IFNULL(firstlon, lon);
+			SET firstcoords = IFNULL( firstcoords, curcoords );
 
 			-- Add our new found lat/lon to our polygon string
-			SET polygonstring = concat(polygonstring, lat, ' ', lon, ', ');
+			SET polygonstring = concat(polygonstring, curcoords, ', ');
 
 			-- Increment our degrees for the next loop
 			SET degrees = degrees + step;
@@ -86,7 +60,7 @@ BEGIN
 
 
 	-- close the polygon with the original points and closing parens
-	SET polygonstring = concat(polygonstring,firstlat, ' ', firstlon, '))');
+	SET polygonstring = concat(polygonstring,firstcoords, '))');
 
 	-- Turn it into geometry and return it
 	RETURN GeomFromText(polygonstring);

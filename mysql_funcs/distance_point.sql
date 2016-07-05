@@ -23,18 +23,21 @@ NO SQL DETERMINISTIC
 BEGIN
 
 	DECLARE lat1 FLOAT;
-	DECLARE lon1 FLOAT;
 	DECLARE lat2 FLOAT;
-	DECLARE lon2 FLOAT;
-	
+	DECLARE deltalon FLOAT;
+
+	-- http://www.movable-type.co.uk/scripts/latlong.html
+	-- var φ1 = lat1.toRadians()
+	-- var φ2 = lat2.toRadians()
+	-- Δλ = (lon2-lon1).toRadians()
+	-- R = 6371e3; // gives d in metres
+	-- var d = Math.acos( Math.sin(φ1)*Math.sin(φ2) + Math.cos(φ1)*Math.cos(φ2) * Math.cos(Δλ) ) * R;
+
 	SET lat1 = RADIANS( Y( p1 ) );
-	SET lon1 = RADIANS( X( p1 ) );
-
 	SET lat2 = RADIANS( Y( p2 ) );
-	SET lon2 = RADIANS( X( p2 ) );
+	SET deltalon = RADIANS( X( p2 ) - X( p1 ) );
 
-	-- http://williams.best.vwh.net/avform.htm#Dist
-	return radius * 2 * ASIN( SQRT(  POW( ( SIN( ( lat1 - lat2 ) / 2 ) ), 2 ) + COS( lat1 ) * COS( lat2 ) * POW( ( SIN( ( lon1 - lon2 ) / 2 ) ), 2) ) );
+	RETURN ACOS( SIN( lat1 ) * SIN( lat2 ) + COS( lat1 ) * COS( lat2 ) * COS( deltalon ) ) * radius; 
 END$$
 
 DELIMITER ;
