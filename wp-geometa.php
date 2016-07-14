@@ -14,21 +14,38 @@
  * @package WP_GeoMeta
  */
 
-require_once( __DIR__ . '/lib/wp-geoquery.php' );
-require_once( __DIR__ . '/lib/wp-geometa.php' );
+/**
+ * This is the admin_init callback. If the plugin is active and
+ * we don't have the needed PHP version, then we deacivate it.
+ */
+function wp_geometa_admin_init() {
+	if ( version_compare( phpversion(), '5.3.0', '<' ) ) {
+		deactivate_plugins( plugin_basename( __FILE__ ) );
+		wp_die( esc_html__( 'WP GeoMeta requires PHP %1$s or higher.','wp-spatial-capabilities-check' , '5.3.0' ) );
+	} else {
 
-// This will initialize both classes.
-WP_GeoMeta::get_instance();
-WP_GeoQuery::get_instance();
-
-register_activation_hook( __FILE__, 'activate_wp_geometa' );
+		// This is where the actual plugin starts to get loaded.
+		require_once( dir( __FILE__ ) . '/lib/wp-geometa-loader.php' );
+	}
+}
+add_action( 'admin_init' , 'wp_geometa_admin_init' );
 
 /**
- * Handle plugin activation. Create tables and pre-populate them
- * with any existing geo data.
+ * This is the plugin activation function.
+ *
+ * It also checks version numbers.
  */
-function activate_wp_geometa() {
-	$wpgeo = WP_GeoMeta::get_instance();
-	$wpgeo->create_geo_table();
-	$wpgeo->populate_geo_tables();
+function wp_geometa_activation_func() {
+	if ( ! version_compare( phpversion(), '5.3.0', '<' ) ) {
+		if ( is_plugin_active( plugin_basename( __FILE__ ) ) ) {
+			deactivate_plugins( plugin_basename( __FILE__ ) );
+
+			add_action( 'admin_notices',  esc_html__( 'WP GeoMeta requires PHP %1$s or higher.','wp-spatial-capabilities-check' , '5.3.0' ) );
+
+			if ( isset( $_GET['activate'] ) ) {
+				unset( $_GET['activate'] );
+			}
+		}
+	}
 }
+register_activation_hook( __FILE__, 'wp_geometa_activation_hook' );
