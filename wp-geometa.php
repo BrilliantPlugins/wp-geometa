@@ -26,10 +26,10 @@ $wp_geometa_load_this_instance = false;
  */
 $wp_geometa_version_status = version_compare( $wp_geometa_version, $wp_geometa_max_version );
 
-if ( $wp_geometa_version_status === 1 ) {
+if ( 1 === $wp_geometa_version_status ) {
 	// This will cause our version to get loaded next time.
-	update_option( 'wp_geometa_version', $wp_geometa_version, false );	
-} else if ( $wp_geometa_version_status === 0 ) {
+	update_option( 'wp_geometa_version', $wp_geometa_version, false );
+} else if ( 0 === $wp_geometa_version_status ) {
 
 	// Other instances of WP_GeoMeta shouldn't have loaded these classes
 	// unless they're the same version as this instance.
@@ -44,14 +44,14 @@ if ( $wp_geometa_version_status === 1 ) {
 		if ( version_compare( $wp_geometa_version, $wp_geometa_db_version ) > 0 ) {
 			$wpgeo->create_geo_tables();
 			$wpgeo->populate_geo_tables();
-			update_option( 'wp_geometa_db_version', $wp_geometa_version, false );	
+			update_option( 'wp_geometa_db_version', $wp_geometa_version, false );
 		}
 	}
-} 
+}
 
 /**
- * There's a chance that someone installed a newere version of the plugin, 
- * (or a plugin that used the library) which caused the option to get set, 
+ * There's a chance that someone installed a newere version of the plugin,
+ * (or a plugin that used the library) which caused the option to get set,
  * then removed that plugin, which would mean that we aren't loading the
  * usual way.
  *
@@ -76,7 +76,7 @@ if ( ! function_exists( 'wp_geometa_load_older_version' ) ) {
 			if ( version_compare( $wp_geometa_version, $wp_geometa_db_version ) > 0 ) {
 				$wpgeo->create_geo_tables();
 				$wpgeo->populate_geo_tables();
-				update_option( 'wp_geometa_db_version', $wp_geometa_version, false );	
+				update_option( 'wp_geometa_db_version', $wp_geometa_version, false );
 			}
 		}
 	}

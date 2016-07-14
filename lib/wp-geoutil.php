@@ -213,10 +213,10 @@ class WP_GeoUtil {
 		);
 
 	/**
-		* All the functions we detect as available in MySQL
-		*
-		* @var $found_funcs
-		*/
+	 * All the functions we detect as available in MySQL
+	 *
+	 * @var $found_funcs
+	 */
 	private static $found_funcs = array();
 
 
@@ -259,9 +259,9 @@ class WP_GeoUtil {
 	public static function merge_geojson() {
 		$fragments = func_get_args();
 
-		// check if we've been given an array of fragments and act accordingly
-		// If we don't have 'type' in our keys, then there's a good chance we might have an array of geojsons as our first arg
-		if ( 1 === count( $fragments ) && is_array( $fragments[0] ) && !array_key_exists('type', $fragments[0] ) ) {
+		// Check if we've been given an array of fragments and act accordingly.
+		// If we don't have 'type' in our keys, then there's a good chance we might have an array of geojsons as our first arg.
+		if ( 1 === count( $fragments ) && is_array( $fragments[0] ) && ! array_key_exists( 'type', $fragments[0] ) ) {
 			$fragments = $fragments[0];
 		}
 
@@ -349,6 +349,7 @@ class WP_GeoUtil {
 	/**
 	 * Convert WKT to GeoJSON
 	 *
+	 * @param geometry $wkt Convert a geometry of some sort to GeoJSON.
 	 */
 	public static function geom_to_geojson( $wkt ) {
 		$maybe_geojson = apply_filters( 'wpgq_geom_to_geojson', $wkt );
@@ -357,17 +358,17 @@ class WP_GeoUtil {
 		}
 
 		// Don't know what to do non-strings.
-		if ( !is_string( $maybe_geojson ) ) {
+		if ( ! is_string( $maybe_geojson ) ) {
 			return false;
 		}
 
 		// WKT needs to start with one of these things.
-		$maybe_geojson = trim($maybe_geojson);
-		if ( stripos( $maybe_geojson, 'POINT' ) !== 0 && 
-			stripos( $maybe_geojson, 'LINESTRING' ) !== 0 && 
-			stripos( $maybe_geojson, 'POLYGON' ) !== 0 && 
-			stripos( $maybe_geojson, 'MULTIPOINT' ) !== 0 && 
-			stripos( $maybe_geojson, 'MULTILINESTRING' ) !== 0 && 
+		$maybe_geojson = trim( $maybe_geojson );
+		if ( stripos( $maybe_geojson, 'POINT' ) !== 0 &&
+			stripos( $maybe_geojson, 'LINESTRING' ) !== 0 &&
+			stripos( $maybe_geojson, 'POLYGON' ) !== 0 &&
+			stripos( $maybe_geojson, 'MULTIPOINT' ) !== 0 &&
+			stripos( $maybe_geojson, 'MULTILINESTRING' ) !== 0 &&
 			stripos( $maybe_geojson, 'MULTIPOLYGON' ) !== 0
 		) {
 			return false;
@@ -379,7 +380,6 @@ class WP_GeoUtil {
 		} catch ( Exception $e ) {
 			return false;
 		}
-
 
 	}
 
@@ -406,6 +406,7 @@ class WP_GeoUtil {
 	/**
 	 * Check if a value is in GeoJSON, which is our code-ready forma.
 	 *
+	 * @param anything $maybe_geojson Check if a value is GeoJSON or not.
 	 */
 	public static function is_geojson( $maybe_geojson ) {
 		try {
@@ -464,35 +465,6 @@ class WP_GeoUtil {
 
 		update_option( 'geometa_capabilities',self::$found_funcs, false );
 		return self::$found_funcs;
-	}
-
-	/**
-	 * Buffer a point by meters
-	 */
-	public static function buffer_point_m($geojson, $radius, $segments = 16) {
-		global $wpdb;
-		$point = self::metaval_to_geom( $geojson );
-
-		$q = "SELECT AsText(wp_buffer_point_m(GeomFromText(%s),%f,%d))";
-		$sql = $wpdb->prepare($q, array( $point, $radius, $segments ));
-		$buffered = $wpdb->get_var($sql);
-
-		return $buffered;
-	}
-
-
-	/**
-	 * Buffer a point by miles
-	 */
-	public static function buffer_point_mi($geojson, $radius, $segments = 16) {
-		global $wpdb;
-		$point = self::metaval_to_geom( $geojson );
-
-		$q = "SELECT AsText(wp_buffer_point_mi(GeomFromText(%s),%f,%d))";
-		$sql = $wpdb->prepare($q, array( $point, $radius, $segments ));
-		$buffered = $wpdb->get_var($sql);
-
-		return $buffered;
 	}
 
 	/**
