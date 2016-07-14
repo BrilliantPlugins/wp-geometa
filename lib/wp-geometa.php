@@ -60,6 +60,7 @@ class WP_GeoMeta {
 	 * Set up our filters
 	 */
 	protected function __construct() {
+		define( 'WP_GEOMETA_HOME', dirname( dirname( __FILE__ ) ) );
 		$this->setup_filters();
 	}
 
