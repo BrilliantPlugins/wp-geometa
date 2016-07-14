@@ -301,6 +301,8 @@ class WP_GeoUtil {
 	 * We're going to support single GeoJSON features and FeatureCollections in either string, object or array format.
 	 *
 	 * @param mixed $metaval The meta value to try to convert to WKT.
+	 *
+	 * @return A WKT geometry string.
 	 */
 	public static function metaval_to_geom( $metaval = '' ) {
 		// Let other plugins support non GeoJSON geometry.
@@ -350,6 +352,8 @@ class WP_GeoUtil {
 	 * Convert WKT to GeoJSON
 	 *
 	 * @param geometry $wkt Convert a geometry of some sort to GeoJSON.
+	 *
+	 * @return A GeoJSON string.
 	 */
 	public static function geom_to_geojson( $wkt ) {
 		$maybe_geojson = apply_filters( 'wpgq_geom_to_geojson', $wkt );

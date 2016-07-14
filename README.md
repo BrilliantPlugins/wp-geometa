@@ -2,10 +2,6 @@ WP_GeoMeta
 ===========
 A WordPressy spatial foundation for WordPress.
 
-The Warning
------------
-*WARNING*: This is an early alpha and shouldn't be used for production yet. 
-
 Usage
 -----
 
@@ -197,7 +193,7 @@ Can you believe that MySQL doesn't have ST_TRANSFORM and doesn't use the SRID?
 
 
 Next Todos
-----
+----------
  * Support single geometry compairson operators.
  * Support spatial orderby
  * Replace geoPHP with something small and focused. All we're using it for is GeoJSON to WKT conversion.
@@ -218,7 +214,13 @@ store geo data in a geo way.
 Changes
 -------
 
-### 0.0.2 
+### 0.1.0: Perfect Tommy
+ * Will now work as a library or a plugin. 
+ * Additional functions for getting data back into GeoJSON format.
+ * Working well enough to use in production.
+
+
+### 0.0.2: New Jersey
  * Improved meta query capabilities. Now support sub queries, and uses standard meta-query syntax
  * Whitelist of known spatial functions in meta_query args. Allowed args set by detecting MySQL capabilities.
  * We now delete the spatial index on activation so that we don't end up with duplicate spatial keys
@@ -227,7 +229,7 @@ Changes
  * Conform to WP coding standards
  * Explicitly set visibility on properties and methods
 
-### 0.0.1
+### 0.0.1: Emilio Lizardo
  * Initial Release
 
 Quotes
