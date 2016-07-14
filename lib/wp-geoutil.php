@@ -12,7 +12,7 @@
 /**
  * Include geoPHP for this function
  */
-require_once( __DIR__ . '/geoPHP/geoPHP.inc' );
+require_once( dirname( __FILE__ ) . '/geoPHP/geoPHP.inc' );
 
 /**
  * Some spatial utilities that are used by both WP_GeoQuery and WP_GeoMeta

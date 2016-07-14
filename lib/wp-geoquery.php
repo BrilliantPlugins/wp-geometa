@@ -13,7 +13,7 @@
 /**
  * This class extends GeoUtil
  */
-require_once( __DIR__ . '/wp-geoutil.php' );
+require_once( dirname( __FILE__ ) . '/wp-geoutil.php' );
 
 /**
  * WP_GeoQuery adds spatial query functionality to WP_Meta_Query, allowing
