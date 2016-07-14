@@ -66,7 +66,7 @@ class WP_GeoMeta {
 	/**
 	 * Run SQL to create geo tables
 	 */
-	public function create_geo_table() {
+	public function create_geo_tables() {
 		global $wpdb;
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
