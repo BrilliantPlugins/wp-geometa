@@ -6,10 +6,6 @@ require_once('./../wp-geometa.php');
 
 global $wpdb;
 
-// Test table creation
-print "Creating Geo Tables\n";
-activate_wp_geometa();
-
 $geo_tables = $wpdb->get_results("SHOW TABLES LIKE '{$wpdb->prefix}_%_geo'",ARRAY_N);
 
 if(count($geo_tables) !== 4){

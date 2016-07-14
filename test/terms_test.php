@@ -9,10 +9,6 @@ require_once(__DIR__ . '/../../../../wp-load.php');
 require_once('./../wp-geometa.php');
 
 
-// Test table creation
-print "Creating tables for WP_GeoMeta\n";
-activate_wp_geometa();
-
 // Test adding data
 print "Adding geometry metadata to term $term_id_to_test\n";
 $single_feature = '{ "type": "Feature", "geometry": {"type": "Point", "coordinates": [102.0, 0.5]}, "properties": {"prop0": "value0"} }';

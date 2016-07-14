@@ -8,10 +8,6 @@ $post_id_to_test = 48;
 require_once(__DIR__ . '/../../../../wp-load.php');
 require_once('./../wp-geometa.php');
 
-// Test table creation
-print "Creating tables for WP_GeoMeta\n";
-activate_wp_geometa();
-
 // Test adding data
 print "Adding geometry metadata to post $post_id_to_test\n";
 $single_feature = '
