@@ -3,9 +3,8 @@ WP GeoMeta
 A WordPressy spatial foundation for WordPress.
 
 This is a plugin and a library for other plugins to use. It makes
-working with spatial data pretty much the same as working with 
+working with spatial data the same as working with 
 any other metadata.
-
 
 Usage
 -----
@@ -77,27 +76,6 @@ to InnoDB! (and let me know how it goes).
 The goal is PHP 5.2 support, just like WordPress's minimum version, even though it's
 ancient. 
 
-The Problems
-------------
-### GIS + WordPress = ???
-GIS is awesome (and popular!). WordPress is awesome (and popular!). Unfortunately
-they don't interact very much. If you drew a ven diagram, the two circles would
-just barely be touching. 
-
-And most of that touching is just embedded maps from 3rd party services.
-
-GIS and WordPress should become better friends.
-
-### GIS + Developers = ???
-GIS isn't hard, but it's different. WordPress developers don't need or want to 
-learn yet another thing for just one project. WordPress admins have even less 
-desire to dig into the murky details of GIS.
-
-WordPress isn't hard, but it's different. GIS developers don't need or want to
-learn yet another thing for just one project. GIS admins have even less desire 
-to dig into the murky details of WordPress.
-
-
 Next Todos
 ----------
  * Support single geometry compairson operators.
@@ -119,8 +97,7 @@ Changes
 ### 0.1.0: Perfect Tommy
  * Will now work as a library or a plugin. 
  * Additional functions for getting data back into GeoJSON format.
- * Working well enough to use in production.
-
+ * Working well enough to submit to the plugin repo.
 
 ### 0.0.2: New Jersey
  * Improved meta query capabilities. Now support sub queries, and uses standard meta-query syntax

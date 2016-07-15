@@ -8,13 +8,13 @@
  * Plugin Name: WP-GeoMeta
  * Author: Michael Moore
  * Author URI: http://cimbura.com
- * Version: 0.0.3
+ * Version: 0.1.0
  * Code Name: Perfect Tommy - Let her out?
  *
  * @package WP_GeoMeta
  */
 
-$wp_geometa_version = '0.0.3';
+$wp_geometa_version = '0.1.0';
 $wp_geometa_max_version = get_option( 'wp_geometa_version', '0.0.0' );
 $wp_geometa_db_version = get_option( 'wp_geometa_db_version', '0.0.0' );
 $wp_geometa_load_this_instance = false;
