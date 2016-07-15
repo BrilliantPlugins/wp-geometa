@@ -28,7 +28,7 @@ $wp_geometa_version_status = version_compare( $wp_geometa_version, $wp_geometa_m
 
 if ( 1 === $wp_geometa_version_status ) {
 	// This will cause our version to get loaded next time.
-	update_option( 'wp_geometa_version', $wp_geometa_version, false );
+	update_option( 'wp_geometa_version', $wp_geometa_version );
 } else if ( 0 === $wp_geometa_version_status ) {
 
 	// Other instances of WP_GeoMeta shouldn't have loaded these classes
@@ -44,7 +44,7 @@ if ( 1 === $wp_geometa_version_status ) {
 		if ( version_compare( $wp_geometa_version, $wp_geometa_db_version ) > 0 ) {
 			$wpgeo->create_geo_tables();
 			$wpgeo->populate_geo_tables();
-			update_option( 'wp_geometa_db_version', $wp_geometa_version, false );
+			update_option( 'wp_geometa_db_version', $wp_geometa_version );
 		}
 	}
 }
@@ -76,22 +76,22 @@ if ( ! function_exists( 'wp_geometa_load_older_version' ) ) {
 			if ( version_compare( $wp_geometa_version, $wp_geometa_db_version ) > 0 ) {
 				$wpgeo->create_geo_tables();
 				$wpgeo->populate_geo_tables();
-				update_option( 'wp_geometa_db_version', $wp_geometa_version, false );
+				update_option( 'wp_geometa_db_version', $wp_geometa_version );
 			}
 
 			/*
 			 * If we got downgraded, then the first found wp-geometa will have been
 			 * loaded. Lowering the version to this instance's version will allow
-			 * WP GeoMeta to pick the highest version again on the next run. 
+             * WP GeoMeta to pick the highest version again on the next run.
 			 *
 			 * Eg. This is v5 and is the first one that WP finds. v6 is also installed
 			 * and v7 was installed. When v7 is no longer found, this (v5) will run since
-			 * it was the first one found and will set wp_geometa_version to v5. 
+             * it was the first one found and will set wp_geometa_version to v5.
 			 *
 			 * On the next run, it would find that v6 is the higher version and would update
 			 * wp_geometa_version. On the run after that v6 would be loaded.
 			 */
-			update_option( 'wp_geometa_version', $wp_geometa_version, false );
+			update_option( 'wp_geometa_version', $wp_geometa_version );
 		}
 	}
 	add_action( 'plugins_loaded', 'wp_geometa_load_older_version' );
