@@ -12,7 +12,7 @@ global $wpdb;
 $geo_tables = $wpdb->get_results("SHOW TABLES LIKE '{$wpdb->prefix}_%_geo'",ARRAY_N);
 
 if(count($geo_tables) !== 4){
-	print "😞\n";
+	print "😡\n";
 }else {
 	print "😎\n";
 }

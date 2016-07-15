@@ -6,6 +6,7 @@ require_once( dirname( __FILE__ ) . '/__load.php' );
 
 print str_pad( "Testing WP_Query", WP_GEOMETA_TEST_WIDTH, '.' );
 
+// Test for intersection: Should find some records.
 $wpq = new WP_Query(array(
 	'post_type' => 'geo_test',
 	'post_status' => 'any',
@@ -17,8 +18,25 @@ $wpq = new WP_Query(array(
 	)
 	))); 
 
+if ( ! $wpq->have_posts() ) {
+	print "😡\n";
+	return;
+}
+
+// Test for intersection: Should not find any records.
+$wpq = new WP_Query(array(
+	'post_type' => 'geo_test',
+	'post_status' => 'any',
+	'meta_query' => array(
+		array( 
+		'key' => 'wpgeometa_test',
+		'compare' => 'INTERSECTS',
+		'value' => '{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-1.26,1.08],[-1.26,1.09],[-1.21,1.09],[-1.21,1.08],[-1.26,1.08]]]}}'
+	)
+	))); 
+
 if ( $wpq->have_posts() ) {
-	print "😎\n";
+	print "😡\n";
 } else {
-	print "😞\n";
+	print "😎\n";
 }

@@ -22,14 +22,14 @@ foreach( $geojson['features'] as $feature ) {
 	) );
 
 	if ( empty( $post_id ) ) {
-		print "😞\n";
+		print "😡\n";
 		return;
 	}
 
 	$updated_meta = update_post_meta( $post_id, 'wpgeometa_test', $feature );
 
 	if ( empty( $updated_meta ) ) {
-		print "😞\n";
+		print "😡\n";
 		return;
 	}
 
@@ -44,7 +44,7 @@ foreach ( $results as $res ) {
 }
 
 if ( ! empty( array_diff( $post_ids, $meta_post_ids ) ) ) {
-	print "😞\n";
+	print "😡\n";
 } else {
 	print "😎\n";
 }
