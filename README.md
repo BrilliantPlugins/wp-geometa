@@ -1,10 +1,21 @@
 WP GeoMeta
 ===========
-A WordPressy spatial foundation for WordPress.
+A spatial foundation for WordPress. Store and search spatial metadata like
+you do any other metadata, but using MySQL spatial indexes.
 
-This is a plugin and a library for other plugins to use. It makes
-working with spatial data the same as working with 
-any other metadata.
+WP GeoMeta lets you take advantage MySQL's spatial data types and spatial 
+indexes when storing and searching spatial metadata. 
+
+It detects when GeoJSON metadata is being stored, and transparently 
+stores a copy in a spatial meta table. 
+
+WP GeoMeta also adds support for spatial search operators. When a spatial
+search operator is used, WP GeoMeta will make sure that the spatial table
+is used, taking advantage of indexes and spatial relations.
+
+WP GeoMeta isn't just a plugin, it's also a library which other plugins can
+take advantage of. It's meant to be a spatial platform that other GIS and
+mapping plugins can build on. 
 
 Usage
 -----
@@ -54,8 +65,9 @@ Server Requirements
 -------------------
 
 ### WordPress
-Probably WordPress 4.4 since we are using the meta_query parameters of get_terms 
-which was introduced in that version.
+This plugin supports storing spatial metadata for posts, users, comments and
+terms. Searching term metadata arrived in WordPress 4.4, but other
+functionality should still work in older versions of WordPress.
 
 ### MySQL
 MySQL 5.6.1 or higher is strongly recommended. 
@@ -73,8 +85,23 @@ If you are using MySQL 5.7, good for you, and consider converting your geo table
 to InnoDB! (and let me know how it goes).
 
 ### PHP
-The goal is PHP 5.2 support, just like WordPress's minimum version, even though it's
-ancient. 
+The goal is PHP 5.2 support, just like WordPress's minimum version
+Please report any PHP errors you come across and we'll fix them up.
+
+Frequently Asked Questions
+--------------------------
+
+### What spatial comparisons are supported?
+
+Any spatial operation that takes two geometries and returns a boolean is
+supported, if your version of MySQL supports it. For example, INTERSECT,
+CONTAINS, ST_WITHIN, etc.
+
+To see what your install of MySQL supports, install 
+[WP Spatial Capabilities Check](https://wordpress.org/plugins/wp-spatial-capabilities-check/). 
+We recommend MySQL 5.6.1 or higher since it included many important updates to 
+spatial operators.
+
 
 Next Todos
 ----------

@@ -44,6 +44,9 @@ if ( 1 === $wp_geometa_version_status ) {
 		if ( version_compare( $wp_geometa_version, $wp_geometa_db_version ) > 0 ) {
 			$wpgeo->create_geo_tables();
 			$wpgeo->populate_geo_tables();
+
+			$wp_geoutil = WP_GeoUtil::get_instance();
+			$wp_geoutil::get_capabilities( true );
 			update_option( 'wp_geometa_db_version', $wp_geometa_version );
 		}
 	}
@@ -76,6 +79,9 @@ if ( ! function_exists( 'wp_geometa_load_older_version' ) ) {
 			if ( version_compare( $wp_geometa_version, $wp_geometa_db_version ) > 0 ) {
 				$wpgeo->create_geo_tables();
 				$wpgeo->populate_geo_tables();
+
+				$wp_geoutil = WP_GeoUtil::get_instance();
+				$wp_geoutil::get_capabilities( true );
 				update_option( 'wp_geometa_db_version', $wp_geometa_version );
 			}
 

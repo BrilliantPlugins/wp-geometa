@@ -4,7 +4,11 @@ define( 'WP_GEOMETA_TESTDIR', dirname( __FILE__ ) . '/../' );
 define( 'WP_GEOMETA_TEST_WIDTH', 60 );
 
 // Load WordPress.
-require_once( WP_GEOMETA_TESTDIR . '/../../../../wp-load.php');
+$wp_load = WP_GEOMETA_TESTDIR . '/../../../../wp-load.php';
+if ( ! file_exists( $wp_load ) ) {
+	die( "Couldn't find wp-load. Tests are meant to be run when WP_GeoMeta is installed as a plugin.\n" ); 
+}
+require_once( $wp_load );
 
 // Load WP GeoMeta in case it's not active.
 require_once( WP_GEOMETA_TESTDIR . '/../wp-geometa.php');

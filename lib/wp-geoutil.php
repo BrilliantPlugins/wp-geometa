@@ -51,7 +51,7 @@ class WP_GeoUtil {
 	 *
 	 * @var $all_funcs
 	 */
-	public $all_funcs = array(
+	public static $all_funcs = array(
 		'Area',
 		'AsBinary',
 		'AsText',
@@ -452,7 +452,7 @@ class WP_GeoUtil {
 		$suppress = $wpdb->suppress_errors( true );
 		$errors = $wpdb->show_errors( false );
 
-		foreach ( self::$all_funcs as $func ) {
+		foreach ( WP_GeoUtil::all_funcs as $func ) {
 			$q = "SELECT $func() AS worked";
 			$wpdb->query( $q ); // @codingStandardsIgnoreLine
 
