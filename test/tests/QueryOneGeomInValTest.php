@@ -4,7 +4,7 @@
  */
 require_once( dirname( __FILE__ ) . '/__load.php' );
 
-print str_pad( "Testing WP_Query", WP_GEOMETA_TEST_WIDTH, '.' );
+print str_pad( "Testing One Geom Queries with array of values", WP_GEOMETA_TEST_WIDTH, '.' );
 
 // Test for intersection: Should find some records.
 $wpq = new WP_Query(array(
@@ -13,8 +13,10 @@ $wpq = new WP_Query(array(
 	'meta_query' => array(
 		array( 
 		'key' => 'wpgeometa_test',
-		'compare' => 'INTERSECTS',
-		'value' => '{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-93.267731667438,45.089788984497],[-93.267731667438,45.092818717985],[-93.213829995075,45.092818717985],[-93.213829995075,45.089788984497],[-93.267731667438,45.089788984497]]]}}'
+		'compare' => 'BETWEEN',
+		'value' => array(1,10),
+		'geom_op' => 'IsSimple',
+		'type' => 'NUMERIC',  // 'NUMERIC', 'BINARY', 'CHAR', 'DATE', 'DATETIME', 'DECIMAL', 'SIGNED', 'TIME', 'UNSIGNED'. Default value is 'CHAR'. 
 	)
 	))); 
 
@@ -30,8 +32,9 @@ $wpq = new WP_Query(array(
 	'meta_query' => array(
 		array( 
 		'key' => 'wpgeometa_test',
-		'compare' => 'INTERSECTS',
-		'value' => '{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-1.26,1.08],[-1.26,1.09],[-1.21,1.09],[-1.21,1.08],[-1.26,1.08]]]}}'
+		'compare' => 'NOT IN',
+		'value' => array(1,2,3),
+		'geom_op' => 'NumPoints'
 	)
 	))); 
 

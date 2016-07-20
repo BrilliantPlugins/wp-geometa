@@ -105,23 +105,83 @@ class WP_GeoQuery {
 				$clauses = $this->get_meta_sql( $clauses,$meta_query,$type,$primary_table,$primary_id_column,$context, $depth + 1 );
 			}
 
-			if ( ! in_array( strtolower( $meta_query['compare'] ),WP_GeoUtil::get_capabilities(), true ) ) {
+			$meta_type = $context->meta_query->get_cast_for_type( $meta_query['type'] );
+
+			// Is our compare a spatial compare? If, so, it has to be in our list of allowed compares
+			if ( in_array( strtolower( $meta_query['compare'] ),WP_GeoUtil::get_capabilities(), true ) ) {
+
+				// If we have a geometry for our value, then we're doing a two-geometry function that returns a boolean.
+				$geometry = WP_GeoUtil::metaval_to_geom( $meta_query['value'] );
+				if ( !empty( $geometry ) ) {
+
+					$std_query = "( $metatable.meta_key = %s AND CAST($metatable.meta_value AS $meta_type) = %s )";
+					$std_query = $wpdb->prepare( $std_query, array( $meta_query['key'], $meta_query['value'] ) ); // @codingStandardsIgnoreLine
+
+					$geom_query = "( $metatable.$id_column IN ( SELECT fk_meta_id FROM {$geotable} WHERE (meta_key=%s AND {$meta_query['compare']}($geotable.meta_value,GeomFromText(%s,%d))) ) )";
+					$geom_query = $wpdb->prepare( $geom_query, array( $meta_query['key'], $geometry, WP_GeoUtil::get_srid() ) ); // @codingStandardsIgnoreLine
+
+				} else {
+
+					// If we don't have a value, then our subquery gets written without parenthesis wraps
+					// IDK why.
+
+					$std_query = "  $metatable.meta_key = %s";
+					$std_query = $wpdb->prepare( $std_query, array( $meta_query['key'] ) ); // @codingStandardsIgnoreLine
+
+					// Otherwise we're doing a one geometry operation that returns a boolean.
+					$geom_query = "( $metatable.$id_column IN ( SELECT fk_meta_id FROM {$geotable} WHERE (meta_key=%s AND {$meta_query['compare']}($geotable.meta_value)) ) )";
+					$geom_query = $wpdb->prepare( $geom_query, array( $meta_query['key'] ) ); // @codingStandardsIgnoreLine
+				}
+
+			} else if ( array_key_exists( 'geom_op', $meta_query ) && in_array( strtolower( $meta_query['geom_op'] ),WP_GeoUtil::get_capabilities(), true ) ) {
+
+				// We must be doing a one geom op that returns a value.
+				// Verify that we're requesting a valid compare type.
+				if ( in_array( $meta_query[ 'compare' ], array(
+					'=', '!=', '>', '>=', '<', '<=',
+					'LIKE', 'NOT LIKE',
+					'IN', 'NOT IN',
+					'BETWEEN', 'NOT BETWEEN',
+					'REGEXP', 'NOT REGEXP', 'RLIKE'
+				) ) ) {
+
+				$std_query = "( $metatable.meta_key = %s AND CAST($metatable.meta_value AS $meta_type) {$meta_query[ 'compare' ]}";
+				$std_query = $wpdb->prepare( $std_query, array( $meta_query['key'] ) ); // @codingStandardsIgnoreLine
+				$std_escaped = preg_quote( $std_query );
+				$std_regex = "|$std_escaped(.*)\)|";
+
+				if ( preg_match( $std_regex, $clauses[ 'where' ], $matches ) ) {
+
+					$std_query .= $matches[1] . ')';
+
+					// TODO: Handle IN/NOT INT/BETWEET/NOT BETWEEN...
+
+					$geom_query = "( $metatable.$id_column IN ( SELECT fk_meta_id FROM {$geotable} WHERE (meta_key=%s AND CAST({$meta_query['geom_op']}($geotable.meta_value) AS $meta_type) {$meta_query[ 'compare' ]} ";
+					$geom_query = $wpdb->prepare( $geom_query, array( $meta_query['key'] ) ); // @codingStandardsIgnoreLine
+					$geom_query .= $matches[1] . ')))';
+				} else {
+					error_log( "WP_GeoQuery: I expected to find a compare in `{$clauses['where']}`" );
+					continue;
+				}
+				} else {
+					continue;
+				}
+			} else {
 				continue;
 			}
 
-			$geometry = WP_GeoUtil::metaval_to_geom( $meta_query['value'] );
+			// $a = 1 + 1;
 
-			if ( empty( $geometry ) ) {
-				continue;
-			}
+			// print "\n\n\n";
 
-			$search_string = "( $metatable.meta_key = %s AND CAST($metatable.meta_value AS CHAR) = %s )";
-			$search_string = $wpdb->prepare( $search_string, array( $meta_query['key'], $meta_query['value'] ) ); // @codingStandardsIgnoreLine
+			// print str_replace(' ','*',"----{$clauses['where']}----\n\n");
+			// print str_replace(' ','*',"----{$std_query}-----\n\n");
+			// print "----{$geom_query}-----\n\nn";
+			$clauses['where'] = str_replace( $std_query, $geom_query, $clauses['where'] );
+			// print "----{$clauses['where']}----\n";
 
-			$replace_string = "( $metatable.$id_column IN ( SELECT fk_meta_id FROM {$geotable} WHERE (meta_key=%s AND {$meta_query['compare']}($geotable.meta_value,GeomFromText(%s,%d))) ) )";
-			$replace_string = $wpdb->prepare( $replace_string,array( $meta_query['key'], $geometry, WP_GeoUtil::get_srid() ) ); // @codingStandardsIgnoreLine
-
-			$clauses['where'] = str_replace( $search_string, $replace_string, $clauses['where'] );
+			// print "\n\n\n-------------\n";
+			// $a = 1 + 1;
 		}
 
 		return $clauses;

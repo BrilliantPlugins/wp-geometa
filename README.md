@@ -41,9 +41,20 @@ Read GeoJSON back from the post;
 
 ### Querying
 
-Querying is done through the WP_Query meta_query argument. Set _compare_ to a [supported spatial operator](https://wordpress.org/plugins/wp-spatial-capabilities-check/) for your system. The _value_ should be GeoJSON representing the second geometry to compare with. 
+Querying is done through the WP_Query meta_query argument. See
+[WP Spatial Capabilities Check](https://wordpress.org/plugins/wp-spatial-capabilities-check/) 
+to generate a list of supported spatial functions for your system. 
 
-Query posts spatially and print their titles:
+There are three styles of queries supported, to cover three different classes of spatial functions
+
+1. Query comparing geometries
+
+This style of query is for all spatial functions which accept two geometries as arguments and which 
+return a boolean as a result. For example ST_INTERSECTS, CONTAINS or MBROverlaps. 
+
+The meta_query _compare_ is the function to use, and the _value_ should be a GeoJSON representation
+of the geometry to use for the second argument. The geometry meta field indicated by the _key_ parameter
+will be used as the first argument to the _compare_ function.
 
     $q = new WP_Query( array(
     	'meta_query' => array(
@@ -60,6 +71,42 @@ Query posts spatially and print their titles:
     	print "\t* " . get_the_title() . "\n";
     }
 
+2. Query geometry properties
+
+This style of query is for all spatial functions which accept a single geometry as an argument and
+which return a boolean as a result. For example ST_IsSimple, IsClosed or ST_IsEmpty.
+
+The _compare_ argument should be the function just like above, but no value is needed.
+
+    $q = new WP_Query(array( 
+    	'meta_query' => array( 
+    		array( 
+    		'key' => 'wpgeometa_test',
+    		'compare' => 'ST_IsEmpty'
+    		)
+    	)));
+
+3. Compare the results of geometry functionso
+
+This style of query is for spatial functions which accept a single geometry as an argument but return
+a non-boolean response. For example, GLength, ST_Area or ST_SRID.
+
+In these queries you may want to use a normal meta_query comparison (=, >, BETWEEN, etc.) but against
+the result of a spatial function. To accomodate this type of case, you will need to add an additional
+parameter _geom_op_. 
+
+The _key_, _compare_ and _value_ are used in the regular WP_Query way, but the comparison will be 
+made against the result of applying the geometry function to the spatial metadata specified.
+
+    $q = new WP_Query(array(
+    	'meta_query' => array(
+    		array( 
+    		'key' => 'wpgeometa_test',
+    		'compare' => '>',
+    		'value' => '100',
+    		'geom_op' => 'NumPoints'
+    	)
+    	))); 
 
 Server Requirements
 -------------------
@@ -93,19 +140,72 @@ Frequently Asked Questions
 
 ### What spatial comparisons are supported?
 
-Any spatial operation that takes two geometries and returns a boolean is
-supported, if your version of MySQL supports it. For example, INTERSECT,
-CONTAINS, ST_WITHIN, etc.
+Any spatial operation that takes two geometries and returns a boolean, 
+or which takes one geometry and returns a boolean or a value is
+supported, if your version of MySQL supports it. 
+
+The following function should work, if your install of MySQL supports them: 
+
+ * Area
+ * Contains
+ * Crosses
+ * Dimension
+ * Disjoint
+ * Equals
+ * GLength
+ * GeometryType
+ * Intersects
+ * IsClosed
+ * IsEmpty
+ * IsRing
+ * IsSimple
+ * MBRContains
+ * MBRCoveredBy
+ * MBRDisjoint
+ * MBREqual
+ * MBREquals
+ * MBRIntersects
+ * MBROverlaps
+ * MBRTouches
+ * MBRWithin
+ * NumGeometries
+ * NumInteriorRings
+ * NumPoints
+ * Overlaps
+ * SRID
+ * ST_Area
+ * ST_Contains
+ * ST_Crosses
+ * ST_Difference
+ * ST_Dimension
+ * ST_Disjoint
+ * ST_Distance
+ * ST_Distance_Sphere
+ * ST_Equals
+ * ST_GeometryType
+ * ST_Intersects
+ * ST_IsClosed
+ * ST_IsEmpty
+ * ST_IsRing
+ * ST_IsSimple
+ * ST_IsValid
+ * ST_Length
+ * ST_NumPoints
+ * ST_Overlaps
+ * ST_SRID
+ * ST_Touches
+ * ST_Within
+ * Touches
+ * Within
 
 To see what your install of MySQL supports, install 
 [WP Spatial Capabilities Check](https://wordpress.org/plugins/wp-spatial-capabilities-check/). 
-We recommend MySQL 5.6.1 or higher since it included many important updates to 
+We recommend using MySQL 5.6.1 or higher since it included many important updates to 
 spatial operators.
 
 
 Next Todos
 ----------
- * Support single geometry compairson operators.
  * Support spatial orderby
  * Live examples
 
@@ -125,6 +225,7 @@ Changes
  * Will now work as a library or a plugin. 
  * Additional functions for getting data back into GeoJSON format.
  * Working well enough to submit to the plugin repo.
+ * Support for single geometry functions in meta_queries.
 
 ### 0.0.2: New Jersey
  * Improved meta query capabilities. Now support sub queries, and uses standard meta-query syntax
