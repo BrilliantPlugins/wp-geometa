@@ -2,6 +2,7 @@
 
 define( 'WP_GEOMETA_TESTDIR', dirname( __FILE__ ) . '/../' );
 define( 'WP_GEOMETA_TEST_WIDTH', 60 );
+define( 'WP_GEOMETA_DEBUG', false );
 
 // Load WordPress.
 $wp_load = WP_GEOMETA_TESTDIR . '/../../../../wp-load.php';
@@ -12,6 +13,7 @@ require_once( $wp_load );
 
 // Load WP GeoMeta in case it's not active.
 require_once( WP_GEOMETA_TESTDIR . '/../wp-geometa.php');
+require_once( WP_GEOMETA_TESTDIR . '/tests/__SqlFormatter.php');
 
 // A post type for testing with.
 $args = array(
@@ -38,4 +40,22 @@ $args = array(
 );
 register_post_type( "geo_test", $args );
 
+function fail( $wpq = null ) {
+	print "😡\n";
 
+	$bt = debug_backtrace();
+	$caller = array_shift($bt);
+	print "\n" . basename($caller['file']) . ':' . $caller['line'] . "\n";
+
+	prettyQuery( $wpq );
+}
+
+function pass(){
+	print "😎\n";
+}
+
+function prettyQuery( $wpq = null ) {
+	if ( !empty( $wpq ) ) {
+		print "\n" . SqlFormatter::format($wpq->request) . "\n";
+	}
+}

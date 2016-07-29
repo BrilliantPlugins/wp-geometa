@@ -20,7 +20,7 @@ $wpq = new WP_Query(array(
 	))); 
 
 if ( ! $wpq->have_posts() ) {
-	print "😡\n";
+	fail($wpq);
 	return;
 }
 
@@ -33,12 +33,13 @@ $wpq = new WP_Query(array(
 		'key' => 'wpgeometa_test',
 		'compare' => '>',
 		'value' => '100',
-		'geom_op' => 'NumPoints'
+		'geom_op' => 'Dimension',
+		'type' => 'NUMERIC'
 	)
 	))); 
 
 if ( $wpq->have_posts() ) {
-	print "😡\n";
+	fail($wpq);
 } else {
-	print "😎\n";
+	pass();
 }

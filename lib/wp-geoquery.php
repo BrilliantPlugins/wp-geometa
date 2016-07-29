@@ -11,7 +11,7 @@
  */
 
 /**
- * This class extends GeoUtil
+ * This class uses GeoUtil
  */
 require_once( dirname( __FILE__ ) . '/wp-geoutil.php' );
 
@@ -122,7 +122,7 @@ class WP_GeoQuery {
 
 				} else {
 
-					// If we don't have a value, then our subquery gets written without parenthesis wraps
+					// If we don't have a value, then our subquery gets written without parenthesis wraps.
 					// IDK why.
 
 					$std_query = "  $metatable.meta_key = %s";
@@ -170,18 +170,18 @@ class WP_GeoQuery {
 				continue;
 			}
 
-			// $a = 1 + 1;
 
-			// print "\n\n\n";
-
-			// print str_replace(' ','*',"----{$clauses['where']}----\n\n");
-			// print str_replace(' ','*',"----{$std_query}-----\n\n");
-			// print "----{$geom_query}-----\n\nn";
+			if ( WP_GEOMETA_DEBUG ) {
+				print "WPGM Original Where: ---" . str_replace(' ','*',"{$clauses['where']}") . "---\n";
+				print "WPGM Search Patterns: ---" . str_replace(' ','*',$std_query) . "---\n";
+				print "WPGM Replacement Pattern: ----" . $geom_query . "---\n";
+			}
 			$clauses['where'] = str_replace( $std_query, $geom_query, $clauses['where'] );
-			// print "----{$clauses['where']}----\n";
 
-			// print "\n\n\n-------------\n";
-			// $a = 1 + 1;
+			if ( WP_GEOMETA_DEBUG ) {
+				print "WPGM Final Where: ----" . $clauses['where'] . "---\n";
+				print "\n\n-------------\n\n";
+			}
 		}
 
 		return $clauses;

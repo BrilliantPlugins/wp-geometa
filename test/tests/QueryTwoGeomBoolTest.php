@@ -19,9 +19,11 @@ $wpq = new WP_Query(array(
 	))); 
 
 if ( ! $wpq->have_posts() ) {
-	print "😡\n";
+	fail($wpq);
 	return;
 }
+
+	prettyQuery( $wpq );
 
 // Test for intersection: Should not find any records.
 $wpq = new WP_Query(array(
@@ -36,7 +38,7 @@ $wpq = new WP_Query(array(
 	))); 
 
 if ( $wpq->have_posts() ) {
-	print "😡\n";
+	fail($wpq);
 } else {
-	print "😎\n";
+	pass();
 }

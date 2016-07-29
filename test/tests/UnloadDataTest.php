@@ -15,7 +15,7 @@ do {
 $results = $wpdb->get_results( "SELECT post_id FROM {$wpdb->postmeta}_geo WHERE meta_key='wpgeometa_test'" );
 
 if ( count( $results ) ) {
-	print "😡\n";
+	fail();
 } else {
-	print "😎\n";
+	pass();
 }

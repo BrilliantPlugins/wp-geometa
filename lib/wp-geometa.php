@@ -10,7 +10,7 @@
  */
 
 /**
- * This class extends GeoUtil
+ * This class uses GeoUtil
  */
 require_once( dirname( __FILE__ ) . '/wp-geoutil.php' );
 
