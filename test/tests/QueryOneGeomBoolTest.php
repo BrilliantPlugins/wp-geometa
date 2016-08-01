@@ -21,6 +21,7 @@ if ( ! $wpq->have_posts() ) {
 	fail($wpq);
 	return;
 }
+
 // Test for intersection: Should not find any records.  
 $wpq = new WP_Query(array( 
 	'post_type' => 'geo_test', 

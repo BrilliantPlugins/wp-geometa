@@ -28,7 +28,7 @@
 		 );
 
 
-	// Order by metavalue with a spatial filter
+	// Order by metavalue with a single-geometry spatial function
 	WP_Query(
 		'orderby' => 'metaident',
 		'meta_query' => array(
@@ -37,25 +37,28 @@
 				'value' => '14',
 				'compare' => '>=',
 				'geom_op' => 'spatial_function'
+				'type' => 'NUMERIC'
 				)
 			)
 		);
 
-	// Order by metavalue with a spatial filter
+
+	// Order by metavalue with a two-geometry spatial function
 	WP_Query(
 		'orderby' => 'metaident',
 		'meta_query' => array(
 			'metaident' => array(
 				'key' => 'metakey',
 				'value' => '14',
-				'compare' => '>=',
-				'geom_op' => 'spatial_function'
+				'compare' => 'spatial_function,
+				'type' => 'NUMERIC'
 				)
 			)
 		);
 
-
-
+	// the same thing, but with array notation should work too
+	'orderby' => array('metaident' => 'DESC'),
+	'orderby' => array('metaident' => 'ASC'),
  */
 require_once( dirname( __FILE__ ) . '/__load.php' );
 
@@ -77,8 +80,8 @@ print str_pad( "Testing OrderBy", WP_GEOMETA_TEST_WIDTH, '.' );
 $wpq = new WP_Query(array(
 	'post_type' => 'geo_test',
 	'posts_per_page' => -1,
-	'orderby' => ARRAY( 'dimensions' => 'DESC',  'titlemeta' => 'ASC' ),
-	// 'orderby' => 'dimensions titlemeta',
+	// 'orderby' => ARRAY( 'dimensions' => 'DESC',  'titlemeta' => 'ASC' ),
+	'orderby' => 'dimensions titlemeta',
 	'post_status' => 'any',
 	'meta_query' => array(
 		'dimensions' => array( 

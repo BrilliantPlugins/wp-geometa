@@ -26,6 +26,8 @@ class WP_GeoMeta {
 	 * @var $meta_types
 	 *
 	 * @note Still missing sitemeta
+	 *
+	 * We could use pre_get_posts, pre_get_comments, pre_get_terms, pre_get_users
 	 */
 	public $meta_types = array( 'comment','post','term','user' );
 

@@ -60,7 +60,7 @@ class WP_GeoQuery {
 	 */
 	protected function setup_filters() {
 		global $wpdb;
-		add_action( 'get_meta_sql', array( $this, 'get_meta_sql' ),10,6 );
+		add_action( 'get_meta_sql', array( $this, 'get_meta_sql' ), 10, 6 );
 	}
 
 	/**
@@ -77,8 +77,7 @@ class WP_GeoQuery {
 	 * @param object $context The main query object.
 	 * @param int    $depth How deep have we recursed.
 	 */
-	public function get_meta_sql( $clauses, $queries, $type, $primary_table, $primary_id_column, $context, $depth = 0 ) {
-		global $wpdb;
+	public function get_meta_sql( $clauses, $queries, $type, $primary_table, $primary_id_column, $context, &$depth = 0 ) {
 
 		$metatable = _get_meta_table( $type );
 
@@ -88,102 +87,183 @@ class WP_GeoQuery {
 
 		$geotable = $metatable . '_geo';
 
-		if ( $depth > 0 ) {
-			$metatable = 'mt' . $depth;
-		}
-
 		$id_column = 'user' === $type ? 'umeta_id' : 'meta_id';
 
-		$conditions = array();
 		foreach ( $queries as $k => $meta_query ) {
 			if ( ! is_array( $meta_query ) ) {
 				continue;
 			}
 
-			// Not a first-order clause. Recurse!
-			if ( ! array_key_exists( 'key',$meta_query ) && ! array_key_exists( 'value',$meta_query ) ) {
-				$clauses = $this->get_meta_sql( $clauses,$meta_query,$type,$primary_table,$primary_id_column,$context, $depth + 1 );
+			if ( $depth > 0 ) {
+				$metatable = 'mt' . $depth;
 			}
 
-			$meta_type = $context->meta_query->get_cast_for_type( $meta_query['type'] );
+			$depth++;
+
+			// Not a first-order clause. Recurse!
+			if ( ! array_key_exists( 'key',$meta_query ) && ! array_key_exists( 'value',$meta_query ) ) {
+				$clauses = $this->get_meta_sql( $clauses,$meta_query,$type,$primary_table,$primary_id_column,$context, $depth );
+				continue;
+			}
 
 			// Is our compare a spatial compare? If, so, it has to be in our list of allowed compares
 			if ( in_array( strtolower( $meta_query['compare'] ),WP_GeoUtil::get_capabilities(), true ) ) {
-
-				// If we have a geometry for our value, then we're doing a two-geometry function that returns a boolean.
-				$geometry = WP_GeoUtil::metaval_to_geom( $meta_query['value'] );
-				if ( !empty( $geometry ) ) {
-
-					$std_query = "( $metatable.meta_key = %s AND CAST($metatable.meta_value AS $meta_type) = %s )";
-					$std_query = $wpdb->prepare( $std_query, array( $meta_query['key'], $meta_query['value'] ) ); // @codingStandardsIgnoreLine
-
-					$geom_query = "( $metatable.$id_column IN ( SELECT fk_meta_id FROM {$geotable} WHERE (meta_key=%s AND {$meta_query['compare']}($geotable.meta_value,GeomFromText(%s,%d))) ) )";
-					$geom_query = $wpdb->prepare( $geom_query, array( $meta_query['key'], $geometry, WP_GeoUtil::get_srid() ) ); // @codingStandardsIgnoreLine
-
-				} else {
-
-					// If we don't have a value, then our subquery gets written without parenthesis wraps.
-					// IDK why.
-
-					$std_query = "  $metatable.meta_key = %s";
-					$std_query = $wpdb->prepare( $std_query, array( $meta_query['key'] ) ); // @codingStandardsIgnoreLine
-
-					// Otherwise we're doing a one geometry operation that returns a boolean.
-					$geom_query = "( $metatable.$id_column IN ( SELECT fk_meta_id FROM {$geotable} WHERE (meta_key=%s AND {$meta_query['compare']}($geotable.meta_value)) ) )";
-					$geom_query = $wpdb->prepare( $geom_query, array( $meta_query['key'] ) ); // @codingStandardsIgnoreLine
-				}
-
+				$worked = $this->handle_two_geom_bool_meta( $clauses,$meta_query,$type,$primary_table,$primary_id_column,$context, $metatable, $geotable, $id_column );
 			} else if ( array_key_exists( 'geom_op', $meta_query ) && in_array( strtolower( $meta_query['geom_op'] ),WP_GeoUtil::get_capabilities(), true ) ) {
-
-				// We must be doing a one geom op that returns a value.
-				// Verify that we're requesting a valid compare type.
-				if ( in_array( $meta_query[ 'compare' ], array(
-					'=', '!=', '>', '>=', '<', '<=',
-					'LIKE', 'NOT LIKE',
-					'IN', 'NOT IN',
-					'BETWEEN', 'NOT BETWEEN',
-					'REGEXP', 'NOT REGEXP', 'RLIKE'
-				) ) ) {
-
-				$std_query = "( $metatable.meta_key = %s AND CAST($metatable.meta_value AS $meta_type) {$meta_query[ 'compare' ]}";
-				$std_query = $wpdb->prepare( $std_query, array( $meta_query['key'] ) ); // @codingStandardsIgnoreLine
-				$std_escaped = preg_quote( $std_query );
-				$std_regex = "|$std_escaped(.*)\)|";
-
-				if ( preg_match( $std_regex, $clauses[ 'where' ], $matches ) ) {
-
-					$std_query .= $matches[1] . ')';
-
-					// TODO: Handle IN/NOT INT/BETWEET/NOT BETWEEN...
-
-					$geom_query = "( $metatable.$id_column IN ( SELECT fk_meta_id FROM {$geotable} WHERE (meta_key=%s AND CAST({$meta_query['geom_op']}($geotable.meta_value) AS $meta_type) {$meta_query[ 'compare' ]} ";
-					$geom_query = $wpdb->prepare( $geom_query, array( $meta_query['key'] ) ); // @codingStandardsIgnoreLine
-					$geom_query .= $matches[1] . ')))';
-				} else {
-					error_log( "WP_GeoQuery: I expected to find a compare in `{$clauses['where']}`" );
-					continue;
-				}
-				} else {
-					continue;
-				}
+				// Single arg functions that get cast and compared just need to re-alias the meta table. We can leave the rest of the WHERE clause alone
+				$new_meta_value = "{$meta_query['geom_op']}(meta_value)";
+				$worked = $this->make_join_spatial( $clauses,$meta_query,$type,$primary_table,$primary_id_column,$context, $metatable, $geotable, $id_column, $new_meta_value );
 			} else {
 				continue;
 			}
 
-
-			if ( WP_GEOMETA_DEBUG ) {
-				print "WPGM Original Where: ---" . str_replace(' ','*',"{$clauses['where']}") . "---\n";
-				print "WPGM Search Patterns: ---" . str_replace(' ','*',$std_query) . "---\n";
-				print "WPGM Replacement Pattern: ----" . $geom_query . "---\n";
+			if ( !$worked ) {
+				continue;
 			}
-			$clauses['where'] = str_replace( $std_query, $geom_query, $clauses['where'] );
 
-			if ( WP_GEOMETA_DEBUG ) {
+			if ( WP_GEOMETA_DEBUG > 1) {
 				print "WPGM Final Where: ----" . $clauses['where'] . "---\n";
 				print "\n\n-------------\n\n";
 			}
 		}
 
+		// $context->meta_query->clauses['titlemeta']['alias'] = (string[3]) 'mt1';
+
 		return $clauses;
+	}
+
+
+	/**
+	 * Make the join spatial
+	 *
+	 * Modifies $clauses by reference
+	 * 
+	 * @param array  $clauses The query JOIN and WHERE clauses.
+	 * @param array  $queries The array of meta queries.
+	 * @param string $type The type of meta we're dealing with.
+	 * @param string $primary_table The main table for the meta.
+	 * @param string $primary_id_column The primary key for the main table.
+	 * @param object $context The main query object.
+	 * @param string $metatable The table to query.
+	 * @param string $geometry The geo table to query.
+	 * @param string $id_column The id column name.
+	 * @return bool for success.
+	 */
+	private function make_join_spatial(&$clauses,$meta_query,$type,$primary_table,$primary_id_column,$context, $metatable, $geotable, $id_column, $new_meta_value ){
+
+		/*
+		 * If a spatial meta query is in the orderby clause, then we're going to add an extra join with a virtual
+		 * table that just has the orderby operation in it, with the name of the original table
+		 * so that when the ORDER BY is built, it compares against our virtual table
+		 *
+		 * eg. 
+		 * INNER JOIN wp_postmeta ON ( wp_posts.ID = wp_postmeta.post_id )
+		 * INNER JOIN wp_postmeta AS mt1 ON ( wp_posts.ID = mt1.post_id )
+		 *
+		 * Needs to become
+		 *
+		 * INNER JOIN wp_postmeta_geo ON ( wp_posts.ID = wp_postmeta_geo.post_id ) INNER JOIN ( SELECT meta_key, Dimension(meta_value) AS meta_value FROM wp_postmeta_geo ) wp_postmeta ON ( wp_postmeta_geo.meta_key = wp_postmeta.meta_key )
+		 * INNER JOIN wp_postmeta_geo AS mt1_geo ON ( wp_posts.ID = mt1.post_id ) INNER JOIN ( SELECT meta_key, ST_DISTANCE(meta_value, GeomFromText('POINT(0,0)')) AS meta_value FROM wp_postmeta_geo ) mt1 ON ( mt1_geo.meta_key = mt1.meta_key ) 
+		 *
+		 * The ORDER BY clause will continue to reference 'wp_postmeta.meta_value DESC' or 'mt1.meta_value ASC', but we'll have done
+		 * a little switch-a-roo before it actually gets to that point. 
+		 *
+		 */
+        // $context->meta_query->clauses['dimensions']['alias'] = (string[11]) 'wp_postmeta';
+		//
+		//
+
+		/**
+		 * $realmetatable
+		 * $metatable
+		 */
+
+		// Replace join to metatable with join to metatable_geo 
+		$realmetatable = _get_meta_table( $type );
+		if ( is_numeric( $metatable[ strlen( $metatable ) - 1 ] ) ) {
+			$alias = ' AS ' . $metatable;
+		} else {
+			$alias = '';
+		}
+
+		$orig_join = 'JOIN ' . $realmetatable . $alias . ' ON ( ' . $primary_table . '.' . $primary_id_column . ' = ' . $metatable . '.' . $type . '_id )';
+		$new_join  = 'JOIN ' . $realmetatable . '_geo AS ' . $metatable . '_geo ON ( ' . $primary_table . '.' . $primary_id_column . ' = ' . $metatable . '_geo.' . $type . '_id )';
+
+		$spatial_operation = ' INNER JOIN ( SELECT meta_id, ' . $type . '_id, meta_key, ' . $new_meta_value . ' AS meta_value FROM ' . $realmetatable . '_geo ) AS ' . $metatable . ' ON ( ' . $metatable . '_geo.meta_id = ' . $metatable . '.meta_id ) ';
+
+		$new_join .= $spatial_operation;
+
+		if ( WP_GEOMETA_DEBUG > 1 ) {
+			print "\n";
+			print "Orig Join: {$clauses['join']}\n";
+			print "Search Join: $orig_join\n";
+			print "Replace Join: $new_join\n";
+			print "\n";
+		}
+
+		$clauses['join'] = str_replace( $orig_join, $new_join, $clauses['join'] );
+
+		return true;
+	}
+
+	/**
+	 * Handle query modifications for spatial operations that take two geometry args.
+	 *
+	 * Modifies $clauses by reference
+	 * 
+	 * @param array  $clauses The query JOIN and WHERE clauses.
+	 * @param array  $queries The array of meta queries.
+	 * @param string $type The type of meta we're dealing with.
+	 * @param string $primary_table The main table for the meta.
+	 * @param string $primary_id_column The primary key for the main table.
+	 * @param object $context The main query object.
+	 * @param string $metatable The table to query.
+	 * @param string $geometry The geo table to query.
+	 * @param string $id_column The id column name.
+	 * @return bool for success.
+	 */
+	private function handle_two_geom_bool_meta(&$clauses,$meta_query,$type,$primary_table,$primary_id_column,$context, $metatable, $geotable, $id_column ){
+		global $wpdb;
+
+		$meta_type = $context->meta_query->get_cast_for_type( $meta_query['type'] );
+
+		// If we have a geometry for our value, then we're doing a two-geometry function that returns a boolean.
+		$geometry = WP_GeoUtil::metaval_to_geom( $meta_query['value'] );
+		if ( !empty( $geometry ) ) {
+
+			$new_meta_value = "{$meta_query['compare']}( meta_value,GeomFromText( %s, %d ) )";
+			$new_meta_value = $wpdb->prepare( $new_meta_value, array( $geometry, WP_GeoUtil::get_srid() ) ); // @codingStandardsIgnoreLine
+
+			$std_query = "( $metatable.meta_key = %s AND CAST($metatable.meta_value AS $meta_type) = %s )";
+			$std_query = $wpdb->prepare( $std_query, array( $meta_query['key'], $meta_query['value'] ) ); // @codingStandardsIgnoreLine
+
+			$geom_query = "( $metatable.meta_key = %s AND $metatable.meta_value )";
+			$geom_query = $wpdb->prepare( $geom_query, array( $meta_query['key'], $geometry, WP_GeoUtil::get_srid() ) ); // @codingStandardsIgnoreLine
+
+		} else {
+
+			// If we don't have a value, then our subquery gets written without parenthesis wraps.
+			// IDK why.
+	
+			$new_meta_value = "{$meta_query['compare']}( meta_value )";
+
+			$std_query = "  $metatable.meta_key = %s";
+			$std_query = $wpdb->prepare( $std_query, array( $meta_query['key'] ) ); // @codingStandardsIgnoreLine
+
+			// Otherwise we're doing a one geometry operation that returns a boolean.
+			$geom_query = "( $metatable.meta_key = %s AND $metatable.meta_value )";
+			$geom_query = $wpdb->prepare( $geom_query, array( $meta_query['key'] ) ); // @codingStandardsIgnoreLine
+		}
+
+		$this->make_join_spatial( $clauses,$meta_query,$type,$primary_table,$primary_id_column,$context, $metatable, $geotable, $id_column, $new_meta_value );
+
+		if ( WP_GEOMETA_DEBUG > 1) {
+			print "WPGM Original Where: ---" . str_replace(' ','*',"{$clauses['where']}") . "---\n";
+			print "WPGM Search Patterns: ---" . str_replace(' ','*',$std_query) . "---\n";
+			print "WPGM Replacement Pattern: ----" . $geom_query . "---\n";
+		}
+		$clauses['where'] = str_replace( $std_query, $geom_query, $clauses['where'] );
+
+		return true;
 	}
 }

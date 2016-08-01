@@ -15,6 +15,11 @@ $wpq = new WP_Query(array(
 		'key' => 'wpgeometa_test',
 		'compare' => 'INTERSECTS',
 		'value' => '{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-93.267731667438,45.089788984497],[-93.267731667438,45.092818717985],[-93.213829995075,45.092818717985],[-93.213829995075,45.089788984497],[-93.267731667438,45.089788984497]]]}}'
+	),
+	array( 
+		'key' => 'wpgeometa_test',
+		'compare' => 'INTERSECTS',
+		'value' => '{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-93.267731667438,45.089788984497],[-93.267731667438,45.092818717985],[-93.213829995075,45.092818717985],[-93.213829995075,45.089788984497],[-93.267731667438,45.089788984497]]]}}'
 	)
 	))); 
 
@@ -22,8 +27,6 @@ if ( ! $wpq->have_posts() ) {
 	fail($wpq);
 	return;
 }
-
-	prettyQuery( $wpq );
 
 // Test for intersection: Should not find any records.
 $wpq = new WP_Query(array(

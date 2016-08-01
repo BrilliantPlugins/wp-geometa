@@ -2,7 +2,9 @@
 
 define( 'WP_GEOMETA_TESTDIR', dirname( __FILE__ ) . '/../' );
 define( 'WP_GEOMETA_TEST_WIDTH', 60 );
-define( 'WP_GEOMETA_DEBUG', false );
+if ( !defined( 'WP_GEOMETA_DEBUG' ) ) {
+	define( 'WP_GEOMETA_DEBUG', 0 );
+}
 
 // Load WordPress.
 $wp_load = WP_GEOMETA_TESTDIR . '/../../../../wp-load.php';
@@ -43,11 +45,13 @@ register_post_type( "geo_test", $args );
 function fail( $wpq = null ) {
 	print "😡\n";
 
-	$bt = debug_backtrace();
-	$caller = array_shift($bt);
-	print "\n" . basename($caller['file']) . ':' . $caller['line'] . "\n";
+	if ( WP_GEOMETA_DEBUG > 0) {
+		$bt = debug_backtrace();
+		$caller = array_shift($bt);
+		print "\n" . basename($caller['file']) . ':' . $caller['line'] . "\n";
 
-	prettyQuery( $wpq );
+		prettyQuery( $wpq );
+	}
 }
 
 function pass(){
@@ -56,6 +60,10 @@ function pass(){
 
 function prettyQuery( $wpq = null ) {
 	if ( !empty( $wpq ) ) {
+		ob_start();
 		print "\n" . SqlFormatter::format($wpq->request) . "\n";
+		$sql = ob_get_clean();
+		$sql = str_replace("\n","\n\t",$sql);
+		print $sql;
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Deletes all test posts
+ * Test querying one geometry and returning a value
  */
 require_once( dirname( __FILE__ ) . '/__load.php' );
 
