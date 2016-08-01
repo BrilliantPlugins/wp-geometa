@@ -150,9 +150,9 @@ class WP_GeoQuery {
 	 */
 	private function make_join_spatial( &$clauses, $meta_query, $type, $primary_table, $primary_id_column, $context, $metatable, $geotable, $id_column, $new_meta_value ) {
 		/*
-		 * Replace the original join with a new join that creates a virtual
-		 * table that just has the orderby operation in it, with the name of the original table
-		 * so that when the ORDER BY is built, it compares against our virtual table
+		 * Replace the original join with a named subquery that hits the spatial table and performs the 
+		 * requested spatial operations. It's given the same name as the original table so that we don't
+		 * have to touch ORDERBY.
 		 *
          * eg.
 		 * INNER JOIN wp_postmeta ON ( wp_posts.ID = wp_postmeta.post_id )
@@ -160,11 +160,8 @@ class WP_GeoQuery {
 		 *
 		 * Needs to become
 		 *
-		 * INNER JOIN wp_postmeta_geo ON ( wp_posts.ID = wp_postmeta_geo.post_id ) INNER JOIN ( SELECT meta_key, Dimension(meta_value) AS meta_value FROM wp_postmeta_geo ) wp_postmeta ON ( wp_postmeta_geo.meta_key = wp_postmeta.meta_key )
-         * INNER JOIN wp_postmeta_geo AS mt1_geo ON ( wp_posts.ID = mt1.post_id ) INNER JOIN ( SELECT meta_key, ST_DISTANCE(meta_value, GeomFromText('POINT(0,0)')) AS meta_value FROM wp_postmeta_geo ) mt1 ON ( mt1_geo.meta_key = mt1.meta_key )
-		 *
-		 * The ORDER BY clause will continue to reference 'wp_postmeta.meta_value DESC' or 'mt1.meta_value ASC', but we'll have done
-         * a little switch-a-roo before it actually gets to that point.
+		 * INNER JOIN ( SELECT meta_key, Dimension(meta_value) AS meta_value FROM wp_postmeta_geo ) wp_postmeta ON ( wp_posts.ID = wp_postmeta.post_id)
+         * INNER JOIN ( SELECT meta_key, ST_DISTANCE(meta_value, GeomFromText('POINT(0,0)')) AS meta_value FROM wp_postmeta_geo ) mt1 ON ( wp_posts.ID = mt1.post_id )
 		 *
 		 */
 
@@ -176,16 +173,11 @@ class WP_GeoQuery {
 		}
 
 		$orig_join = 'JOIN ' . $realmetatable . $alias . ' ON ( ' . $primary_table . '.' . $primary_id_column . ' = ' . $metatable . '.' . $type . '_id )';
-		$new_join  = 'JOIN ' . $realmetatable . '_geo AS ' . $metatable . '_geo ON ( ' . $primary_table . '.' . $primary_id_column . ' = ' . $metatable . '_geo.' . $type . '_id )';
-		$new_join  = 'JOIN ' . $realmetatable . '_geo AS ' . $metatable . '_geo ON ( ' . $primary_table . '.' . $primary_id_column . ' = ' . $metatable . '_geo.' . $type . '_id )';
-
-		$spatial_operation = ' JOIN ( SELECT meta_id, ' . $type . '_id, meta_key, ' . $new_meta_value . ' AS meta_value FROM ' . $realmetatable . '_geo ) AS ' . $metatable . ' ON ( ' . $metatable . '_geo.meta_id = ' . $metatable . '.meta_id ) ';
-
-		$new_join .= $spatial_operation;
+		$new_join  = 'JOIN ( SELECT meta_id, ' . $type . '_id, meta_key, ' . $new_meta_value . ' AS meta_value FROM ' . $realmetatable . '_geo ) AS ' . $metatable . ' ON ( ' . $primary_table . '.' . $primary_id_column . ' = ' . $metatable . '.' . $type . '_id )';
 
 		if ( WP_GEOMETA_DEBUG > 1 ) {
 			print "\n";
-			print 'Orig Join: ' . esc_attr( {$clauses['join']} ) . "\n";
+			print 'Orig Join: ' . esc_attr( $clauses['join'] ) . "\n";
 			print 'Search Join: ' . esc_attr( $orig_join ) . "\n";
 			print 'Replace Join: ' . esc_attr( $new_join ) . "\n";
 			print "\n";

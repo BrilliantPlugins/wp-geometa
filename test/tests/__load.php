@@ -3,7 +3,7 @@
 define( 'WP_GEOMETA_TESTDIR', dirname( __FILE__ ) . '/../' );
 define( 'WP_GEOMETA_TEST_WIDTH', 60 );
 if ( !defined( 'WP_GEOMETA_DEBUG' ) ) {
-	define( 'WP_GEOMETA_DEBUG', 0 );
+	define( 'WP_GEOMETA_DEBUG', 1 );
 }
 
 // Load WordPress.
