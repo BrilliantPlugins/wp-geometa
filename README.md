@@ -1,5 +1,8 @@
 WP GeoMeta
 ===========
+
+![WP GeoMeta adds spatial capabilities to WordPress](assets/github_banner.png)
+
 A spatial foundation for WordPress. Store and search spatial metadata like
 you do any other metadata, but using MySQL spatial indexes.
 
