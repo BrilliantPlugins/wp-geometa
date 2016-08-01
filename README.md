@@ -124,6 +124,23 @@ orderby with named meta clauses should work. It's a new feature though, so send 
     		)
 		)));
 
+2) Two argument function that returns a value, eg. ST_Distance. Note that I use 
+```'type' => 'DECIMAL(10,7)'``` so that sorting is done numerically, instead of alphabetically.
+
+    $wpq = new WP_Query(array(
+    	'post_type' => 'geo_test',
+    	'orderby' => 'distance',
+    	'order' => 'ASC',
+    	'meta_query' => array(
+    		'distance' => array( 
+    			'key' => 'wpgeometa_test',
+    			'compare' => 'ST_Distance',
+    			'value' => '{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-1.26,1.08],[-1.26,1.09],[-1.21,1.09],[-1.21,1.08],[-1.26,1.08]]]}}',
+    			'type' => 'DECIMAL(10,7)'
+    		)
+    	))); 
+
+
 
 Server Requirements
 -------------------
@@ -224,6 +241,7 @@ spatial operators.
 Next Todos
 ----------
  * Live examples
+ * Some sort of useful UI so we can release it in the plugin directory
 
 Future Enhancements
 -------------------
@@ -231,11 +249,16 @@ Future Enhancements
  * Buffering is a very common operation, but it doesn't work well in EPSG:4326. 
  * Add filter to let users/devs explicitly define meta keys to filter on w/constant to enable the filter
  * Lat/Lng migration tool or plugin that detects coord pairs
- * Add callbacks/hooks so that other plugins with custom tables (eg. Gravity Forms) could
-store geo data in a geo way.
+ * Add callbacks/hooks so that other plugins with custom tables (eg. Gravity Forms) could store geo data in a geo way.
 
 Changes
 -------
+
+### 0.1.1
+ * Only x.x.0 releases will get code names
+ * orderby should now work
+ * Much cleaner joins
+ * Minor fix for when upgrades occurs
 
 ### 0.1.0: Perfect Tommy
  * Will now work as a library or a plugin. 
