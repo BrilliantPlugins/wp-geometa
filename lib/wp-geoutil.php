@@ -452,7 +452,7 @@ class WP_GeoUtil {
 		$suppress = $wpdb->suppress_errors( true );
 		$errors = $wpdb->show_errors( false );
 
-		foreach ( WP_GeoUtil::all_funcs as $func ) {
+		foreach ( WP_GeoUtil::$all_funcs as $func ) {
 			$q = "SELECT $func() AS worked";
 			$wpdb->query( $q ); // @codingStandardsIgnoreLine
 

@@ -86,7 +86,7 @@ The _compare_ argument should be the function just like above, but no value is n
     		)
     	)));
 
-3. Compare the results of geometry functionso
+3. Compare the results of geometry functions
 
 This style of query is for spatial functions which accept a single geometry as an argument but return
 a non-boolean response. For example, GLength, ST_Area or ST_SRID.
@@ -107,6 +107,23 @@ made against the result of applying the geometry function to the spatial metadat
     		'geom_op' => 'NumPoints'
     	)
     	))); 
+
+### ORDER BY
+
+orderby with named meta clauses should work. It's a new feature though, so send me bug reports.
+
+1) Single arg orderby (eg. Dimension, GLength, ST_Area)
+
+    $wpq = new WP_Query(array(
+    	'post_type' => 'geo_test',
+    	'orderby' => ARRAY( 'dimensions' => 'ASC',  'titlemeta' => 'ASC' ),
+    	'meta_query' => array(
+    		'dimensions' => array( 
+    			'key' => 'wpgeometa_test',
+    			'geom_op' => 'Dimension'
+    		)
+		)));
+
 
 Server Requirements
 -------------------
@@ -206,7 +223,6 @@ spatial operators.
 
 Next Todos
 ----------
- * Support spatial orderby
  * Live examples
 
 Future Enhancements
