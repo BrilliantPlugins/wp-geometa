@@ -230,30 +230,23 @@ class WP_GeoQuery {
 		// If we have a geometry for our value, then we're doing a two-geometry function that returns a boolean.
 		$geometry = WP_GeoUtil::metaval_to_geom( $meta_query['value'] );
 		if ( !empty( $geometry ) ) {
-
 			$new_meta_value = "{$meta_query['compare']}( meta_value,GeomFromText( %s, %d ) )";
 			$new_meta_value = $wpdb->prepare( $new_meta_value, array( $geometry, WP_GeoUtil::get_srid() ) ); // @codingStandardsIgnoreLine
 
 			$std_query = "( $metatable.meta_key = %s AND CAST($metatable.meta_value AS $meta_type) = %s )";
 			$std_query = $wpdb->prepare( $std_query, array( $meta_query['key'], $meta_query['value'] ) ); // @codingStandardsIgnoreLine
-
-			$geom_query = "( $metatable.meta_key = %s AND $metatable.meta_value )";
-			$geom_query = $wpdb->prepare( $geom_query, array( $meta_query['key'], $geometry, WP_GeoUtil::get_srid() ) ); // @codingStandardsIgnoreLine
-
 		} else {
-
 			// If we don't have a value, then our subquery gets written without parenthesis wraps.
 			// IDK why.
-	
 			$new_meta_value = "{$meta_query['compare']}( meta_value )";
 
 			$std_query = "  $metatable.meta_key = %s";
 			$std_query = $wpdb->prepare( $std_query, array( $meta_query['key'] ) ); // @codingStandardsIgnoreLine
-
-			// Otherwise we're doing a one geometry operation that returns a boolean.
-			$geom_query = "( $metatable.meta_key = %s AND $metatable.meta_value )";
-			$geom_query = $wpdb->prepare( $geom_query, array( $meta_query['key'] ) ); // @codingStandardsIgnoreLine
 		}
+
+		// Our geom_query will be against our aliased meta table so we just need to check for boolean true
+		$geom_query = "( $metatable.meta_key = %s AND $metatable.meta_value )";
+		$geom_query = $wpdb->prepare( $geom_query, array( $meta_query['key'] ) ); // @codingStandardsIgnoreLine
 
 		$this->make_join_spatial( $clauses,$meta_query,$type,$primary_table,$primary_id_column,$context, $metatable, $geotable, $id_column, $new_meta_value );
 

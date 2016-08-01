@@ -20,8 +20,6 @@ $wpq = new WP_Query(array(
 	)
 	))); 
 
-prettyQuery( $wpq );
-
 if ( ! $wpq->have_posts() ) {
 	fail($wpq);
 	return;

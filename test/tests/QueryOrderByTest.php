@@ -101,42 +101,61 @@ if ( ! $wpq->have_posts() ) {
 	return;
 } else {
 
-	// See if our dimension is in fact incrementing
+	// See if our dimension is in fact decrementing 
+	$minVal = 99;
+	while ( $wpq->have_posts() ) {
+		$wpq->the_post();
+		$post_id = get_the_ID();
+		$res = $wpdb->get_var( $wpdb->prepare( 'SELECT Dimension(meta_value) FROM ' . $wpdb->postmeta . '_geo WHERE post_id=%s', array( $post_id ) ) );
+
+		if ( $res > $minVal) {
+			fail( $wpq );
+			return;
+		} 
+
+		$minVal = $res;
+	}
+}
+
+// Test for intersection: Should find some records.
+$wpq = new WP_Query(array(
+	'post_type' => 'geo_test',
+	'posts_per_page' => -1,
+	'orderby' => ARRAY( 'dimensions' => 'ASC',  'titlemeta' => 'ASC' ),
+	// 'orderby' => 'dimensions titlemeta',
+	'post_status' => 'any',
+	'meta_query' => array(
+		'dimensions' => array( 
+			'key' => 'wpgeometa_test',
+			'geom_op' => 'Dimension',
+			// 'type' => 'NUMERIC'
+		),
+		'titlemeta' => array( 
+			'key' => '_post_title',
+			'compare' => 'LIKE',
+			'value' => 'TEST',
+		)
+	))); 
+
+if ( ! $wpq->have_posts() ) {
+	fail($wpq);
+	return;
+} else {
+
+	// See if our dimension is in fact decrementing 
 	$maxVal = 0;
 	while ( $wpq->have_posts() ) {
 		$wpq->the_post();
 		$post_id = get_the_ID();
 		$res = $wpdb->get_var( $wpdb->prepare( 'SELECT Dimension(meta_value) FROM ' . $wpdb->postmeta . '_geo WHERE post_id=%s', array( $post_id ) ) );
 
-		if ( $res < $maxVal ) {
+		if ( $res < $maxVal) {
 			fail( $wpq );
 			return;
 		} 
 
 		$maxVal = $res;
 	}
-
-	prettyQuery( $wpq );
-	
-	pass();
 }
-/*
-// Test for intersection: Should not find any records.
-$wpq = new WP_Query(array(
-	'post_type' => 'geo_test',
-	'post_status' => 'any',
-	'meta_query' => array(
-		array( 
-		'key' => 'wpgeometa_test',
-		'compare' => '>',
-		'value' => '100',
-		'geom_op' => 'NumPoints'
-	)
-	))); 
 
-if ( $wpq->have_posts() ) {
-	fail($wpq);
-} else {
-	pass();
-}
- */
+pass();
