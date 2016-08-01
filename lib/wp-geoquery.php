@@ -98,13 +98,13 @@ class WP_GeoQuery {
 				$metatable = 'mt' . $depth;
 			}
 
-			$depth++;
-
 			// Not a first-order clause. Recurse!
 			if ( ! array_key_exists( 'key',$meta_query ) && ! array_key_exists( 'value',$meta_query ) ) {
 				$clauses = $this->get_meta_sql( $clauses,$meta_query,$type,$primary_table,$primary_id_column,$context, $depth );
 				continue;
 			}
+
+			$depth++;
 
 			// Is our compare a spatial compare? If, so, it has to be in our list of allowed compares
 			if ( in_array( strtolower( $meta_query['compare'] ),WP_GeoUtil::get_capabilities(), true ) ) {
