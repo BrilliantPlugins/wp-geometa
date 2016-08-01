@@ -2048,18 +2048,18 @@
      inkscape:pageshadow="2"
      inkscape:guide-bbox="true"
      pagecolor="#ffffff"
-     inkscape:window-height="1195"
+     inkscape:window-height="965"
      inkscape:window-maximized="1"
-     inkscape:zoom="0.7502218"
+     inkscape:zoom="0.3751109"
      inkscape:window-x="0"
      showgrid="false"
      borderopacity="1.0"
      inkscape:current-layer="layer1"
-     inkscape:cx="381.88253"
-     inkscape:cy="1176.2747"
+     inkscape:cx="2791.4259"
+     inkscape:cy="378.37671"
      showguides="true"
      inkscape:window-y="1"
-     inkscape:window-width="2048"
+     inkscape:window-width="1680"
      inkscape:pageopacity="0.0"
      inkscape:document-units="px"
      fit-margin-top="0"
@@ -2099,7 +2099,7 @@
        height="500"
        x="1596.9015"
        y="1746.7008"
-       inkscape:export-filename="/Users/admin/Desktop/banner-772x520.png"
+       inkscape:export-filename="/Users/admin/Desktop/github_banner.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <g
@@ -3370,10 +3370,16 @@
        cx="286.6308"
        cy="521.77954"
        rx="16.667517"
-       ry="5.5558391" />
+       ry="5.5558391"
+       inkscape:export-filename="/Users/admin/Desktop/github_banner.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <g
        id="g17823"
-       transform="matrix(0.78541614,0,0,0.78541614,1108.5755,1988.8591)">
+       transform="matrix(0.78541614,0,0,0.78541614,1108.5755,1988.8591)"
+       inkscape:export-filename="/Users/admin/Desktop/github_banner.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <path
          inkscape:connector-curvature="0"
          id="path17692"
@@ -3409,7 +3415,10 @@
     </g>
     <g
        id="g17831"
-       transform="matrix(0.78541614,0,0,0.78541614,1108.0521,1943.3185)">
+       transform="matrix(0.78541614,0,0,0.78541614,1108.0521,1943.3185)"
+       inkscape:export-filename="/Users/admin/Desktop/github_banner.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <path
          d="m 2187.3128,181.95376 -0.2356,56.94218 0.7535,0 c -0.4858,0.54721 -0.7535,1.06674 -0.7535,1.63021 0,8.22492 53.3304,26.19496 118.9071,26.19496 65.5767,0 118.6714,-17.97004 118.6714,-26.19496 0,-0.56428 -0.2664,-1.08223 -0.7534,-1.63021 l 0.7534,0 0,-56.94218 -237.3368,0 z"
          style="fill:url(#linearGradient17845)"
@@ -3445,7 +3454,10 @@
     </g>
     <g
        transform="matrix(0.78541614,0,0,0.78541614,1108.7923,1894.4601)"
-       id="g17876">
+       id="g17876"
+       inkscape:export-filename="/Users/admin/Desktop/github_banner.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <path
          inkscape:connector-curvature="0"
          id="path17878"
@@ -3486,10 +3498,16 @@
        cx="286.6308"
        id="ellipse24846"
        style="opacity:1;fill:url(#radialGradient5040);fill-opacity:1;filter:url(#filter6093-3)"
-       transform="matrix(5.5948501,0,0,4.8033437,1317.2044,-470.52641)" />
+       transform="matrix(5.5948501,0,0,4.8033437,1317.2044,-470.52641)"
+       inkscape:export-filename="/Users/admin/Desktop/github_banner.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <g
        id="g5029"
-       transform="translate(0,-12)">
+       transform="translate(0,-12)"
+       inkscape:export-filename="/Users/admin/Desktop/github_banner.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <line
          style="fill:none;stroke:#000000;stroke-width:5.80966187;stroke-miterlimit:10"
          x1="2829.0232"
@@ -3516,7 +3534,10 @@
        id="g19348"
        transform="matrix(0.72835069,0.29391117,-0.29391117,0.72835069,1457.453,-103.55132)"
        inkscape:transform-center-x="21.494512"
-       inkscape:transform-center-y="12.265129">
+       inkscape:transform-center-y="12.265129"
+       inkscape:export-filename="/Users/admin/Desktop/github_banner.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <g
          transform="translate(212.04553,1591.2202)"
          id="g17898">
@@ -3804,7 +3825,10 @@
     </g>
     <g
        id="g24794"
-       transform="matrix(0.92079191,0.05253883,-0.05253883,0.92079191,330.21419,41.799924)">
+       transform="matrix(0.92079191,0.05253883,-0.05253883,0.92079191,330.21419,41.799924)"
+       inkscape:export-filename="/Users/admin/Desktop/github_banner.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <line
          style="fill:none;stroke:#000000;stroke-width:9.22144794;stroke-miterlimit:10"
          x1="1484.4382"
@@ -4446,6 +4470,33 @@
              d="m 34.369141,22.775391 c -3.827124,0.427589 -7.602155,1.517419 -10.988194,3.367276 -0.39163,0.256922 -0.819274,0.637277 -0.78915,1.150302 0.09838,0.273997 0.495831,0.24981 0.637877,0.02822 1.147639,-0.830632 2.144565,-1.930631 3.517263,-2.398625 1.261173,-0.473206 2.593602,-0.709719 3.877853,-1.108732 0.827544,-0.229611 1.655088,-0.459222 2.482632,-0.688833 0.252238,0.007 0.164604,0.456604 -0.07422,0.378906 -0.457031,0.108724 -0.914062,0.217448 -1.371094,0.326172 1.297922,-0.208976 2.60151,-0.535334 3.925782,-0.417969 0.315955,0.421289 0.339488,1.077014 0.865234,1.322266 0.892757,0.576621 1.795245,1.139517 2.660156,1.757813 0.367779,0.08335 0.547732,-0.548733 0.197266,-0.677735 -0.231092,-0.179791 -0.498817,-0.322423 -0.675781,-0.5625 0.158208,-0.441921 -0.195804,-0.866274 -0.564321,-1.065222 -1.021595,-0.872621 -2.337921,-1.467461 -3.701304,-1.41134 z m 1.853515,0.04492 -0.0098,-0.0039 0.0098,0.0039 z m 1.199219,0.257813 c -0.255472,-0.09434 -0.517075,-0.170326 -0.777344,-0.25 0.259115,0.08333 0.518229,0.166667 0.777344,0.25 z m 0.941406,0.640625 c 0.658235,0.667694 1.549329,1.188373 1.865763,2.121078 0.625617,1.542795 1.04098,3.172942 1.832849,4.645956 0.505061,1.049124 0.895823,2.14829 1.336561,3.223942 0.118935,0.19307 0.215316,0.44361 0.3793,0.582743 0.203211,0.01024 0.311126,-0.296197 0.153887,-0.421375 -0.312215,-0.813622 -0.601773,-1.635595 -0.892579,-2.457032 0.0087,-0.14612 0.07218,-0.563284 0.264875,-0.317902 0.584883,0.88006 0.972412,1.869653 1.393329,2.833528 0.01052,0.261691 -0.286798,-0.05044 -0.402344,-0.02539 -0.146579,0.140326 -0.03036,0.383761 -0.01354,0.560021 0.590468,2.67302 0.521069,5.46274 1.322138,8.094276 0.392614,0.860218 1.193953,1.523452 2.115234,1.740234 0.706597,-0.07918 1.124551,-0.934685 0.863281,-1.568359 -0.53833,-2.56433 -1.878744,-4.846875 -3.003462,-7.182822 -1.671944,-3.372956 -3.079663,-6.8974 -5.16646,-10.047647 -0.588883,-0.845965 -1.38812,-1.526113 -2.279029,-2.036997 -0.166031,-0.103701 -0.470829,-0.307814 -0.151289,-0.06015 0.127164,0.1053 0.254327,0.2106 0.38149,0.3159 z m 0.244141,0.505859 0.02734,-0.002 -0.02734,0.002 z m 0.302734,0.222657 c -0.04281,0.0411 0.04261,-0.01163 0,0 z m -8.439453,0.138672 c 0.05396,-0.04047 0.02776,-0.02082 0,0 z m 0.392578,0.0625 0.01953,-0.0078 -0.01953,0.0078 z m 1.429688,0.08203 c -0.333035,0.03867 -0.162942,0.647298 0.140625,0.5 0.209568,-0.117829 0.122006,-0.537403 -0.140625,-0.5 z m 6.810547,0.138672 c 0.04921,-0.01298 0.0012,-0.08725 0,0 z m 0.169922,0.376953 0.0059,-0.0039 -0.0059,0.0039 z m -15.09375,1.386718 -0.0059,-0.0059 0.0059,0.0059 z m 16.210937,0.03906 c 0.03955,3.6e-5 -0.02058,-0.04073 0,0 z m -0.373047,0.08008 c 0.0042,0.04715 0.07358,-0.0983 0,0 z M 22.25,27.994141 l 0.0332,-0.002 -0.0332,0.002 z m 19.447266,0.0918 c 0.08336,0.04197 -0.05233,-0.0027 0,0 z m 0.796875,1.949218 c -0.02335,0.04446 -0.06362,-0.102843 0,0 z m 0.476562,0.306641 c 0.108684,0.0466 -0.0626,-0.0025 0,0 z m -0.01758,0.605469 c 0.05444,0.03846 -0.05244,-0.0035 0,0 z m 0.667969,0.771484 -0.0059,-0.01953 0.0059,0.01953 z m 0.09375,0.363281 0.01953,-0.01953 -0.01953,0.01953 z m -0.314453,0.113281 c -0.07332,0.0839 0.06305,-0.02507 0,0 z m 0.246093,0.289063 -0.0059,-0.0078 0.0059,0.0078 z m -24.685546,0.185547 -0.02148,0 0.02148,0 z m 24.720703,0.333984 0.002,-0.0039 -0.002,0.0039 z m 0.904297,1.402344 c 0.03138,0.07679 -0.04724,0.03753 0,0 z m 0.527343,2.566406 c 0.03385,0.04623 -0.04637,-0.0058 0,0 z M 20.138672,54.560547 c 0.05437,-0.01631 0.04688,-0.01407 0,0 z" />
         </g>
       </g>
+    </g>
+    <g
+       id="g5538"
+       transform="translate(0,8)"
+       inkscape:export-filename="/Users/admin/Desktop/github_banner.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <rect
+         ry="35.614468"
+         y="2038.7623"
+         x="1664.5421"
+         height="151.95506"
+         width="711.78949"
+         id="rect5536"
+         style="opacity:0.9;fill:#1e1e1e;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text5532"
+         y="2146.3235"
+         x="1746.5156"
+         style="font-style:normal;font-weight:normal;font-size:88.34588623px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Helvetica Neue';-inkscape-font-specification:'Helvetica Neue Bold';fill:#ffffff;fill-opacity:1"
+           y="2146.3235"
+           x="1746.5156"
+           id="tspan5534"
+           sodipodi:role="line">WP GeoMeta</tspan></text>
     </g>
   </g>
   <g
