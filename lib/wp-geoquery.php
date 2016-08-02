@@ -3,8 +3,8 @@
  * This class handles query interception and
  * modification in order to handle geo queries
  *
- * @package WP_GeoMeta
- * @link https://github.com/cimburadotcom/WP_GeoMeta
+ * @package WP-GeoMeta
+ * @link https://github.com/cimburadotcom/WP-GeoMeta
  * @author Michael Moore / michael_m@cimbura.com / https://profiles.wordpress.org/stuporglue/
  * @copyright Cimbura.com, 2016
  * @license GNU GPL v2
@@ -173,7 +173,7 @@ class WP_GeoQuery {
 		}
 
 		$orig_join = 'JOIN ' . $realmetatable . $alias . ' ON ( ' . $primary_table . '.' . $primary_id_column . ' = ' . $metatable . '.' . $type . '_id )';
-		$new_join  = 'JOIN ( SELECT meta_id, ' . $type . '_id, meta_key, ' . $new_meta_value . ' AS meta_value FROM ' . $realmetatable . '_geo ) AS ' . $metatable . ' ON ( ' . $primary_table . '.' . $primary_id_column . ' = ' . $metatable . '.' . $type . '_id )';
+		$new_join  = 'JOIN ( SELECT ' . $id_column . ', ' . $type . '_id, meta_key, ' . $new_meta_value . ' AS meta_value FROM ' . $realmetatable . '_geo ) AS ' . $metatable . ' ON ( ' . $primary_table . '.' . $primary_id_column . ' = ' . $metatable . '.' . $type . '_id )';
 
 		if ( WP_GEOMETA_DEBUG > 1 ) {
 			print "\n";

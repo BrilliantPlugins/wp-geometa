@@ -10,8 +10,9 @@
  * Author URI: http://cimbura.com
  * Version: 0.1.1
  * Code Name: Perfect Tommy - Let her out?
+ * Text Domain: wp-geometa
  *
- * @package WP_GeoMeta
+ * @package WP-GeoMeta
  */
 
 $wp_geometa_version = '0.1.1';
@@ -38,6 +39,8 @@ if ( 1 === $wp_geometa_version_status ) {
 		require_once( dirname( __FILE__ ) . '/lib/wp-geometa.php' );
 		$wpgeo = WP_GeoMeta::get_instance();
 		$wpgq = WP_GeoQuery::get_instance();
+
+		define( 'WP_GEOMETA_VERSION', $wp_geometa_version );
 
 		// Since we just got loaded, make sure that the database reflects any
 		// changes that the latest version of WP_GeoMeta might have added.
@@ -101,4 +104,14 @@ if ( ! function_exists( 'wp_geometa_load_older_version' ) ) {
 		}
 	}
 	add_action( 'plugins_loaded', 'wp_geometa_load_older_version' );
+}
+
+// Only try to show dashboard on admin pages.
+if ( is_admin() ) {
+	$plugindir = explode( PATH_SEPARATOR, WP_PLUGIN_DIR ); // full path, no trailing slash
+	$ourdir = explode( PATH_SEPARATOR, plugin_dir_path( __FILE__ ) );
+	if ( 1 === count( array_diff( $plugindir, $ourdir ) ) ) {
+		require_once( dirname( __FILE__ ) . '/lib/wp-geometa-dash.php' );
+		WP_GeoMeta_Dash::get_instance();
+	}
 }

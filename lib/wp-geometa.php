@@ -2,8 +2,8 @@
 /**
  * This class handles creating spatial tables saving geo metadata
  *
- * @package WP_GeoMeta
- * @link https://github.com/cimburadotcom/WP_GeoMeta
+ * @package WP-GeoMeta
+ * @link https://github.com/cimburadotcom/WP-GeoMeta
  * @author Michael Moore / michael_m@cimbura.com / https://profiles.wordpress.org/stuporglue/
  * @copyright Cimbura.com, 2016
  * @license GNU GPL v2
@@ -139,8 +139,10 @@ class WP_GeoMeta {
 		";
 
 		/*
-		So, dbDelta has a problem with SPATIAL INDEX, so we run those separate
+		Pre WP 4.6, dbDelta had a problem with SPATIAL INDEX, so we run those separate.
 		https://core.trac.wordpress.org/ticket/36948
+
+		Once WP 4.6 is out we can revisit this.
 		 */
 		dbDelta( $geotables );
 
@@ -386,11 +388,17 @@ class WP_GeoMeta {
 				$meta_pkey = 'umeta_id';
 			}
 
-			$truncate = "TRUNCATE $geotable";
-			$wpdb->query( $truncate ); // @codingStandardsIgnoreLine
 			$maxid = -1;
 			do {
-				$q = "SELECT * FROM $metatable WHERE meta_value LIKE '%{%Feature%geometry%}%' AND $meta_pkey > $maxid LIMIT 100";
+				$q = "SELECT $metatable.* 
+					FROM $metatable 
+					LEFT JOIN {$metatable}_geo ON ({$metatable}_geo.fk_meta_id = $metatable.$meta_pkey )
+					WHERE $metatable.meta_value LIKE '%{%Feature%geometry%}%' 
+					AND {$metatable}_geo.fk_meta_id IS NULL
+					AND $meta_pkey > $maxid 
+					ORDER BY $meta_pkey
+					LIMIT 100";
+
 				$res = $wpdb->get_results( $q,ARRAY_A ); // @codingStandardsIgnoreLine
 				$found_rows = count( $res );
 

@@ -2,8 +2,8 @@
 /**
  * This class has geo utils that users and WP_Geo* classes might need.
  *
- * @package WP_GeoMeta
- * @link https://github.com/cimburadotcom/WP_GeoMeta
+ * @package WP-GeoMeta
+ * @link https://github.com/cimburadotcom/WP-GeoMeta
  * @author Michael Moore / michael_m@cimbura.com / https://profiles.wordpress.org/stuporglue/
  * @copyright Cimbura.com, 2016
  * @license GNU GPL v2
@@ -435,17 +435,20 @@ class WP_GeoUtil {
 	 *
 	 * @param bool $retest Should we re-check and re-store our capabilities.
 	 */
-	public static function get_capabilities( $retest = false ) {
+	public static function get_capabilities( $retest = false, $lower = true ) {
 		global $wpdb;
 
-		if ( ! empty( self::$found_funcs ) && ! $retest ) {
-			return self::$found_funcs;
-		}
-
 		if ( ! $retest ) {
-			self::$found_funcs = get_option( 'geometa_capabilities',array() );
+			if ( empty( self::$found_funcs ) ) {
+				self::$found_funcs = get_option( 'geometa_capabilities',array() );
+			}
+
 			if ( ! empty( self::$found_funcs ) ) {
-				return self::$found_funcs;
+				if ( $lower ) {
+					return array_map( 'strtolower', self::$found_funcs );
+				} else {
+					return self::$found_funcs;
+				}
 			}
 		}
 
@@ -465,10 +468,9 @@ class WP_GeoUtil {
 		$wpdb->suppress_errors( $suppress );
 		$wpdb->show_errors( $errors );
 
-		self::$found_funcs = array_map( 'strtolower',self::$found_funcs );
-
 		update_option( 'geometa_capabilities',self::$found_funcs, false );
-		return self::$found_funcs;
+
+		return self::get_capabilities( false, $lower );
 	}
 
 	/**
