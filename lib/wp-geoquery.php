@@ -10,6 +10,8 @@
  * @license GNU GPL v2
  */
 
+defined('ABSPATH') or die('No direct access');
+
 /**
  * This class uses GeoUtil
  */

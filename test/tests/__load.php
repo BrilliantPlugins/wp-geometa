@@ -12,6 +12,7 @@ if ( ! file_exists( $wp_load ) ) {
 	die( "Couldn't find wp-load. Tests are meant to be run when WP_GeoMeta is installed as a plugin.\n" ); 
 }
 require_once( $wp_load );
+defined('ABSPATH') or die('No direct access');
 
 // Load WP GeoMeta in case it's not active.
 require_once( WP_GEOMETA_TESTDIR . '/../wp-geometa.php');

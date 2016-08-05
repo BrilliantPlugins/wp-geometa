@@ -9,6 +9,8 @@
  * @license GNU GPL v2
  */
 
+defined('ABSPATH') or die('No direct access');
+
 /**
  * Include geoPHP for this function
  */
