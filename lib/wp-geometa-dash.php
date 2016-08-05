@@ -25,6 +25,10 @@ class WP_GeoMeta_Dash {
 	 */
 	protected function __construct() {
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+		add_action( 'wp_ajax_delete_tables', array( $this, 'ajax_delete_tables' ) );
+		add_action( 'wp_ajax_create_tables', array( $this, 'ajax_create_tables' ) );
+		add_action( 'wp_ajax_truncate_tables', array( $this, 'ajax_truncate_tables' ) );
+		add_action( 'wp_ajax_populate_tables', array( $this, 'ajax_populate_tables' ) );
 	}
 
 	/**
@@ -36,5 +40,21 @@ class WP_GeoMeta_Dash {
 
 	public function show_dashboard() {
 		require_once( dirname( __FILE__ ) . '/dash.inc' );
+	}
+
+	public function ajax_delete_tables() {
+
+	}
+
+	public function ajax_create_tables() {
+
+	}
+
+	public function ajax_truncate_tables() {
+
+	}
+
+	public function ajax_populate_tables() {
+
 	}
 }
