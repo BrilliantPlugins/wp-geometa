@@ -23,7 +23,7 @@ class WP_GeoMeta_Dash {
 	/**
 	 * Get the functions by type
 	 */
-	public static function get_functions_by_type() {
+	public function get_functions_by_type() {
 
 		$cap_cats = array(
 			'geom_relationship' => array(
@@ -284,5 +284,70 @@ class WP_GeoMeta_Dash {
 
 	public function ajax_populate_tables() {
 
+	}
+
+	public function make_table_list_block() {
+		/*
+			$geometa = WP_GeoMeta::get_instance();
+			foreach( $geometa->meta_types as $meta_type ) {
+			$geotable = _get_meta_table( $meta_type ) . '_geo';
+			if ( $geotable !== $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', array( $geotable ) ) ) ) {
+			continue;
+			}
+			$create = $wpdb->get_var( 'SHOW CREATE TABLE `' . $geotable . '`', 1 );
+			$has_spatial_index = ( false !== strpos( $create, 'SPATIAL KEY `meta_val_spatial_idx` (`meta_value`)' ) ? 'TRUE' : 'FALSE' ); 
+
+			$num_records = $wpdb->get_var( 'SELECT COUNT(*) FROM `' . $geotable . '`' );
+
+			print '<tr><td>' . $geotable . '</td><td>' . $has_spatial_index . '</td><td>' . $num_records . '</td></tr>';
+		 */
+	
+	}
+
+	public function make_db_version_block() {
+		global $wpdb;
+
+		$our_caps = WP_GeoUtil::get_capabilities();
+		$version_info = $wpdb->get_var( 'SELECT VERSION()' ); // @codingStandardsIgnoreLine
+
+		if ( in_array( 'st_intersects', $our_caps ) ) {
+			return $this->make_status_block( 'good', 'Good Database!', 'Your database version (' . $version_info . ') supports a wide variety of useful spatial functions.');
+		} else if ( in_array( 'geometrycollection', $our_caps ) ) {
+			return $this->make_status_block( 'fair', 'OK Database', 'Your database version (' . $version_info . ') has some spatial support, but doesn\'t support key spatial functions. Consider upgrading to MySQL 5.6.1 or higher, or MariaDB 5.3.3 or higher.');
+		} else {
+			return $this->make_status_block( 'bad', 'Bad Database', 'Your database version (' . $version_info . ') doesn\'t appear to have spatial support. You won\'t be able to store or use spatial data.');
+		}
+	}
+
+	public function make_update_block() {
+
+		$all_plugins = get_plugin_updates();
+
+		$this_plugin = basename( dirname( dirname( __FILE__ ) ) ) . '/wp-geometa.php';
+
+		/*
+		 * Three statuses. 
+		 * Bad. There are updates and WP_GEOMETA_DASH_VERSION and WP_GEOMETA_VERSION are the same and both are out of date
+		 * OK. There are updates, and WP_GEOMETA_DASH_VERSION is out of date, but WP_GEOMETA_VERSION is up to date (some other plugin has an updated version)
+		 * Good. There are no updates: WP_GEOMETA_DASH_VERSION is up to date and WP_GEOMETA_VERSION is up to date
+		 */
+
+		if ( empty( $all_plugins[ $this_plugin ] ) ) {
+			return $this->make_status_block( 'good', 'Up to date!', 'You are running the most recent version of WP-GeoMeta (' . WP_GEOMETA_VERSION . ')');
+		} else if ( 0 === version_compare( WP_GEOMETA_VERSION, $all_plugins[ $this_plugin ]->Version ) && -1 === version_compare( WP_GEOMETA_DASH_VERSION, $all_plugins[ $this_plugin ]->Version ) ) {
+			return $this->make_status_block( 'fair', 'Out of date.', 'A plugin you are using is providing the most recent version of the WP-GeoMeta library (' . WP_GEOMETA_VERSION . '), but your plugin is out of date.');
+		} else {
+			return $this->make_status_block( 'bad', 'Out of date!', 'You are running an outdated version of WP-GeoMeta (' . WP_GEOMETA_VERSION . '). Please upgrade!');
+		}
+	} 
+
+	public function make_status_block($status, $title, $description){
+
+		$block = '<div class="status-block">
+				<div class="status-circle ' . $status . '"></div>
+				<div class="status-title">' . $title . '</div>
+				<div class="status-text">' . $description . '</div>
+			</div>';
+		return $block;
 	}
 }

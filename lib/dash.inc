@@ -155,17 +155,12 @@ clear: both;
 
 	<div class="wpgm-status">
 		<div class="status-table">
-			<div class="status-block">
-				<div class="status-circle good"></div>
-				<div class="status-title">Up to Date</div>
-				<div class="status-text"></div>
-			</div>
 
-			<div class="status-block">
-				<div class="status-circle fair"></div>
-				<div class="status-title">Spatial Operations</div>
-				<div class="status-text"></div>
-			</div>
+			<?php
+				print $this->make_update_block();
+				print $this->make_db_version_block();
+				print $this->make_table_list_block();
+			?>
 
 			<div class="status-block">
 				<div class="status-circle poor"></div>
@@ -184,9 +179,10 @@ clear: both;
 	<div class="wpgm-funcs">
 		<h3>Available Spatial Functions</h3>
 		<p>These functions are available in your version of MySQL.</p>
+		<p>For a list of all spatial functions MySQL and MariaDB support, along with which database versions support which functions, please visit the <a href="https://mariadb.com/kb/en/mariadb/mysqlmariadb-spatial-support-matrix/" target="_blank">Spatial Support Matrix</a> page.</p>
 		<table class="funclist"><tr><th>Function Group</th><th>Functions</th></tr>
 		<?php
-			$our_funcs = WP_GeoMeta_Dash::get_functions_by_type();
+			$our_funcs = $this->get_functions_by_type();
 
 			foreach ( $our_funcs as $functype => $funcinfo ) {
 				print '<tr><td><h4>' . $funcinfo['label'] . '</h4><p>' . $funcinfo['desc'] . '</p></td><td><div class="funcnamelist">' . implode( '<span class="wordclear"> </span>', $funcinfo['funcs'] )  . '</div></td></tr>';
@@ -208,19 +204,6 @@ clear: both;
 		</p>
 	</div>
 
-	<div>
-		<h3>Supported Functions</h3>
-		<p>To see a table showing which spatial functions are supported in each version of MySQL or MariaDB please visit the <a href="https://mariadb.com/kb/en/mariadb/mysqlmariadb-spatial-support-matrix/" target="_blank">Spatial Support Matrix</a> page.</p>
-		<p>Your install of MySQL supports the following spatial functions:</p>
-		<ul>
-			<?php
-			$capabilities = WP_GeoUtil::get_capabilities( false, false );
-			foreach($capabilities as $capability){
-			print '<li>' . $capability . '</li>';
-			}
-			?>
-		</ul>
-	</div>
 
 	<div><h3>Spatial System Info</h3>
 		<p>

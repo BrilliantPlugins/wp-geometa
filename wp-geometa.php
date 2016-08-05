@@ -111,6 +111,7 @@ if ( is_admin() ) {
 	$plugindir = explode( PATH_SEPARATOR, WP_PLUGIN_DIR ); // full path, no trailing slash
 	$ourdir = explode( PATH_SEPARATOR, plugin_dir_path( __FILE__ ) );
 	if ( 1 === count( array_diff( $plugindir, $ourdir ) ) ) {
+		define( 'WP_GEOMETA_DASH_VERSION', $wp_geometa_version );
 		require_once( dirname( __FILE__ ) . '/lib/wp-geometa-dash.php' );
 		WP_GeoMeta_Dash::get_instance();
 	}
