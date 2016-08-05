@@ -157,10 +157,36 @@
 	}
 
 
-/**
- * Map
- */
-#wpgmmap {
-	height: 400px;
-	max-height: 100vh;
-}
+	/**
+	 * Map
+	 */
+	#wpgmmap {
+		height: 400px;
+		margin-right: 20px;
+		max-height: 100vh;
+		min-width: 350px;
+		width: 100%;
+	}
+	.posttypegeotable {
+		margin-top: 10px;
+	}
+	.posttypegeotable table {
+		border-collapse: collapse;
+		width: 100%;
+	}
+	.posttypegeotable table th {
+		text-align: left;
+	}
+	.posttypegeotable td, .posttypegeotable th {
+		border: 1px solid #ccc;
+		padding: 2px 5px;
+	}
+
+
+	.colorswatch {
+		width: 25px;
+		height: 25px;
+		display: inline-block;
+		vertical-align: middle;
+		margin-left: 10px;
+	}

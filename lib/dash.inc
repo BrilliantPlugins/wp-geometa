@@ -20,10 +20,12 @@ defined('ABSPATH') or die('No direct access');
 	</div>
 
 	<div class="wpgm-data"> 
+		<h3>Your Spatial Data</h3>
 		<div id="wpgmmap">
 		</div>
 		<div class="posttypegeotable">
-			<table><tr><th>Type</th><th>Meta Key</th><th>Quantity</th><th></th></tr>
+			<h4>Found Spatial Metadata Types</h4>
+			<table><tr><th>Type</th><th>Meta Key</th><th>Quantity</th><th>View Sample Data</th></tr>
 				<?php 
 					$meta_stats = $this->get_geometa_stats();
 					foreach ( $meta_stats as $meta_stat ) {
@@ -31,7 +33,7 @@ defined('ABSPATH') or die('No direct access');
 						print '<td>' . $meta_stat['name'] . '</td>';
 						print '<td>' . $meta_stat['meta_key'] . '</td>';
 						print '<td>' . $meta_stat['quantity'] . '</td>';
-						print '<td data-type="' . $meta_stat['type']. '" data-meta_key="' . $meta_stat['meta_key'] . '"><button class="wpgmsampledata">Sample Data</button></td>';
+						print '<td data-color="' . $meta_stat['color'] . '" data-type="' . $meta_stat['type']. '" data-meta_key="' . $meta_stat['meta_key'] . '"><button class="wpgmsampledata">View Data</button><div class="colorswatch" style="background-color:' . $meta_stat['color'] . '"</td>';
 						print '</tr>';
 					}
 				?>

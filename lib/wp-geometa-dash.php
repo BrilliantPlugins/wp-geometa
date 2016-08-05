@@ -258,6 +258,7 @@ class WP_GeoMeta_Dash {
 		add_action( 'wp_ajax_create_tables', array( $this, 'ajax_create_tables' ) );
 		add_action( 'wp_ajax_truncate_tables', array( $this, 'ajax_truncate_tables' ) );
 		add_action( 'wp_ajax_populate_tables', array( $this, 'ajax_populate_tables' ) );
+		add_action( 'wp_ajax_wpgm_get_sample_data', array( $this, 'ajax_wpgm_get_sample_data' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 	}
 
@@ -271,8 +272,8 @@ class WP_GeoMeta_Dash {
 
 		wp_enqueue_script( 'leafletjs', 'https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js', array(), null );
 		wp_enqueue_style( 'leafletcss', 'https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css', array(), null );
-		wp_enqueue_style( 'wpgeometadash', plugin_dir_url( __FILE__ ) . '/../../assets/dash.css', array( 'leafletcss' ) );
-		wp_enqueue_script( 'wpgeometadashjs', plugin_dir_url( __FILE__ ) . '/../../assets/dash.js', array( 'leafletjs' ) );
+		wp_enqueue_style( 'wpgeometadash', plugin_dir_url( __FILE__ ) . '/../../assets/wpgeometa.css', array( 'leafletcss' ) );
+		wp_enqueue_script( 'wpgeometadashjs', plugin_dir_url( __FILE__ ) . '/../../assets/wpgeometa.js', array( 'leafletjs' ) );
 	}
 
 	/**
@@ -491,6 +492,85 @@ return $block;
 				);
 		} 
 
+		foreach( $found_data as &$data ) {
+			$data['color'] = sprintf('#%06X', mt_rand(0, 0xFFFFFF));
+		}
+
 		return $found_data;
+	}
+
+	public function ajax_wpgm_get_sample_data(){
+		global $wpdb;
+
+		$wpgm = WP_GeoMeta::get_instance();
+
+		if ( !in_array( $_GET['type'], $wpgm->meta_types ) ) {
+			die();
+		}
+
+		$type = $_GET['type'];
+		$types = $type . 's';
+		$metatype = $type . 'meta';
+		$id_column = 'user' === $type ? 'umeta_id' : 'meta_id';
+
+		switch ( $type ) {
+			case 'post':
+				$table_id = 'ID';
+				break;
+			case 'comment':
+				$table_id = 'comment_ID';
+				break;
+			case 'term':
+				$table_id = 'term_id';
+				break;
+			case 'user':
+				$table_id = 'ID';
+				break;
+		}
+
+		$q = 'SELECT 
+				t.' . $table_id . ' AS the_id,
+				m.meta_value 
+			FROM 	
+			' . $wpdb->$metatype . ' m,
+			' . $wpdb->$metatype . '_geo geo,
+			' . $wpdb->$types . ' t
+			WHERE
+				m.meta_key=%s
+				AND geo.fk_meta_id=m.' . $id_column . '
+				AND t.' . $table_id . '=geo.' . $type . '_id
+			ORDER BY RAND()
+			LIMIT 500';
+
+		$sql = $wpdb->prepare( $q, array( $_GET['meta_key'] ) );
+
+		$res = $wpdb->get_results( $sql, ARRAY_A);
+
+		if ( empty( $res ) ) {
+			wp_send_json( array() );
+		}
+
+		$geojson = array();
+
+		$type = ucfirst( $type );
+
+		foreach( $res as $record ) {
+			$featureCollection = WP_GeoUtil::merge_geojson( $record['meta_value'] );
+			$featureCollection = json_decode( $featureCollection, TRUE );
+			foreach( $featureCollection['features'] as &$feature ) {
+				$feature['title'] = $type . ' id ' . $record['the_id'];
+			}
+			$geojson[] = $featureCollection;
+		}
+
+		$geojson = WP_GeoUtil::merge_geojson( $geojson );
+
+		$geojson = json_decode( $geojson );
+
+		if ( empty( $geojson ) ) {
+			wp_send_json( array() );
+		}
+
+		wp_send_json( $geojson );
 	}
 }

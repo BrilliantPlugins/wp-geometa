@@ -286,7 +286,7 @@ class WP_GeoUtil {
 			}
 
 			if ( 0 === strcasecmp( 'featurecollection',$fragment['type'] ) && is_array( $fragment['features'] ) ) {
-				$ret['features'] += $fragment['features'];
+				$ret['features'] = array_merge( $ret['features'], $fragment['features'] );
 			} else if ( 0 === strcasecmp( 'feature', $fragment['type'] ) ) {
 				$ret['features'][] = $fragment;
 			}
