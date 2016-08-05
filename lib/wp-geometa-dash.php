@@ -303,21 +303,32 @@ class WP_GeoMeta_Dash {
 
 	}
 
-	public function make_table_list_block() {
+	public function set_list_of_geotables() {
 		global $wpdb;
+
+		if ( isset( $this->tables_found ) ) {
+			return $this->tables_found;
+		}
+
 		$geometa = WP_GeoMeta::get_instance();
-		$tables_found = array();
+		$this->tables_found = array();
 		foreach( $geometa->meta_types as $meta_type ) {
 			$geotable = _get_meta_table( $meta_type ) . '_geo';
 			if ( $geotable === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', array( $geotable ) ) ) ) {
-				$tables_found[] = $geotable;
+				$this->tables_found[] = $geotable;
+				$this->table_types_found[] = $meta_type;
 			}
 		}
+	}
 
-		if ( count( $tables_found ) === count( $geometa->meta_types ) ) {
-			return $this->make_status_block( 'good', 'Geo Tables Exist', 'All ' . count( $tables_found ) . ' geometa tables exist. (' . implode( ', ', $tables_found ) . ')');
-		} else if ( count( $tables_found ) > 0 ) {
-			return $this->make_status_block( 'fair', 'Some Geo Tables Exist', 'Some geo tables are missing. If this wasn\'t intentional, there could be a problem. ' . implode( ', ', $tables_found ) . ' all exist. ' . implode( ', ', array_diff( $geometa->meta_types, $tables_found ) ) . ' don\'t exist');
+	public function make_table_list_block() {
+
+		$this->set_list_of_geotables();
+
+		if ( count( $this->tables_found ) === count( $geometa->meta_types ) ) {
+			return $this->make_status_block( 'good', 'Geo Tables Exist', 'All ' . count( $this->tables_found ) . ' geometa tables exist. (' . implode( ', ', $this->tables_found ) . ')');
+		} else if ( count( $this->tables_found ) > 0 ) {
+			return $this->make_status_block( 'fair', 'Some Geo Tables Exist', 'Some geo tables are missing. If this wasn\'t intentional, there could be a problem. ' . implode( ', ', $this->tables_found ) . ' all exist. ' . implode( ', ', array_diff( $geometa->meta_types, $this->tables_found ) ) . ' don\'t exist');
 		} else {
 			return $this->make_status_block( 'bad', 'No Geo Tables Exist', 'No geo tables exist. You can try recreating them with the tools at the bottom of this page.');
 		}
@@ -389,107 +400,113 @@ class WP_GeoMeta_Dash {
 
 	public function make_status_block($status, $title, $description){
 
-		$block = '<div class="status-block">
-			<div class="status-circle ' . $status . '"></div>
-			<div class="status-title">' . $title . '</div>
-			<div class="status-text">' . $description . '</div>
-			</div>';
-return $block;
+		$block = '<div class="status-block"><div class="status-circle ' . $status . '"></div><div class="status-title">' . $title . '</div><div class="status-text">' . $description . '</div></div>';
+		return $block;
 	}
 
 	function get_geometa_stats() {
 		global $wpdb;
-		
+
 		$found_data = array();
+		$this->set_list_of_geotables();
+		$found_tables = $this->table_types_found;
 
-		// Posts	
-		$q = 'SELECT 
-			p.post_type,
-			geo.meta_key,
-			COUNT(p.ID) AS quantity 
-		FROM
-			' . $wpdb->postmeta . '_geo geo,
-			' . $wpdb->posts . ' p
-		WHERE
-			1=1
-			AND geo.post_id=p.ID
-		GROUP BY 
-			p.post_type,
-			geo.meta_key
-		ORDER BY p.post_type, geo.meta_key';
-		
-		foreach( $wpdb->get_results( $q, ARRAY_A ) as $geometa ) {
+		if ( in_array( 'post', $found_tables ) ) {
+			// Posts	
+			$q = 'SELECT 
+				p.post_type,
+				geo.meta_key,
+				COUNT(p.ID) AS quantity 
+				FROM
+				' . $wpdb->postmeta . '_geo geo,
+				' . $wpdb->posts . ' p
+				WHERE
+				1=1
+				AND geo.post_id=p.ID
+				GROUP BY 
+				p.post_type,
+				geo.meta_key
+				ORDER BY p.post_type, geo.meta_key';
 
-			$post_type_object = get_post_type_object( $geometa['post_type'] );
+foreach( $wpdb->get_results( $q, ARRAY_A ) as $geometa ) {
 
-			$found_data[] = array(
-				'name' => $post_type_object->labels->name . ' (post)',
-				'type' => 'post',
-				'meta_key' => $geometa['meta_key'],
-				'quantity' => $geometa['quantity'],
-				);
+	$post_type_object = get_post_type_object( $geometa['post_type'] );
+
+	$found_data[] = array(
+		'name' => $post_type_object->labels->name . ' (post)',
+		'type' => 'post',
+		'meta_key' => $geometa['meta_key'],
+		'quantity' => $geometa['quantity'],
+	);
+}
 		}
 
-		// Users 
-		$q = 'SELECT 
+		if ( in_array( 'user', $found_tables ) ) {
+			// Users 
+			$q = 'SELECT 
 				meta_key, 
 				COUNT(umeta_id) AS quantity
-			FROM 
+				FROM 
 				' . $wpdb->usermeta . '_geo geo
 				GROUP BY 
-					meta_key';
+				meta_key';
 
-		foreach( $wpdb->get_results( $q, ARRAY_A ) as $usermeta ) {
-			$found_data[] = array(
-				'name' => 'Users',
-				'type' => 'user',
-				'meta_key' => $usermeta['meta_key'],
-				'quantity' => $usermeta['quantity']
-				);
+foreach( $wpdb->get_results( $q, ARRAY_A ) as $usermeta ) {
+	$found_data[] = array(
+		'name' => 'Users',
+		'type' => 'user',
+		'meta_key' => $usermeta['meta_key'],
+		'quantity' => $usermeta['quantity']
+	);
+}
 		}
 
-		// Term Meta
-		$q = 'SELECT 
-			t.name,
-			geo.meta_key,
-			COUNT(t.term_id) AS quantity
-		FROM
-			' . $wpdb->termmeta . '_geo geo,
-			' . $wpdb->terms . ' t
-		WHERE
-			1=1
-			AND geo.term_id=t.term_id
-		GROUP BY 
-			t.name,
-			geo.meta_key
-		ORDER BY t.name, geo.meta_key';
+		if ( in_array( 'term', $found_tables ) ) {
+			// Term Meta
+			$q = 'SELECT 
+				t.name,
+				geo.meta_key,
+				COUNT(t.term_id) AS quantity
+				FROM
+				' . $wpdb->termmeta . '_geo geo,
+				' . $wpdb->terms . ' t
+				WHERE
+				1=1
+				AND geo.term_id=t.term_id
+				GROUP BY 
+				t.name,
+				geo.meta_key
+				ORDER BY t.name, geo.meta_key';
 
-		foreach( $wpdb->get_results( $q, ARRAY_A ) as $termmeta) {
+foreach( $wpdb->get_results( $q, ARRAY_A ) as $termmeta) {
 
-			$found_data[] = array(
-				'name' => $termmeta['name'] . ' (term)',
-				'type' => 'user',
-				'meta_key' => $termmeta['meta_key'],
-				'quantity' => $termmeta['quantity'],
-				);
+	$found_data[] = array(
+		'name' => $termmeta['name'] . ' (term)',
+		'type' => 'user',
+		'meta_key' => $termmeta['meta_key'],
+		'quantity' => $termmeta['quantity'],
+	);
+}
 		}
 
-		// Comment Meta
-		$q = 'SELECT 
+		if ( in_array( 'comment', $found_tables ) ) {
+			// Comment Meta
+			$q = 'SELECT 
 				meta_key, 
 				COUNT(meta_id) AS quantity
-			FROM 
+				FROM 
 				' . $wpdb->commentmeta . '_geo geo
 				GROUP BY 
-					meta_key';
+				meta_key';
 
-		foreach( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) {
-			$found_data[] = array(
-				'name' => 'Comments',
-				'type' => 'comment',
-				'meta_key' => $commentmeta['meta_key'],
-				'quantity' => $commentmeta['quantity']
-				);
+foreach( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) {
+	$found_data[] = array(
+		'name' => 'Comments',
+		'type' => 'comment',
+		'meta_key' => $commentmeta['meta_key'],
+		'quantity' => $commentmeta['quantity']
+	);
+} 
 		} 
 
 		foreach( $found_data as &$data ) {
@@ -529,48 +546,48 @@ return $block;
 		}
 
 		$q = 'SELECT 
-				t.' . $table_id . ' AS the_id,
-				m.meta_value 
+			t.' . $table_id . ' AS the_id,
+			m.meta_value 
 			FROM 	
 			' . $wpdb->$metatype . ' m,
 			' . $wpdb->$metatype . '_geo geo,
 			' . $wpdb->$types . ' t
 			WHERE
-				m.meta_key=%s
-				AND geo.fk_meta_id=m.' . $id_column . '
-				AND t.' . $table_id . '=geo.' . $type . '_id
+			m.meta_key=%s
+			AND geo.fk_meta_id=m.' . $id_column . '
+			AND t.' . $table_id . '=geo.' . $type . '_id
 			ORDER BY RAND()
 			LIMIT 500';
 
-		$sql = $wpdb->prepare( $q, array( $_GET['meta_key'] ) );
+$sql = $wpdb->prepare( $q, array( $_GET['meta_key'] ) );
 
-		$res = $wpdb->get_results( $sql, ARRAY_A);
+$res = $wpdb->get_results( $sql, ARRAY_A);
 
-		if ( empty( $res ) ) {
-			wp_send_json( array() );
-		}
+if ( empty( $res ) ) {
+	wp_send_json( array() );
+}
 
-		$geojson = array();
+$geojson = array();
 
-		$type = ucfirst( $type );
+$type = ucfirst( $type );
 
-		foreach( $res as $record ) {
-			$featureCollection = WP_GeoUtil::merge_geojson( $record['meta_value'] );
-			$featureCollection = json_decode( $featureCollection, TRUE );
-			foreach( $featureCollection['features'] as &$feature ) {
-				$feature['title'] = $type . ' id ' . $record['the_id'];
-			}
-			$geojson[] = $featureCollection;
-		}
+foreach( $res as $record ) {
+	$featureCollection = WP_GeoUtil::merge_geojson( $record['meta_value'] );
+	$featureCollection = json_decode( $featureCollection, TRUE );
+	foreach( $featureCollection['features'] as &$feature ) {
+		$feature['title'] = $type . ' id ' . $record['the_id'];
+	}
+	$geojson[] = $featureCollection;
+}
 
-		$geojson = WP_GeoUtil::merge_geojson( $geojson );
+$geojson = WP_GeoUtil::merge_geojson( $geojson );
 
-		$geojson = json_decode( $geojson );
+$geojson = json_decode( $geojson );
 
-		if ( empty( $geojson ) ) {
-			wp_send_json( array() );
-		}
+if ( empty( $geojson ) ) {
+	wp_send_json( array() );
+}
 
-		wp_send_json( $geojson );
+wp_send_json( $geojson );
 	}
 }

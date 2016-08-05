@@ -25,7 +25,7 @@ defined('ABSPATH') or die('No direct access');
 		</div>
 		<div class="posttypegeotable">
 			<h4>Found Spatial Metadata Types</h4>
-			<table><tr><th>Type</th><th>Meta Key</th><th>Quantity</th><th>View Sample Data</th></tr>
+			<table><tr><th>Type</th><th>Meta Key</th><th>Quantity</th><th>View Sample Data (500 records max)</th></tr>
 				<?php 
 					$meta_stats = $this->get_geometa_stats();
 					foreach ( $meta_stats as $meta_stat ) {
