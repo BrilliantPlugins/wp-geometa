@@ -9,29 +9,193 @@ global $wpdb;
 		padding: 10px;
 	}
 
+	.wp-geometa-dash .wpgm-header img{
+		display: inline-block; 
+		vertical-align: middle; 
+		padding-right: 20px;
+	}
+
+	.wp-geometa-dash .wpgm-header h2 {
+		font-size: 75px; 
+		font-family: Garamond, Baskerville, “Baskerville Old Face”, “Hoefler Text”, “Times New Roman”, serif;
+		font-family: Rockwell, “Courier Bold”, Courier, Georgia, Times, “Times New Roman”, serif;
+		display: inline-block; 
+		vertical-align: middle; 
+		margin-top: 0;
+		margin-bottom: 0;
+	}
+
 	.wp-geometa-dash > div {
-		width: 45%;
-		max-width: 500px;
-		min-width: 250px;
-		display: inline-block;
 		border: 1px solid #ccc;
 		border-radius: 2px;
 		margin-bottom: 20px;
 		margin-right: 20px;
 		padding: 10px;
 		color: #555;
-		vertical-align: top;
-		max-height: 300px; 
-		overflow: auto;
 	}
 
 	.wp-geometa-dash > div h3 {
 		margin-top: 0;
 		color: #333;
 	}
+
+/**
+ * System status shapes
+ */
+
+	.status-circle {
+		height: 50px;
+		width: 50px;
+		display: inline-block;
+		border-radius: 50px;
+		color: #000000;
+		border-width: 8px;
+		border-style: solid;
+	}
+
+	.status-circle:before {
+		display: block;
+		position: absolute;
+		font-size: 50px;
+		line-height: 38px; 
+		width: 50px;
+	}
+
+	.status-circle.good {
+		border-color: #499b44; /* grey green */
+		background-color: #29df20; /* bright green */
+	}
+
+	.status-circle.good:before {
+		content: '✔';
+	}
+
+	.status-circle.fair {
+		border-color: #98752c; /* grey orange */
+		background-color: #f6b01b; /* bright orange */
+	}
+
+	.status-circle.fair:before {
+		content: '❋';
+	}
+
+	.status-circle.poor {
+		border-color: #9b4544; /* grey red */
+		background-color: #fe2624; /* bright red*/
+	}
+
+	.status-circle.poor:before {
+		content: '✗';
+	}
+
+	.status-title {
+		text-align: center;
+		font-weight: bold;
+		font-size: 18px;
+	}
+
+	.status-table {
+		display: table;
+		width: 100%;
+	}
+
+	.status-table .status-block {
+		display: table-cell;
+		text-align: center;
+	}
+
+/**
+ * Function list table
+ */
+.funclist {
+    border: 1px solid #000;
+    border-collapse: collapse;
+	max-width: 100%;
+}
+.funclist th {
+    text-align: left;
+}
+.funclist tr, .funclist td, .funclist th {
+    border: 1px solid #000;
+    border-collapse: collapse;
+    padding: 5px;
+	vertical-align: top;
+}
+
+.funcnamelist {
+	-moz-column-count: 9;
+	-webkit-column-count:9;
+	column-count:9;
+
+	-moz-column-gap: 10px;
+	-webkit-column-gap:10px;
+	column-gap:10px;
+
+	-moz-column-rule: 1px solid #ccc;
+	-webkit-column-rule:1px solid #ccc;
+	column-rule:1px solid #ccc;
+
+	-moz-column-width: 200px;
+	-webkit-column-width:200px;
+	column-width:200px;
+}
+
+.wordclear {
+display: block;
+clear: both;
+}
+
+
+
 </style>
 <div class="wp-geometa-dash">
-	<h2>WP GeoMeta</h2>
+	<div class="wpgm-header">
+		<img src="<?php print plugin_dir_url( __FILE__ ); ?>/../../assets/icon.png" title="WP GeoMeta Logo"/><h2>WP GeoMeta</h2>
+	</div>
+
+	<div class="wpgm-status">
+		<div class="status-table">
+			<div class="status-block">
+				<div class="status-circle good"></div>
+				<div class="status-title">Up to Date</div>
+				<div class="status-text"></div>
+			</div>
+
+			<div class="status-block">
+				<div class="status-circle fair"></div>
+				<div class="status-title">Spatial Operations</div>
+				<div class="status-text"></div>
+			</div>
+
+			<div class="status-block">
+				<div class="status-circle poor"></div>
+				<div class="status-title">Tables Exist</div>
+				<div class="status-text"></div>
+			</div>
+
+			<div class="status-block">
+				<div class="status-circle good"></div>
+				<div class="status-title">Indexes Enabled</div>
+				<div class="status-text"></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="wpgm-funcs">
+		<h3>Available Spatial Functions</h3>
+		<p>These functions are available in your version of MySQL.</p>
+		<table class="funclist"><tr><th>Function Group</th><th>Functions</th></tr>
+		<?php
+			$our_funcs = WP_GeoMeta_Dash::get_functions_by_type();
+
+			foreach ( $our_funcs as $functype => $funcinfo ) {
+				print '<tr><td><h4>' . $funcinfo['label'] . '</h4><p>' . $funcinfo['desc'] . '</p></td><td><div class="funcnamelist">' . implode( '<span class="wordclear"> </span>', $funcinfo['funcs'] )  . '</div></td></tr>';
+			}
+		?>
+		</table>
+	</div>
+
+
 	<div><h3>About</h3>
 		<p>
 		You are running WP GeoMeta version <strong><?php echo WP_GEOMETA_VERSION; ?></strong>.
@@ -97,18 +261,18 @@ global $wpdb;
 		you can manually create them here. WP GeoMeta uses dbDelta, so running
 		this multiple times will have no ill effects.  <br> <button>Create WP
 			GeoMeta Tables</button> </p> 
-		
+
 		<p>If you want to clear out the
 		existing spatial data, but not remove the tables, this is your button.
 		<br> <button>Truncate WP GeoMeta Tables</button> </p> 
-		
+
 		<p> WP GeoMeta
 		detects and loads GeoJSON metadata being stored in any of the existing
 		metadata tables. Click this button to make WP GeoMeta search the
 		(non-geo) metadata tables for any GeoJSON records that weren't there
 		before, which were missed for some reason or if you have truncated the
 		table.  <br> <button>Populate WP GeoMeta Tables</button> </p> 
-	
+
 	</div>
 
 </div>
