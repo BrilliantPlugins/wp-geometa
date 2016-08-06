@@ -256,6 +256,7 @@ Changes
  * Upgrading no longer truncates and rebuilds the meta tables. 
  * Fix for joins so user meta should work again (umeta_id vs meta_id key name issue).
  * A dashboard! 
+ * Plugin activation hooks so that deactivating/activating without upgrading will recreate database tables
 
 ### 0.1.1
  * Only x.x.0 releases will get code names

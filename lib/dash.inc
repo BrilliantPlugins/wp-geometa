@@ -56,8 +56,14 @@ defined('ABSPATH') or die('No direct access');
 		</table>
 	</div>
 
+	<div><h3>List of installs</h3></div>
+
+	<div><h3>List of resources</h3></div>
 
 	<div><h3>Here Be Dragons</h3>
+
+* Run Tests
+
 		<p>
 		All WP GeoMeta data is stored in its own tables. Your original data is
 		untouched. Removing WP GeoMeta tables will break any spatial queries you

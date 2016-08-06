@@ -65,7 +65,12 @@ class WP_GeoMeta {
 	 */
 	protected function __construct() {
 		define( 'WP_GEOMETA_HOME', dirname( dirname( __FILE__ ) ) );
-		$this->setup_filters();
+
+		foreach ( $this->meta_types as $type ) {
+			foreach ( $this->meta_actions as $action ) {
+				add_action( "{$action}_{$type}_meta", array( $this, "{$action}_{$type}_meta" ),10,4 );
+			}
+		}
 	}
 
 	/**
@@ -173,17 +178,6 @@ class WP_GeoMeta {
 		foreach ( $this->meta_types as $type ) {
 			$drop = 'DROP TABLE ' . _get_meta_table( $type ) . '_geo';
 			$wpdb->query( $drop ); // @codingStandardsIgnoreLine
-		}
-	}
-
-	/**
-	 * Set up the filters that will listen to meta being added and removed
-	 */
-	protected function setup_filters() {
-		foreach ( $this->meta_types as $type ) {
-			foreach ( $this->meta_actions as $action ) {
-				add_action( "{$action}_{$type}_meta", array( $this, "{$action}_{$type}_meta" ),10,4 );
-			}
 		}
 	}
 

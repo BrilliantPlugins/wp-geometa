@@ -91,11 +91,11 @@ if ( ! function_exists( 'wp_geometa_load_older_version' ) ) {
 			/*
 			 * If we got downgraded, then the first found wp-geometa will have been
 			 * loaded. Lowering the version to this instance's version will allow
-             * WP GeoMeta to pick the highest version again on the next run.
+			 * WP GeoMeta to pick the highest version again on the next run.
 			 *
 			 * Eg. This is v5 and is the first one that WP finds. v6 is also installed
 			 * and v7 was installed. When v7 is no longer found, this (v5) will run since
-             * it was the first one found and will set wp_geometa_version to v5.
+			 * it was the first one found and will set wp_geometa_version to v5.
 			 *
 			 * On the next run, it would find that v6 is the higher version and would update
 			 * wp_geometa_version. On the run after that v6 would be loaded.
@@ -110,9 +110,23 @@ if ( ! function_exists( 'wp_geometa_load_older_version' ) ) {
 if ( is_admin() ) {
 	$plugindir = explode( PATH_SEPARATOR, WP_PLUGIN_DIR ); // full path, no trailing slash
 	$ourdir = explode( PATH_SEPARATOR, plugin_dir_path( __FILE__ ) );
+
+	// If there's only one directory between WP_PLUGIN_DIR and this directory, then we're installed as a plugin.
+	// TODO: Handle being installed as an MU plugin
 	if ( 1 === count( array_diff( $plugindir, $ourdir ) ) ) {
+
 		define( 'WP_GEOMETA_DASH_VERSION', $wp_geometa_version );
 		require_once( dirname( __FILE__ ) . '/lib/wp-geometa-dash.php' );
 		WP_GeoMeta_Dash::get_instance();
+
 	}
 }
+
+if ( !function_exists( 'wpgeometa_activation_hook' ) ) {
+	function wpgeometa_activation_hook() {
+		$wpgeo = WP_GeoMeta::get_instance();
+		$wpgeo->create_geo_tables();
+	}
+}
+
+register_activation_hook( __FILE__ , 'wpgeometa_activation_hook' );

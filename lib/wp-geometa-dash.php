@@ -324,6 +324,7 @@ class WP_GeoMeta_Dash {
 	public function make_table_list_block() {
 
 		$this->set_list_of_geotables();
+		$geometa = WP_GeoMeta::get_instance();
 
 		if ( count( $this->tables_found ) === count( $geometa->meta_types ) ) {
 			return $this->make_status_block( 'good', 'Geo Tables Exist', 'All ' . count( $this->tables_found ) . ' geometa tables exist. (' . implode( ', ', $this->tables_found ) . ')');
@@ -336,26 +337,25 @@ class WP_GeoMeta_Dash {
 
 	public function make_indexes_block() {
 		global $wpdb;
-		$geometa = WP_GeoMeta::get_instance();
 		$tables_found = array();;
-		foreach( $geometa->meta_types as $meta_type ) {
-			$geotable = _get_meta_table( $meta_type ) . '_geo';
-			if ( $geotable !== $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', array( $geotable ) ) ) ) {
-				continue;
-			}
+		$this->set_list_of_geotables();
+		$no_index = array();
 
+		foreach( $this->tables_found as $geotable ) {
 			$create = $wpdb->get_var( 'SHOW CREATE TABLE `' . $geotable . '`', 1 );
-			$has_spatial_index = ( false !== strpos( $create, 'SPATIAL KEY `meta_val_spatial_idx` (`meta_value`)' ) ? 'TRUE' : 'FALSE' ); 
+			$has_spatial_index = strpos( $create, 'SPATIAL KEY `meta_val_spatial_idx` (`meta_value`)' );
 
-			if ( $has_spatial_index ) {
+			if ( false !== $has_spatial_index ) {
 				$tables_found[] = $geotable;
+			} else {
+				$no_index[] = $geotable;
 			}
 		}
 
-		if ( count( $tables_found ) === count( $geometa->meta_types ) ) {
-			return $this->make_status_block( 'good', 'All geo tables indexed', 'All ' . count( $tables_found ) . ' geometa tables have spatial indexes');
+		if ( count( $tables_found ) === count( $this->tables_found ) ) {
+			return $this->make_status_block( 'good', 'All existing geo tables indexed', 'All ' . count( $tables_found ) . ' geometa tables have spatial indexes');
 		} else if ( count( $tables_found ) > 0 ) {
-			return $this->make_status_block( 'fair', 'Some geo tables not indexed', 'Some geo tables are not indexed. This could cause performance issues');
+			return $this->make_status_block( 'fair', 'Some existing geo tables not indexed', 'Some geo tables are not indexed. The following tables could have performance issues: ' . implode( ', ', $no_index ));
 		} else {
 			return $this->make_status_block( 'bad', 'No spatial indexes', 'No spatial indexes found. Spatial queries will be slow.');
 		}
