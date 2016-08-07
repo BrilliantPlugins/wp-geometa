@@ -1,6 +1,11 @@
 jQuery(document).ready(function(){
-	var wpgmmap = L.map('wpgmmap').setView([0,0],1);
+	var wpgmmap = L.map('wpgmmap', {
+	  scrollWheelZoom: false
+	}).setView([0,0],1);
 	var wpgmlayer;
+
+	wpgmmap.on('focus', function(e) { e.target.scrollWheelZoom.enable(); });
+	wpgmmap.on('blur', function(e) { e.target.scrollWheelZoom.disable(); });
 
 	L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		maxZoom: 19,
@@ -13,7 +18,8 @@ jQuery(document).ready(function(){
 		jQuery.getJSON(ajaxurl, {
 			'action' : 'wpgm_get_sample_data',
 			'type' : this_layer_info.data('type'),
-			'meta_key' : this_layer_info.data('meta_key')
+			'meta_key' : this_layer_info.data('meta_key'),
+			'subtype' : this_layer_info.data('subtype')
 		}).then(
 
 			function(success){

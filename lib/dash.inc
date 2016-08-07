@@ -33,7 +33,7 @@ defined('ABSPATH') or die('No direct access');
 						print '<td>' . $meta_stat['name'] . '</td>';
 						print '<td>' . $meta_stat['meta_key'] . '</td>';
 						print '<td>' . $meta_stat['quantity'] . '</td>';
-						print '<td data-color="' . $meta_stat['color'] . '" data-type="' . $meta_stat['type']. '" data-meta_key="' . $meta_stat['meta_key'] . '"><button class="wpgmsampledata">View Data</button><div class="colorswatch" style="background-color:' . $meta_stat['color'] . '"</td>';
+						print '<td data-subtype="' . ( isset( $meta_stat['sub_type'] ) ? $meta_stat[ 'sub_type' ] : '' ) . '" data-color="' . $meta_stat['color'] . '" data-type="' . $meta_stat['type']. '" data-meta_key="' . $meta_stat['meta_key'] . '"><button class="wpgmsampledata">View Data</button><div class="colorswatch" style="background-color:' . $meta_stat['color'] . '"</td>';
 						print '</tr>';
 					}
 				?>

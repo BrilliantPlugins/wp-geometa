@@ -437,6 +437,7 @@ foreach( $wpdb->get_results( $q, ARRAY_A ) as $geometa ) {
 		'type' => 'post',
 		'meta_key' => $geometa['meta_key'],
 		'quantity' => $geometa['quantity'],
+		'sub_type' => $geometa['post_type'],
 	);
 }
 		}
@@ -555,11 +556,14 @@ foreach( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) {
 			WHERE
 			m.meta_key=%s
 			AND geo.fk_meta_id=m.' . $id_column . '
-			AND t.' . $table_id . '=geo.' . $type . '_id
-			ORDER BY RAND()
+			AND t.' . $table_id . '=geo.' . $type . '_id ';
+		if ( ! empty( $_GET['subtype'] ) ) {
+			$q .= ' AND t.post_type = %s ';
+		}
+		$q .= ' ORDER BY RAND()
 			LIMIT 500';
 
-$sql = $wpdb->prepare( $q, array( $_GET['meta_key'] ) );
+$sql = $wpdb->prepare( $q, array( $_GET['meta_key'], $_GET['subtype'],'asdf' ) );
 
 $res = $wpdb->get_results( $sql, ARRAY_A);
 
@@ -569,7 +573,13 @@ if ( empty( $res ) ) {
 
 $geojson = array();
 
-$type = ucfirst( $type );
+
+if ( !empty( $_GET['subtype'] ) ) {
+	$post_type_object = get_post_type_object( $_GET['subtype'] );
+	$type = $post_type_object->labels->name . ' (post)';
+} else {
+	$type = ucfirst( $type );
+}
 
 foreach( $res as $record ) {
 	$featureCollection = WP_GeoUtil::merge_geojson( $record['meta_value'] );
