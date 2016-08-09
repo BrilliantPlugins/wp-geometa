@@ -64,7 +64,7 @@ jQuery(document).ready(function(){
 		if (confirm('Are you sure you want to ' + desc + '?') === true) {
 
 			jQuery('.wpgm-danger-action').prop('disabled','disabled');
-			jQuery('#danger-spinner').addClass('is-active').addClass('spinner');
+			jQuery('#danger-spinner').addClass('spinny');
 
 			jQuery.get(ajaxurl, {
 				'action' : 'wpgm_dangerzone',
@@ -73,10 +73,10 @@ jQuery(document).ready(function(){
 			function(success){
 				jQuery('#wpgm-danger-results').html(success);
 				jQuery('.wpgm-danger-action').prop('disabled','');
-				jQuery('#danger-spinner').removeClass('is-active');
+				jQuery('#danger-spinner').removeClass('spinny');
 			}, function(failure) {
 				jQuery('.wpgm-danger-action').prop('disabled','');
-				jQuery('#danger-spinner').removeClass('is-active');
+				jQuery('#danger-spinner').removeClass('spinny');
 			}
 			);
 		}

@@ -22,7 +22,7 @@
  */
 require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 $this_plugin_info = get_plugin_data( __FILE__, false, false );
-$wp_geometa_version = $this_plugin_info[ 'Version' ];
+$wp_geometa_version = $this_plugin_info['Version'];
 $wp_geometa_max_version = get_option( 'wp_geometa_version', '0.0.0' );
 $wp_geometa_db_version = get_option( 'wp_geometa_db_version', '0.0.0' );
 $wp_geometa_load_this_instance = false;
@@ -113,7 +113,7 @@ if ( ! function_exists( 'wp_geometa_load_older_version' ) ) {
 
 
 /**
- * Handle tasks that only matter if we're on the dashboard. 
+ * Handle tasks that only matter if we're on the dashboard.
  *
  * The dashboard allows some actions that should be admin only.
  */
@@ -121,12 +121,12 @@ if ( is_admin() ) {
 
 	/**
 	 * This class is deliberately simple, because if it ever changes
-	 * the changes need to be backwards compatible. 
+	 * the changes need to be backwards compatible.
 	 *
 	 * We're using a singleton instead of a global array to capture
-	 * each WP-GeoMeta's version and location. 
+	 * each WP-GeoMeta's version and location.
 	 */
-	if ( !class_exists( 'WP_GeoMeta_Installs' ) ) {
+	if ( ! class_exists( 'WP_GeoMeta_Installs' ) ) {
 		class WP_GeoMeta_Installs {
 			/**
 			 * Singleton variable
@@ -166,7 +166,7 @@ if ( is_admin() ) {
 
 	/**
 	 * If there's only one directory between WP_PLUGIN_DIR and this directory, then we're installed as a plugin,
-	 * and we should show a dashboard. 
+	 * and we should show a dashboard.
 	 *
 	 * We don't want to force a dashboard on plugin devs who use WP-GeoMeta as a library.
 	 *
@@ -182,11 +182,11 @@ if ( is_admin() ) {
 }
 
 /**
- * Set up an activation hook for when this is a plugin. 
+ * Set up an activation hook for when this is a plugin.
  *
  * Plugins using this as a lib should run $wpgeo->create_geo_tables() themselves
  */
-if ( !function_exists( 'wpgeometa_activation_hook' ) ) {
+if ( ! function_exists( 'wpgeometa_activation_hook' ) ) {
 	function wpgeometa_activation_hook() {
 		$wpgeo = WP_GeoMeta::get_instance();
 		$wpgeo->create_geo_tables();

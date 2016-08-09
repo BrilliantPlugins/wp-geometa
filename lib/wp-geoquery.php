@@ -10,7 +10,7 @@
  * @license GNU GPL v2
  */
 
-defined('ABSPATH') or die('No direct access');
+defined( 'ABSPATH' ) or die( 'No direct access' );
 
 /**
  * This class uses GeoUtil
@@ -152,7 +152,7 @@ class WP_GeoQuery {
 	 */
 	private function make_join_spatial( &$clauses, $meta_query, $type, $primary_table, $primary_id_column, $context, $metatable, $geotable, $id_column, $new_meta_value ) {
 		/*
-		 * Replace the original join with a named subquery that hits the spatial table and performs the 
+         * Replace the original join with a named subquery that hits the spatial table and performs the
 		 * requested spatial operations. It's given the same name as the original table so that we don't
 		 * have to touch ORDERBY.
 		 *

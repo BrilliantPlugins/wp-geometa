@@ -224,3 +224,21 @@ h3.dragons {
 #wpgm-danger-results:empty {
 	display: none;
 }
+
+#danger-spinner {
+	background: rgba(0, 0, 0, 0) url("wheel.gif") no-repeat scroll 0 0 / contain ;
+	height: 15px;
+	margin-left: 5px;
+	width: 15px;
+	display: none;
+}
+
+#danger-spinner.spinny {
+	display: inline-block;
+}
+
+/* Resources */
+.wp-geometa-dash ul {
+	list-style: disc;
+	padding-left: 20px;
+}

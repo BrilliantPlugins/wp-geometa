@@ -9,7 +9,7 @@
  * @license GNU GPL v2
  */
 
-defined('ABSPATH') or die('No direct access');
+defined( 'ABSPATH' ) or die( 'No direct access' );
 
 /**
  * This class uses GeoUtil
@@ -189,7 +189,7 @@ class WP_GeoMeta {
 	}
 
 	/**
-	 * Truncate the geo tables 
+	 * Truncate the geo tables
 	 */
 
 	public function truncate_tables() {
