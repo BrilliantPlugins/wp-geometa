@@ -191,7 +191,6 @@ class WP_GeoMeta {
 	/**
 	 * Truncate the geo tables
 	 */
-
 	public function truncate_tables() {
 		global $wpdb;
 

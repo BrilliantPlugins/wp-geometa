@@ -436,6 +436,7 @@ class WP_GeoUtil {
 	 * message says
 	 *
 	 * @param bool $retest Should we re-check and re-store our capabilities.
+	 * @param bool $lower Should all functions be lower-cased before returning.
 	 */
 	public static function get_capabilities( $retest = false, $lower = true ) {
 		global $wpdb;

@@ -1,6 +1,20 @@
 <?php
+/**
+ * This class and file are respnsible for the WP GeoMeta WordPress dashboard page. This file doesn't need to be loaded
+ * when WP GeoMeta is used as a library.
+ *
+ * @package WP-GeoMeta
+ * @link https://github.com/cimburadotcom/WP-GeoMeta
+ * @author Michael Moore / michael_m@cimbura.com / https://profiles.wordpress.org/stuporglue/
+ * @copyright Cimbura.com, 2016
+ * @license GNU GPL v2
+ */
+
 defined( 'ABSPATH' ) or die( 'No direct access' );
 
+/**
+ * This class encapsulates all the data gathering, display and interaction for the dashboard.
+ */
 class WP_GeoMeta_Dash {
 
 	/**
@@ -235,7 +249,7 @@ class WP_GeoMeta_Dash {
 
 			sort( $funcinfo['funcs'] );
 			foreach ( $funcinfo['funcs'] as $func ) {
-				if ( in_array( strtolower( $func ), $our_caps ) ) {
+				if ( in_array( strtolower( $func ), $our_caps, true ) ) {
 					$our_cap_cats[ $category ]['funcs'][] = $func;
 				}
 			}
@@ -265,6 +279,8 @@ class WP_GeoMeta_Dash {
 
 	/**
 	 * Enqueue our scripts and css for the dashboard
+	 *
+	 * @param string $hook The admin page hook we're processing.
 	 */
 	public function admin_enqueue_scripts( $hook ) {
 		if ( 'tools_page_wp-geometa' !== $hook ) {
@@ -275,6 +291,9 @@ class WP_GeoMeta_Dash {
 		wp_enqueue_style( 'leafletcss', 'https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css', array(), null );
 		wp_enqueue_style( 'wpgeometadash', plugin_dir_url( __FILE__ ) . '/../../assets/wpgeometa.css', array( 'leafletcss' ) );
 		wp_enqueue_script( 'wpgeometadashjs', plugin_dir_url( __FILE__ ) . '/../../assets/wpgeometa.js', array( 'leafletjs' ) );
+
+		// Since we're on the right page, gather the data we need.
+		$this->set_list_of_geotables();
 	}
 
 	/**
@@ -284,6 +303,11 @@ class WP_GeoMeta_Dash {
 		add_management_page( esc_html__( 'WP GeoMeta', 'wp-geometa' ), esc_html__( 'WP GeoMeta','wp-geometa' ), 'install_plugins', 'wp-geometa', array( $this, 'show_dashboard' ) );
 	}
 
+	/**
+	 * This is the top-level function for the dashboard display.
+	 *
+	 * Prints the dashboard HTML.
+	 */
 	public function show_dashboard() {
 		print '<div class="wp-geometa-dash">';
 		$this->section_header();
@@ -296,6 +320,9 @@ class WP_GeoMeta_Dash {
 		print '</div>';
 	}
 
+	/**
+	 * This function sets $this->tables_found and $this->table_types_found. It should be called before displaying the dashboard.
+	 */
 	public function set_list_of_geotables() {
 		global $wpdb;
 
@@ -307,16 +334,18 @@ class WP_GeoMeta_Dash {
 		$this->tables_found = array();
 		foreach ( $geometa->meta_types as $meta_type ) {
 			$geotable = _get_meta_table( $meta_type ) . '_geo';
-			if ( $geotable === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', array( $geotable ) ) ) ) {
+			if ( $geotable === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', array( $geotable ) ) ) ) { // @codingStandardsIgnoreLine
 				$this->tables_found[] = $geotable;
 				$this->table_types_found[] = $meta_type;
 			}
 		}
 	}
 
+	/**
+	 * Get the block that checks if all the tables are present.
+	 */
 	public function block_table_list() {
 
-		$this->set_list_of_geotables();
 		$geometa = WP_GeoMeta::get_instance();
 
 		if ( count( $this->tables_found ) === count( $geometa->meta_types ) ) {
@@ -328,15 +357,16 @@ class WP_GeoMeta_Dash {
 		}
 	}
 
+	/**
+	 * Get the block that shows if all tables are indexed.
+	 */
 	public function block_indexes() {
 		global $wpdb;
 		$tables_found = array();
-		;
-		$this->set_list_of_geotables();
 		$no_index = array();
 
 		foreach ( $this->tables_found as $geotable ) {
-			$create = $wpdb->get_var( 'SHOW CREATE TABLE `' . $geotable . '`', 1 );
+			$create = $wpdb->get_var( 'SHOW CREATE TABLE `' . $geotable . '`', 1 ); // @codingStandardsIgnoreLine
 			$has_spatial_index = strpos( $create, 'SPATIAL KEY `meta_val_spatial_idx` (`meta_value`)' );
 
 			if ( false !== $has_spatial_index ) {
@@ -355,21 +385,27 @@ class WP_GeoMeta_Dash {
 		}
 	}
 
+	/**
+	 * Get the block that shows if we've got a good database version.
+	 */
 	public function block_db_versions() {
 		global $wpdb;
 
 		$our_caps = WP_GeoUtil::get_capabilities();
 		$version_info = $wpdb->get_var( 'SELECT VERSION()' ); // @codingStandardsIgnoreLine
 
-		if ( in_array( 'st_intersects', $our_caps ) ) {
+		if ( in_array( 'st_intersects', $our_caps, true ) ) {
 			return $this->make_status_block( 'good', 'Good Database!', 'Your database version (' . $version_info . ') supports a wide variety of useful spatial functions.' );
-		} else if ( in_array( 'geometrycollection', $our_caps ) ) {
+		} else if ( in_array( 'geometrycollection', $our_caps, true ) ) {
 			return $this->make_status_block( 'fair', 'OK Database', 'Your database version (' . $version_info . ') has some spatial support, but doesn\'t support key spatial functions. Consider upgrading to MySQL 5.6.1 or higher, or MariaDB 5.3.3 or higher.' );
 		} else {
 			return $this->make_status_block( 'poor', 'Bad Database', 'Your database version (' . $version_info . ') doesn\'t appear to have spatial support. You won\'t be able to store or use spatial data.' );
 		}
 	}
 
+	/**
+	 * Get the block that shows if our plugin is up to date.
+	 */
 	public function block_updates() {
 
 		$all_plugins = get_plugin_updates();
@@ -378,7 +414,7 @@ class WP_GeoMeta_Dash {
 
 		/*
          * Three statuses.
-		 * Bad. There are updates and WP_GEOMETA_DASH_VERSION and WP_GEOMETA_VERSION are the same and both are out of date
+		 * Poor. There are updates and WP_GEOMETA_DASH_VERSION and WP_GEOMETA_VERSION are the same and both are out of date
 		 * OK. There are updates, and WP_GEOMETA_DASH_VERSION is out of date, but WP_GEOMETA_VERSION is up to date (some other plugin has an updated version)
 		 * Good. There are no updates: WP_GEOMETA_DASH_VERSION is up to date and WP_GEOMETA_VERSION is up to date
 		 */
@@ -392,25 +428,38 @@ class WP_GeoMeta_Dash {
 		}
 	}
 
+	/**
+	 * Get the block that shows if the GIS data is loaded from the meta table.
+	 */
 	public function block_data_loaded() {
 		return $this->make_status_block( 'fair', 'not yet implemented','asdfasdfasdfasdf' );
 	}
 
+	/**
+	 * Block helper function that actually generates the HTML for a block.
+	 *
+	 * @param string $status The block status. Must be good, fair or poor.
+	 * @param string $title The title to show on the block.
+	 * @param string $description The description for the block.
+	 *
+	 * @return An HTML string.
+	 */
 	public function make_status_block( $status, $title, $description ) {
-
 		$block = '<div class="status-block"><div class="status-circle ' . $status . '"></div><div class="status-title">' . $title . '</div><div class="status-text">' . $description . '</div></div>';
 		return $block;
 	}
 
+	/**
+	 * Gather info about which object types and meta keys have spatial data.
+	 */
 	function get_geometa_stats() {
 		global $wpdb;
 
 		$found_data = array();
-		$this->set_list_of_geotables();
 		$found_tables = $this->table_types_found;
 
-		if ( in_array( 'post', $found_tables ) ) {
-			// Posts
+		if ( in_array( 'post', $found_tables, true ) ) {
+			// Posts.
 			$q = 'SELECT 
 				p.post_type,
 				geo.meta_key,
@@ -426,22 +475,29 @@ class WP_GeoMeta_Dash {
 				geo.meta_key
 				ORDER BY p.post_type, geo.meta_key';
 
-			foreach ( $wpdb->get_results( $q, ARRAY_A ) as $geometa ) {
+			foreach ( $wpdb->get_results( $q, ARRAY_A ) as $geometa ) {  // @codingStandardsIgnoreLine
 
 				$post_type_object = get_post_type_object( $geometa['post_type'] );
 
 				$found_data[] = array(
 					'name' => $post_type_object->labels->name . ' (post)',
 					'type' => 'post',
-					'meta_key' => $geometa['meta_key'],
+					'the_meta_key' => $geometa['meta_key'],
 					'quantity' => $geometa['quantity'],
 					'sub_type' => $geometa['post_type'],
 							);
 			}
 		}
 
-		if ( in_array( 'user', $found_tables ) ) {
-			// Users
+		if ( in_array( 'user', $found_tables, true ) ) {
+			// Users.
+			/**
+			 * We don't actually *use* $wpdb->usermeta, we just
+			 * enable it for users who might need it, so we're going to ignore
+			 * the `Usage of users/usermeta tables is highly discouraged in VIP context`
+			 * message.
+			 */
+			// @codingStandardsIgnoreStart
 			$q = 'SELECT 
 				meta_key, 
 				COUNT(umeta_id) AS quantity
@@ -450,18 +506,20 @@ class WP_GeoMeta_Dash {
 				GROUP BY 
 				meta_key';
 
-			foreach ( $wpdb->get_results( $q, ARRAY_A ) as $usermeta ) {
+			// @codingStandardsIgnoreEnd
+
+			foreach ( $wpdb->get_results( $q, ARRAY_A ) as $usermeta ) {  // @codingStandardsIgnoreLine
 				$found_data[] = array(
 					'name' => 'Users',
 					'type' => 'user',
-					'meta_key' => $usermeta['meta_key'],
+					'the_meta_key' => $usermeta['meta_key'],
 					'quantity' => $usermeta['quantity'],
 							);
 			}
 		}
 
-		if ( in_array( 'term', $found_tables ) ) {
-			// Term Meta
+		if ( in_array( 'term', $found_tables, true ) ) {
+			// Term Meta.
 			$q = 'SELECT 
 				t.name,
 				geo.meta_key,
@@ -477,19 +535,19 @@ class WP_GeoMeta_Dash {
 				geo.meta_key
 				ORDER BY t.name, geo.meta_key';
 
-			foreach ( $wpdb->get_results( $q, ARRAY_A ) as $termmeta ) {
+			foreach ( $wpdb->get_results( $q, ARRAY_A ) as $termmeta ) { // @codingStandardsIgnoreLine
 
 				$found_data[] = array(
 					'name' => $termmeta['name'] . ' (term)',
 					'type' => 'user',
-					'meta_key' => $termmeta['meta_key'],
+					'the_meta_key' => $termmeta['meta_key'],
 					'quantity' => $termmeta['quantity'],
 							);
 			}
 		}
 
-		if ( in_array( 'comment', $found_tables ) ) {
-			// Comment Meta
+		if ( in_array( 'comment', $found_tables, true ) ) {
+			// Comment Meta.
 			$q = 'SELECT 
 				meta_key, 
 				COUNT(meta_id) AS quantity
@@ -498,11 +556,11 @@ class WP_GeoMeta_Dash {
 				GROUP BY 
 				meta_key';
 
-			foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) {
+			foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStandardsIgnoreLine
 				$found_data[] = array(
 					'name' => 'Comments',
 					'type' => 'comment',
-					'meta_key' => $commentmeta['meta_key'],
+					'the_meta_key' => $commentmeta['meta_key'],
 					'quantity' => $commentmeta['quantity'],
 							);
 			}
@@ -515,16 +573,21 @@ class WP_GeoMeta_Dash {
 		return $found_data;
 	}
 
+	/**
+	 * Get 500 random spatial records from a post type.
+	 */
 	public function ajax_wpgm_get_sample_data() {
 		global $wpdb;
 
 		$wpgm = WP_GeoMeta::get_instance();
 
-		if ( ! in_array( $_GET['type'], $wpgm->meta_types ) ) {
+		$type = $_GET['type']; // @codingStandardsIgnoreLine
+		$subtype = ( empty( $_GET['subtype'] ) ? null : $_GET['subtype']);
+
+		if ( ! in_array( $type, $wpgm->meta_types, true ) ) {
 			die();
 		}
 
-		$type = $_GET['type'];
 		$types = $type . 's';
 		$metatype = $type . 'meta';
 		$id_column = 'user' === $type ? 'umeta_id' : 'meta_id';
@@ -555,15 +618,15 @@ class WP_GeoMeta_Dash {
 			m.meta_key=%s
 			AND geo.fk_meta_id=m.' . $id_column . '
 			AND t.' . $table_id . '=geo.' . $type . '_id ';
-		if ( ! empty( $_GET['subtype'] ) ) {
+		if ( ! empty( $subtype ) ) {
 			$q .= ' AND t.post_type = %s ';
 		}
-		$q .= ' ORDER BY RAND()
-			LIMIT 500';
+		$q .= ' ORDER BY RAND() LIMIT 500';
 
-		$sql = $wpdb->prepare( $q, array( $_GET['meta_key'], $_GET['subtype'], 'asdf' ) );
+		$meta_key = $_GET['meta_key']; // @codingStandardsIgnoreLine
 
-		$res = $wpdb->get_results( $sql, ARRAY_A );
+		$placeholders = array( $meta_key, $subtype );
+		$res = $wpdb->get_results( $wpdb->prepare( $q, $placeholders ), ARRAY_A ); // @codingStandardsIgnoreLine
 
 		if ( empty( $res ) ) {
 			wp_send_json( array() );
@@ -571,20 +634,20 @@ class WP_GeoMeta_Dash {
 
 		$geojson = array();
 
-		if ( ! empty( $_GET['subtype'] ) ) {
-			$post_type_object = get_post_type_object( $_GET['subtype'] );
+		if ( ! empty( $_GET['subtype'] ) ) { // @codingStandardsIgnoreLine
+			$post_type_object = get_post_type_object( $_GET['subtype'] );  // @codingStandardsIgnoreLine
 			$type = $post_type_object->labels->name . ' (post)';
 		} else {
 			$type = ucfirst( $type );
 		}
 
 		foreach ( $res as $record ) {
-			$featureCollection = WP_GeoUtil::merge_geojson( $record['meta_value'] );
-			$featureCollection = json_decode( $featureCollection, true );
-			foreach ( $featureCollection['features'] as &$feature ) {
+			$feature_collection = WP_GeoUtil::merge_geojson( $record['meta_value'] );
+			$feature_collection = json_decode( $feature_collection, true );
+			foreach ( $feature_collection['features'] as &$feature ) {
 				$feature['title'] = $type . ' id ' . $record['the_id'];
 			}
-			$geojson[] = $featureCollection;
+			$geojson[] = $feature_collection;
 		}
 
 		$geojson = WP_GeoUtil::merge_geojson( $geojson );
@@ -598,6 +661,9 @@ class WP_GeoMeta_Dash {
 		wp_send_json( $geojson );
 	}
 
+	/**
+	 * Generate a list of WP GeoMeta installs.
+	 */
 	function get_list_of_installs() {
 		// TODO: Support WPMU_PLUGIN_DIR too.
 		$all_plugins = get_plugins();
@@ -632,7 +698,7 @@ class WP_GeoMeta_Dash {
 	 * Handle the danger zone actions
 	 */
 	public function ajax_wpgm_dangerzone() {
-		$real_action = $_GET['action_type'];
+		$real_action = $_GET['action_type']; // @codingStandardsIgnoreLine
 
 		switch ( $real_action ) {
 			case 'run-tests':
@@ -642,7 +708,7 @@ class WP_GeoMeta_Dash {
 				$res = trim( $res );
 				$lines = explode( "\n", $res );
 				array_shift( $lines );
-				print implode( "\n", $lines );
+				print esc_html( implode( "\n", $lines ) );
 				break;
 			case 'remove-tables':
 				$wpgm = WP_GeoMeta::get_instance();
@@ -672,6 +738,9 @@ class WP_GeoMeta_Dash {
 		exit();
 	}
 
+	/**
+	 * Print the dashboard header section.
+	 */
 	public function section_header() {
 		$icon = plugin_dir_url( __FILE__ ) . '/../../assets/icon.png';
 		print '<div class="wpgm-header header noborder"><img src="' . $icon . '" title="WP GeoMeta Logo"/><h2>WP GeoMeta</h2></div><div class="wpgm-status noborder"><div class="status-table">';
@@ -683,6 +752,9 @@ class WP_GeoMeta_Dash {
 		print '</div></div>';
 	}
 
+	/**
+	 * Print the section that shows stored spatial object types, their meta keys and how many records of that type there are.
+	 */
 	public function section_data() {
 		print '<div class="wpgm-data"><h3>Your Spatial Data</h3><div id="wpgmmap"></div><div class="posttypegeotable">';
 		print '<h4>Found Spatial Metadata Types</h4>';
@@ -691,15 +763,18 @@ class WP_GeoMeta_Dash {
 		foreach ( $this->get_geometa_stats() as $meta_stat ) {
 			print '<tr>';
 			print '<td>' . $meta_stat['name'] . '</td>';
-			print '<td>' . $meta_stat['meta_key'] . '</td>';
+			print '<td>' . $meta_stat['the_meta_key'] . '</td>';
 			print '<td>' . $meta_stat['quantity'] . '</td>';
-			print '<td data-subtype="' . ( isset( $meta_stat['sub_type'] ) ? $meta_stat['sub_type'] : '' ) . '" data-color="' . $meta_stat['color'] . '" data-type="' . $meta_stat['type']. '" data-meta_key="' . $meta_stat['meta_key'] . '"><button class="wpgmsampledata">View Data</button><div class="colorswatch" style="background-color:' . $meta_stat['color'] . '"</td>';
+			print '<td data-subtype="' . ( isset( $meta_stat['sub_type'] ) ? $meta_stat['sub_type'] : '' ) . '" data-color="' . $meta_stat['color'] . '" data-type="' . $meta_stat['type']. '" data-meta_key="' . $meta_stat['the_meta_key'] . '"><button class="wpgmsampledata">View Data</button><div class="colorswatch" style="background-color:' . $meta_stat['color'] . '"</td>';
 			print '</tr>';
 		}
 
 		print '</table></div></div>';
 	}
 
+	/**
+	 * Print the list of supported functions.
+	 */
 	public function section_functions() {
 		print '<div class="wpgm-funcs">';
 		print '<h3>Available Spatial Functions</h3>';
@@ -715,6 +790,9 @@ class WP_GeoMeta_Dash {
 		print '</table></div>';
 	}
 
+	/**
+	 * Print the list of WP GeoMeta installs.
+	 */
 	public function section_installs() {
 		print '<div><h3>List of Installs</h3>';
 		print '<p>WP-GeoMeta can be installed as a plugin (like this one) or used as a library by 
@@ -732,6 +810,9 @@ class WP_GeoMeta_Dash {
 		print '</table></div>';
 	}
 
+	/**
+	 * Print the list of useful resources.
+	 */
 	public function section_resources() {
 		print '<div><h3>WP GeoMeta Meta and Resources</h3>
 					<p>
@@ -768,6 +849,9 @@ If you need assistance implementing your GIS solution, please <a href="https://c
 				</div>';
 	}
 
+	/**
+	 * Print the danger section.
+	 */
 	public function section_dragons() {
 				print '<h3 class="dragons">The Danger Zone<span id="danger-spinner"></span></h3>
 				<div class="dragons">
