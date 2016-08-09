@@ -23,6 +23,7 @@
 	vertical-align: middle; 
 	margin-top: 0;
 	margin-bottom: 0;
+	line-height: 1em;
 }
 
 .wp-geometa-dash > div {
@@ -46,21 +47,23 @@
 /* System status shapes */
 
 .status-circle {
-	height: 50px;
-	width: 50px;
+	height: 25px;
+	width: 25px;
 	display: inline-block;
-	border-radius: 50px;
+	border-radius: 25px;
 	color: #000000;
-	border-width: 8px;
+	border-width: 6px;
 	border-style: solid;
+	vertical-align: middle
 }
 
 .status-circle:before {
 	display: block;
 	position: absolute;
-	font-size: 50px;
-	line-height: 38px; 
-	width: 50px;
+	font-size: 25px;
+	line-height: 28px; 
+	width: 25px;
+	text-align: center;
 }
 
 .status-circle.good {
@@ -91,9 +94,15 @@
 }
 
 .status-title {
-	text-align: center;
-	font-weight: bold;
+	display: inline-block;
 	font-size: 18px;
+	font-weight: bold;
+	max-width: calc(100% - 45px);
+	padding-left: 10px;
+	padding-right: 10px;
+	text-align: left;
+	vertical-align: middle;
+	white-space: normal;
 }
 
 .status-table {
@@ -102,15 +111,14 @@
 }
 
 .status-table .status-block {
-	display: table-cell;
-	text-align: center;
-	max-width: 300px;
-	padding: 20px;
+	padding: 3px 5px;
+	text-align: left;
+	white-space: nowrap;
+	width: 100%;
 }
 
-.status-text {
-	text-align: left;
-	margin-top: 15px;
+table.summary td:first-child {
+	text-align: center;
 }
 
 /* Function list table */

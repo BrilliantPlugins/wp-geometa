@@ -349,11 +349,11 @@ class WP_GeoMeta_Dash {
 		$geometa = WP_GeoMeta::get_instance();
 
 		if ( count( $this->tables_found ) === count( $geometa->meta_types ) ) {
-			$this->make_status_block( 'good', esc_html__( 'Geo Tables Exist' ) , sprintf( esc_html__( 'All %1$s geometa tables exist.' ), count( $this->tables_found ) ) . '<ul><li>' . implode( '</li><li>', $this->tables_found ) . '</li></ul>' );
+			$this->make_status_block( 'good', esc_html__( 'Geo Tables Exist!' ) , esc_html__( 'All geometa tables exist.' ) );
 		} else if ( count( $this->tables_found ) > 0 ) {
 			$this->make_status_block( 'fair', esc_html__( 'Some Geo Tables Exist' ) , sprintf( esc_html__( 'Some geo tables are missing. If this wasn\'t intentional, there could be a problem. %1%s all exist. %2$s don\'t exist' ), implode( ', ', $this->tables_found ), implode( ', ', array_diff( $geometa->meta_types, $this->tables_found ) ) ) );
 		} else {
-			$this->make_status_block( 'poor', esc_html__( 'No Geo Tables Exist' ), esc_html__( 'No geo tables exist. You can try recreating them with the tools at the bottom of this page.' ) );
+			$this->make_status_block( 'poor', esc_html__( 'No Geo Tables Exist!' ), esc_html__( 'No geo tables exist. You can try recreating them with the tools at the bottom of this page.' ) );
 		}
 	}
 
@@ -377,11 +377,11 @@ class WP_GeoMeta_Dash {
 		}
 
 		if ( count( $tables_found ) === count( $this->tables_found ) ) {
-			$this->make_status_block( 'good', esc_html__( 'All existing geo tables indexed' ), sprintf( esc_html__( 'All %1$s geometa tables have spatial indexes' ), count( $tables_found ) ) );
+			$this->make_status_block( 'good', esc_html__( 'Geo Tables Indexed!' ), sprintf( esc_html__( 'All %1$s geometa tables have spatial indexes' ), count( $tables_found ) ) );
 		} else if ( count( $tables_found ) > 0 ) {
-			$this->make_status_block( 'fair', esc_html__( 'Some existing geo tables not indexed' ), sprintf( esc_html__( 'Some geo tables are not indexed. The following tables could have performance issues: %1$s' ), implode( ', ', $no_index ) ) );
+			$this->make_status_block( 'fair', esc_html__( 'Some Geo Tables Not Indexed' ), sprintf( esc_html__( 'Some geo tables are not indexed. The following tables could have performance issues: %1$s' ), implode( ', ', $no_index ) ) );
 		} else {
-			$this->make_status_block( 'poor', esc_html__( 'No spatial indexes' ), esc_html__( 'No spatial indexes found. Spatial queries will be slow.' ) );
+			$this->make_status_block( 'poor', esc_html__( 'No Spatial Indexes!' ), esc_html__( 'No spatial indexes found. Spatial queries will be slow.' ) );
 		}
 	}
 
@@ -420,11 +420,11 @@ class WP_GeoMeta_Dash {
 		 */
 
 		if ( empty( $all_plugins[ $this_plugin ] ) ) {
-			$this->make_status_block( 'good', esc_html__( 'Up to date!' ), sprintf( esc_html__( 'You are running the most recent version of WP-GeoMeta (%1$s)' ), WP_GEOMETA_VERSION ) );
+			$this->make_status_block( 'good', esc_html__( 'Up To Date!' ), sprintf( esc_html__( 'You are running the most recent version of WP-GeoMeta (%1$s).' ), WP_GEOMETA_VERSION ) );
 		} else if ( 0 === version_compare( WP_GEOMETA_VERSION, $all_plugins[ $this_plugin ]->Version ) && -1 === version_compare( WP_GEOMETA_DASH_VERSION, $all_plugins[ $this_plugin ]->Version ) ) {
-			$this->make_status_block( 'fair', esc_html__( 'Out of date.' ), sprintf( esc_html__( 'A plugin you are using is providing the most recent version of the WP-GeoMeta library (%1$s), but this plugin is out of date.', WP_GEOMETA_VERSION ) ) );
+			$this->make_status_block( 'fair', esc_html__( 'Out Of Date.' ), sprintf( esc_html__( 'A plugin you are using is providing the most recent version of the WP-GeoMeta library (%1$s), but this plugin is out of date.', WP_GEOMETA_VERSION ) ) );
 		} else {
-			$this->make_status_block( 'poor', esc_html__( 'Out of date!' ), sprintf( esc_html__( 'You are running an outdated version of WP-GeoMeta (%1$s). Please upgrade!', WP_GEOMETA_VERSION ) ) );
+			$this->make_status_block( 'poor', esc_html__( 'Out Of Date!' ), sprintf( esc_html__( 'You are running an outdated version of WP-GeoMeta (%1$s). Please upgrade!', WP_GEOMETA_VERSION ) ) );
 		}
 	}
 
@@ -432,7 +432,53 @@ class WP_GeoMeta_Dash {
 	 * Get the block that shows if the GIS data is loaded from the meta table.
 	 */
 	public function block_data_loaded() {
-		$this->make_status_block( 'fair', 'not yet implemented','asdfasdfasdfasdf' );
+		global $wpdb;
+
+		$percents_loaded = array();
+
+		$wpgm = WP_GeoMeta::get_instance();
+
+		$total_meta = 0;
+		$total_geo = 0;
+
+		foreach ( $wpgm->meta_types as $meta_type ) {
+			$metatable = _get_meta_table( $meta_type );
+			$geotable = $metatable . '_geo';
+
+			$num_meta = $wpdb->get_var( "SELECT COUNT(*) FROM $metatable WHERE $metatable.meta_value LIKE '%{%Feature%geometry%}%'" ); // @codingStandardsIgnoreLine
+
+			$total_meta += $num_meta;
+
+			if ( 0 === $num_meta ) {
+				$percents_loaded[ $meta_type ] = 1;
+				continue;
+			}
+
+			if ( in_array( $meta_type, $this->table_types_found, true ) ) {
+				$num_geo = $wpdb->get_var( "SELECT COUNT(*) FROM $geotable" ); // @codingStandardsIgnoreLine
+
+				$total_geo += $num_geo;
+			} else {
+				$percents_loaded[ $meta_type ] = 0;
+				continue;
+			}
+
+			$percents_loaded[ $meta_type ] = $num_geo / $num_meta;
+		}
+
+		if ( 0 === $total_meta ) {
+			$total_percent = 100;
+		} else {
+			$total_percent = $total_geo / $total_meta * 100;
+		}
+
+		if ( 100 === $total_percent ) {
+			$this->make_status_block( 'good', esc_html__( 'All Spatial Data Loaded!' ), sprintf( esc_html__( 'All %1$s spatial records are loaded!' ), $total_meta ) );
+		} else if ( $total_percent > 0 ) {
+			$this->make_status_block( 'fair', esc_html__( 'Some Spatial Data Loaded' ), sprintf( esc_html__( '%1$s% of spatial records are loaded (%2$s records not loaded). Try using the %3$sPopulate WP GeoMeta Tables%4$s tool below to load them.' ), $total_percent, ( $total_meta - $total_geo ), '<em>', '</em>' ) );
+		} else {
+			$this->make_status_block( 'poor', esc_html__( 'No Spatial Data Loaded!' ), sprintf( esc_html__( 'Please verify that the spatial tables exist, then use the %1$sPopulate WP GeoMeta Tables%2$s tool below to load the data.' ), '<em>', '</em>' ) );
+		}
 	}
 
 	/**
@@ -443,7 +489,8 @@ class WP_GeoMeta_Dash {
 	 * @param string $description The description for the block.
 	 */
 	public function make_status_block( $status, $title, $description ) {
-		print '<div class="status-block"><div class="status-circle ' . esc_attr( $status ). '"></div><div class="status-title">' . esc_html( $title ) . '</div><div class="status-text">' . $description  . '</div></div>'; // @codingStandardsIgnoreLine -- $title and $description are already escaped
+		print '<tr><td><div class="status-block"><div class="status-circle ' . esc_attr( $status ). '"></div><div class="status-title">' . esc_html( $title ) . '</div></td><td>' . $description  . '</td></tr>'; // @codingStandardsIgnoreLine -- $title and $description are already escaped
+		// print '<div class="status-block"><div class="status-circle ' . esc_attr( $status ). '"></div><div class="status-title">' . esc_html( $title ) . '</div><div class="status-text">' . $description  . '</div></div>'; // @codingStandardsIgnoreLine -- $title and $description are already escaped
 	}
 
 	/**
@@ -740,12 +787,14 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	 */
 	public function section_header() {
 		$icon = plugin_dir_url( __FILE__ ) . '/../../assets/icon.png';
-		print '<div class="wpgm-header header noborder"><img src="' . esc_attr( $icon ). '" title="WP GeoMeta Logo"/><h2>WP GeoMeta</h2></div><div class="wpgm-status noborder"><div class="status-table">';
+		print '<div class="wpgm-header header noborder"><h2><img src="' . esc_attr( $icon ). '" title="WP GeoMeta Logo"/>WP GeoMeta</h2></div><div class="wpgm-status noborder"><div class="status-table">';
+		print '<table class="summary">';
 		$this->block_updates();
 		$this->block_table_list();
 		$this->block_indexes();
 		$this->block_db_versions();
 		$this->block_data_loaded();
+		print '</table>';
 		print '</div></div>';
 	}
 
@@ -779,7 +828,11 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	 * Print the section showing some basic quick-start info.
 	 */
 	public function section_quickstart() {
-		print '<div><h3>QUICKSTART</h3></div>';
+		print '<div><h3>QUICKSTART</h3>';
+
+		print 'GeoJSON, adding meta, updating meta, deleting meta, querying, link to  more info';
+
+		print '</div>';
 	}
 
 	/**
@@ -859,7 +912,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	public function section_dragons() {
 		print '<h3 class="dragons">'. esc_html__( 'The Danger Zone' ) . '<span id="danger-spinner"></span></h3>';
 		print '<div class="dragons"><p>';
-		print sprintf( esc_html__( '%1$sImportant%2$s: The following section has funtionality that may destroy your spatial data. Your original metadata is never touched, but deleting data may impact plugins or custom code that expect it to be present.' ),'<strong>','</strong' );
+		print sprintf( esc_html__( '%1$sImportant%2$s: The following section has funtionality that may destroy your spatial data. Your original metadata is never touched, but deleting data may impact plugins or custom code that expect it to be present.' ),'<strong>','</strong>' );
 		print'</p><table>';
 
 		// Run tests.
