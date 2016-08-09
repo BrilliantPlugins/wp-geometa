@@ -1,6 +1,6 @@
 jQuery(document).ready(function(){
 	var wpgmmap = L.map('wpgmmap', {
-	  scrollWheelZoom: false
+		scrollWheelZoom: false
 	}).setView([0,0],1);
 	var wpgmlayer;
 
@@ -55,5 +55,30 @@ jQuery(document).ready(function(){
 			function(failure){
 				console.log('Failure is not acceptable (yet).');
 			});
+	});
+
+	jQuery('.wpgm-danger-action').on('click', function(e){
+		var action_type = jQuery(e.target).data('action');
+		var desc = jQuery(e.target).html();
+
+		if (confirm('Are you sure you want to ' + desc + '?') === true) {
+
+			jQuery('.wpgm-danger-action').prop('disabled','disabled');
+			jQuery('#danger-spinner').addClass('is-active').addClass('spinner');
+
+			jQuery.get(ajaxurl, {
+				'action' : 'wpgm_dangerzone',
+				'action_type' : action_type
+			}).then(
+			function(success){
+				jQuery('#wpgm-danger-results').html(success);
+				jQuery('.wpgm-danger-action').prop('disabled','');
+				jQuery('#danger-spinner').removeClass('is-active');
+			}, function(failure) {
+				jQuery('.wpgm-danger-action').prop('disabled','');
+				jQuery('#danger-spinner').removeClass('is-active');
+			}
+			);
+		}
 	});
 });

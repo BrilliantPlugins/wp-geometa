@@ -15,7 +15,14 @@
  * @package WP-GeoMeta
  */
 
-$wp_geometa_version = '0.1.1';
+
+/**
+ * Gather some self metadata so that if WP-GeoMeta is included as a lib in multiple plugins
+ * and/or as a plugin itself, we can determine which one to load.
+ */
+require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+$this_plugin_info = get_plugin_data( __FILE__, false, false );
+$wp_geometa_version = $this_plugin_info[ 'Version' ];
 $wp_geometa_max_version = get_option( 'wp_geometa_version', '0.0.0' );
 $wp_geometa_db_version = get_option( 'wp_geometa_db_version', '0.0.0' );
 $wp_geometa_load_this_instance = false;
@@ -56,7 +63,7 @@ if ( 1 === $wp_geometa_version_status ) {
 }
 
 /**
- * There's a chance that someone installed a newere version of the plugin,
+ * There's a chance that someone installed a newer version of the plugin,
  * (or a plugin that used the library) which caused the option to get set,
  * then removed that plugin, which would mean that we aren't loading the
  * usual way.
@@ -64,8 +71,6 @@ if ( 1 === $wp_geometa_version_status ) {
  * Add an action to try to load our classes after the rest of the plugins
  * get a chance to load.
  */
-
-
 if ( ! function_exists( 'wp_geometa_load_older_version' ) ) {
 	/**
 	 * Load this instance's libraries.
@@ -106,27 +111,85 @@ if ( ! function_exists( 'wp_geometa_load_older_version' ) ) {
 	add_action( 'plugins_loaded', 'wp_geometa_load_older_version' );
 }
 
-// Only try to show dashboard on admin pages.
+
+/**
+ * Handle tasks that only matter if we're on the dashboard. 
+ *
+ * The dashboard allows some actions that should be admin only.
+ */
 if ( is_admin() ) {
-	$plugindir = explode( PATH_SEPARATOR, WP_PLUGIN_DIR ); // full path, no trailing slash
-	$ourdir = explode( PATH_SEPARATOR, plugin_dir_path( __FILE__ ) );
 
-	// If there's only one directory between WP_PLUGIN_DIR and this directory, then we're installed as a plugin.
-	// TODO: Handle being installed as an MU plugin
-	if ( 1 === count( array_diff( $plugindir, $ourdir ) ) ) {
+	/**
+	 * This class is deliberately simple, because if it ever changes
+	 * the changes need to be backwards compatible. 
+	 *
+	 * We're using a singleton instead of a global array to capture
+	 * each WP-GeoMeta's version and location. 
+	 */
+	if ( !class_exists( 'WP_GeoMeta_Installs' ) ) {
+		class WP_GeoMeta_Installs {
+			/**
+			 * Singleton variable
+			 *
+			 * @var $_instance
+			 */
+			private static $_instance = null;
 
+			/**
+			 * Get the singleton instance.
+			 */
+			public static function get_instance() {
+				return ( is_null( self::$_instance ) ? new self : self::$_instance );
+			}
+
+			/**
+			 * Add an install listing
+			 *
+			 * @param string $file __FILE__ of wp-geometa.php
+			 * @param string $version the version of wp-geometa.php
+			 */
+			public static function add( $file, $version ) {
+				$self = self::$_instance = WP_GeoMeta_Installs::get_instance();
+				$self->installs[ $file ] = $version;
+			}
+
+			public static function get_list() {
+				$self = WP_GeoMeta_Installs::get_instance();
+				return $self->installs;
+			}
+		}
+	}
+
+	// Add ourself to the list of installs
+	WP_GeoMeta_Installs::add( __FILE__, $wp_geometa_version );
+
+
+	/**
+	 * If there's only one directory between WP_PLUGIN_DIR and this directory, then we're installed as a plugin,
+	 * and we should show a dashboard. 
+	 *
+	 * We don't want to force a dashboard on plugin devs who use WP-GeoMeta as a library.
+	 *
+	 * TODO: Handle being installed as an MU plugin
+	 */
+	$plugindir = explode( DIRECTORY_SEPARATOR, trim( WP_PLUGIN_DIR, '/' ) ); // full path, no trailing slash
+	$ourdir = explode( DIRECTORY_SEPARATOR, trim( plugin_dir_path( __FILE__ ), '/' ) );
+	if ( 1 === count( array_diff( $ourdir, $plugindir ) ) ) {
 		define( 'WP_GEOMETA_DASH_VERSION', $wp_geometa_version );
 		require_once( dirname( __FILE__ ) . '/lib/wp-geometa-dash.php' );
 		WP_GeoMeta_Dash::get_instance();
-
 	}
 }
 
+/**
+ * Set up an activation hook for when this is a plugin. 
+ *
+ * Plugins using this as a lib should run $wpgeo->create_geo_tables() themselves
+ */
 if ( !function_exists( 'wpgeometa_activation_hook' ) ) {
 	function wpgeometa_activation_hook() {
 		$wpgeo = WP_GeoMeta::get_instance();
 		$wpgeo->create_geo_tables();
 	}
+	register_activation_hook( __FILE__ , 'wpgeometa_activation_hook' );
 }
-
-register_activation_hook( __FILE__ , 'wpgeometa_activation_hook' );

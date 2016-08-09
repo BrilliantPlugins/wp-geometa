@@ -43,150 +43,184 @@
 	color: #333;
 }
 
-/**
- * System status shapes
- */
+/* System status shapes */
 
-	.status-circle {
-		height: 50px;
-		width: 50px;
-		display: inline-block;
-		border-radius: 50px;
-		color: #000000;
-		border-width: 8px;
-		border-style: solid;
-	}
+.status-circle {
+	height: 50px;
+	width: 50px;
+	display: inline-block;
+	border-radius: 50px;
+	color: #000000;
+	border-width: 8px;
+	border-style: solid;
+}
 
-	.status-circle:before {
-		display: block;
-		position: absolute;
-		font-size: 50px;
-		line-height: 38px; 
-		width: 50px;
-	}
+.status-circle:before {
+	display: block;
+	position: absolute;
+	font-size: 50px;
+	line-height: 38px; 
+	width: 50px;
+}
 
-	.status-circle.good {
-		border-color: #499b44; /* grey green */
-		background-color: #29df20; /* bright green */
-	}
+.status-circle.good {
+	border-color: #499b44; /* grey green */
+	background-color: #29df20; /* bright green */
+}
 
-	.status-circle.good:before {
-		content: '✔';
-	}
+.status-circle.good:before {
+	content: '✔';
+}
 
-	.status-circle.fair {
-		border-color: #98752c; /* grey orange */
-		background-color: #f6b01b; /* bright orange */
-	}
+.status-circle.fair {
+	border-color: #98752c; /* grey orange */
+	background-color: #f6b01b; /* bright orange */
+}
 
-	.status-circle.fair:before {
-		content: '❋';
-	}
+.status-circle.fair:before {
+	content: '❋';
+}
 
-	.status-circle.poor {
-		border-color: #9b4544; /* grey red */
-		background-color: #fe2624; /* bright red*/
-	}
+.status-circle.poor {
+	border-color: #9b4544; /* grey red */
+	background-color: #fe2624; /* bright red*/
+}
 
-	.status-circle.poor:before {
-		content: '✗';
-	}
+.status-circle.poor:before {
+	content: '✗';
+}
 
-	.status-title {
-		text-align: center;
-		font-weight: bold;
-		font-size: 18px;
-	}
+.status-title {
+	text-align: center;
+	font-weight: bold;
+	font-size: 18px;
+}
 
-	.status-table {
-		display: table;
-		width: 100%;
-	}
+.status-table {
+	display: table;
+	width: 100%;
+}
 
-	.status-table .status-block {
-		display: table-cell;
-		text-align: center;
-		max-width: 300px;
-		padding: 20px;
-	}
+.status-table .status-block {
+	display: table-cell;
+	text-align: center;
+	max-width: 300px;
+	padding: 20px;
+}
 
-	.status-text {
-		text-align: left;
-		margin-top: 15px;
-	}
+.status-text {
+	text-align: left;
+	margin-top: 15px;
+}
 
-	/**
-	 * Function list table
-	 */
-	.funclist {
-		border: 1px solid #000;
-		border-collapse: collapse;
-		max-width: 100%;
-	}
-	.funclist th {
-		text-align: left;
-	}
-	.funclist tr, .funclist td, .funclist th {
-		border: 1px solid #000;
-		border-collapse: collapse;
-		padding: 5px;
-		vertical-align: top;
-	}
+/* Function list table */
+.funclist {
+	border: 1px solid #000;
+	border-collapse: collapse;
+	max-width: 100%;
+}
+.funclist th {
+	text-align: left;
+}
+.funclist tr, .funclist td, .funclist th {
+	border: 1px solid #000;
+	border-collapse: collapse;
+	padding: 5px;
+	vertical-align: top;
+}
 
-	.funcnamelist {
-		-moz-column-count: 9;
-		-webkit-column-count:9;
-		column-count:9;
+.funcnamelist {
+	-moz-column-count: 9;
+	-webkit-column-count:9;
+	column-count:9;
 
-		-moz-column-gap: 10px;
-		-webkit-column-gap:10px;
-		column-gap:10px;
+	-moz-column-gap: 10px;
+	-webkit-column-gap:10px;
+	column-gap:10px;
 
-		-moz-column-rule: 1px solid #ccc;
-		-webkit-column-rule:1px solid #ccc;
-		column-rule:1px solid #ccc;
+	-moz-column-rule: 1px dotted #ddd;
+	-webkit-column-rule:1px dotted #ddd;
+	column-rule:1px dotted #ddd;
 
-		-moz-column-width: 200px;
-		-webkit-column-width:200px;
-		column-width:200px;
-	}
+	-moz-column-width: 200px;
+	-webkit-column-width:200px;
+	column-width:200px;
+}
 
-	.wordclear {
-		display: block;
-		clear: both;
-	}
+.wordclear {
+	display: block;
+	clear: both;
+}
 
 
-	/**
-	 * Map
-	 */
-	#wpgmmap {
-		height: 400px;
-		margin-right: 20px;
-		max-height: 100vh;
-		min-width: 350px;
-		width: 100%;
-	}
-	.posttypegeotable {
-		margin-top: 10px;
-	}
-	.posttypegeotable table {
-		border-collapse: collapse;
-		width: 100%;
-	}
-	.posttypegeotable table th {
-		text-align: left;
-	}
-	.posttypegeotable td, .posttypegeotable th {
-		border: 1px solid #ccc;
-		padding: 2px 5px;
-	}
+/* Map */
+#wpgmmap {
+	height: 400px;
+	margin-right: 20px;
+	max-height: 100vh;
+	min-width: 350px;
+	width: 100%;
+}
+.posttypegeotable {
+	margin-top: 10px;
+}
+
+/* All tables...  */
+.wp-geometa-dash table {
+	border-collapse: collapse;
+	width: 100%;
+}
+.wp-geometa-dash table th {
+	text-align: left;
+}
+.wp-geometa-dash td, 
+.wp-geometa-dash th {
+	border: 1px solid #ccc;
+	padding: 2px 5px;
+}
 
 
-	.colorswatch {
-		width: 25px;
-		height: 25px;
-		display: inline-block;
-		vertical-align: middle;
-		margin-left: 10px;
-	}
+.colorswatch {
+	width: 25px;
+	height: 25px;
+	display: inline-block;
+	vertical-align: middle;
+	margin-left: 10px;
+}
+
+/* List of installs */
+
+.wpgminstalllist th {
+	text-align: left;
+}
+
+/* Here be dragons */
+
+div.dragons {
+	background-color: #f4d9d9;
+}
+
+div.dragons table button {
+	width: 100%;
+}
+
+h3.dragons {
+	background-color: #d36363;
+	color: #ffffff;
+	padding: 5px;
+	margin: 0;
+	margin-right: 20px;
+}
+
+#wpgm-danger-results {
+	background-color: #fff;
+	padding: 5px;
+	white-space: nowrap;
+	unicode-bidi: embed;
+	font-family: monospace;
+	white-space: pre;
+}
+
+#wpgm-danger-results:empty {
+	display: none;
+}

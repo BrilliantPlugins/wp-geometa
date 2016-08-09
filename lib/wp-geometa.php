@@ -175,10 +175,36 @@ class WP_GeoMeta {
 	 */
 	public function uninstall() {
 		global $wpdb;
+
+		$suppress = $wpdb->suppress_errors( true );
+		$errors = $wpdb->show_errors( false );
+
 		foreach ( $this->meta_types as $type ) {
 			$drop = 'DROP TABLE ' . _get_meta_table( $type ) . '_geo';
 			$wpdb->query( $drop ); // @codingStandardsIgnoreLine
 		}
+
+		$wpdb->suppress_errors( $suppress );
+		$wpdb->show_errors( $errors );
+	}
+
+	/**
+	 * Truncate the geo tables 
+	 */
+
+	public function truncate_tables() {
+		global $wpdb;
+
+		$suppress = $wpdb->suppress_errors( true );
+		$errors = $wpdb->show_errors( false );
+
+		foreach ( $this->meta_types as $type ) {
+			$drop = 'TRUNCATE TABLE ' . _get_meta_table( $type ) . '_geo';
+			$wpdb->query( $drop ); // @codingStandardsIgnoreLine
+		}
+
+		$wpdb->suppress_errors( $suppress );
+		$wpdb->show_errors( $errors );
 	}
 
 	/**
@@ -391,8 +417,8 @@ class WP_GeoMeta {
 					LEFT JOIN {$metatable}_geo ON ({$metatable}_geo.fk_meta_id = $metatable.$meta_pkey )
 					WHERE $metatable.meta_value LIKE '%{%Feature%geometry%}%' 
 					AND {$metatable}_geo.fk_meta_id IS NULL
-					AND $meta_pkey > $maxid 
-					ORDER BY $meta_pkey
+					AND $metatable.$meta_pkey > $maxid 
+					ORDER BY $metatable.$meta_pkey
 					LIMIT 100";
 
 				$res = $wpdb->get_results( $q,ARRAY_A ); // @codingStandardsIgnoreLine

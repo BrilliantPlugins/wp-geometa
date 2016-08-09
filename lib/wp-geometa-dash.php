@@ -259,6 +259,7 @@ class WP_GeoMeta_Dash {
 		add_action( 'wp_ajax_truncate_tables', array( $this, 'ajax_truncate_tables' ) );
 		add_action( 'wp_ajax_populate_tables', array( $this, 'ajax_populate_tables' ) );
 		add_action( 'wp_ajax_wpgm_get_sample_data', array( $this, 'ajax_wpgm_get_sample_data' ) );
+		add_action( 'wp_ajax_wpgm_dangerzone', array( $this, 'ajax_wpgm_dangerzone' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 	}
 
@@ -599,5 +600,80 @@ if ( empty( $geojson ) ) {
 }
 
 wp_send_json( $geojson );
+	}
+
+	function get_list_of_installs() {
+		// TODO: Support WPMU_PLUGIN_DIR too.
+		
+		$all_plugins = get_plugins();
+
+		/*
+		 * Loop through plugins, find the one our wp-geometa is in and get its metadata.
+		 */
+		$installs_info = array();
+		$installs = WP_GeoMeta_Installs::get_list();
+		foreach( $installs as $file => $version ) {
+			$relative_path = str_replace(WP_PLUGIN_DIR, '', $file );
+			$plugin_dir = explode( DIRECTORY_SEPARATOR, trim( $relative_path, DIRECTORY_SEPARATOR ));
+
+			$plugin_base_dir = $plugin_dir[0];
+
+			foreach ( $all_plugins as $plugin_name => $plugin_details ) {
+				if ( strpos( $plugin_name, $plugin_dir[0] . '/' ) === 0 ) {
+					$installs_info[ $plugin_details[ 'Name' ] ] = array(
+						'plugin_name' => $plugin_details[ 'Name' ],
+						'wpgm_version' => $version,
+						'file' => $file,
+					);
+				}
+			}
+		}
+
+		ksort( $installs_info );
+		return $installs_info;
+	}
+
+	/**
+	 * Handle the danger zone actions
+	 */
+	public function ajax_wpgm_dangerzone() {
+		$real_action = $_GET['action_type'];
+
+		switch( $real_action ) {
+			case 'run-tests': 
+				ob_start();
+				require_once( dirname( __FILE__ ) . '/../test/testsuite.php' );
+				$res = ob_get_clean();
+				$res = trim($res);
+				$lines = explode("\n", $res);
+				array_shift($lines);
+				print implode("\n", $lines );
+				break;
+			case 'remove-tables':
+				$wpgm = WP_GeoMeta::get_instance();
+				$wpgm->uninstall();
+				print "The WP-GeoMeta tables should be gone now.";
+				break;
+			case 'create-tables':
+				$wpgm = WP_GeoMeta::get_instance();
+				$wpgm->create_geo_tables();
+				print "The WP-GeoMeta tables should exist now.";
+				break;
+			case 'truncate-tables':
+				$wpgm = WP_GeoMeta::get_instance();
+				$wpgm->truncate_tables();
+				print "The WP-GeoMeta tables should be empty now.";
+				break;
+				break;
+			case 'populate-tables':
+				$wpgm = WP_GeoMeta::get_instance();
+				$wpgm->populate_geo_tables();
+				print "The WP-GeoMeta tables should be populated now.";
+				break;
+			default:
+				print "I don't understand what I'm supposed to do.";
+		}
+
+		exit();
 	}
 }
