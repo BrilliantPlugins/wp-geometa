@@ -81,27 +81,31 @@ jQuery(document).ready(function(){
 				'action' : 'wpgm_dangerzone',
 				'action_type' : action_type
 			}).then(
-			function(success){
-				jQuery('#wpgm-danger-results').html(success);
-				jQuery('.wpgm-danger-action').prop('disabled','');
-				jQuery('#danger-spinner').removeClass('spinny');
-			}, function(failure) {
-				jQuery('.wpgm-danger-action').prop('disabled','');
-				jQuery('#danger-spinner').removeClass('spinny');
-			}
+				function(success){
+					jQuery('#wpgm-danger-results').html(success);
+					jQuery('.wpgm-danger-action').prop('disabled','');
+					jQuery('#danger-spinner').removeClass('spinny');
+				}, function(failure) {
+					jQuery('.wpgm-danger-action').prop('disabled','');
+					jQuery('#danger-spinner').removeClass('spinny');
+				}
 			);
 		}
 	});
 
-	jQuery('.wpgmtabctrl li').on('click', function(e) {
-		var target = jQuery(e.target).data('tab');
-		jQuery('.wpgmtabctrl li.shown').removeClass('shown');
-		jQuery(e.target).addClass('shown');
-		jQuery('.wpgmtab.shown').removeClass('shown');
-		jQuery('.wpgmtab[data-tab="' + target + '"]').addClass('shown');
-
-		if ( target === 'yourmeta' ) {
-			wpgmmap.invalidateSize();
-		}
-	});
+	jQuery('.wpgmtabctrl li').on('click', wpgmeta_change_tab);
+	jQuery('.wpgmmenulink').on('click', wpgmeta_change_tab);
 });
+
+function wpgmeta_change_tab(e) {
+	var target = jQuery(e.target).data('tab');
+	jQuery('.wpgmtabctrl li.shown').removeClass('shown');
+	jQuery('.wpgmtabctrl li[data-tab="' + target + '"]').addClass('shown');
+	jQuery('.wpgmtab.shown').removeClass('shown');
+	jQuery('.wpgmtab[data-tab="' + target + '"]').addClass('shown');
+
+	if ( target === 'yourmeta' ) {
+		wpgmmap.invalidateSize();
+	}
+	return false;
+}

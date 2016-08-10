@@ -319,11 +319,11 @@ class WP_GeoMeta_Dash {
 		$this->section_header();
 
 		print '<ul class="wpgmtabctrl">';
-		print '<li data-tab="yourmeta" class="shown">Your Data</li>';
-		print '<li data-tab="quickstart">Quick Start</li>';
-		print '<li data-tab="functions">Your Functions</li>';
-		print '<li data-tab="resources">Resources</li>';
-		print '<li data-tab="status">System Status</li>';
+		print '<li data-tab="yourmeta" class="shown">' . esc_html__('Your Data') . '</li>';
+		print '<li data-tab="quickstart">' . esc_html__('Quick Start') . '</li>';
+		print '<li data-tab="functions">' . esc_html__('Your Functions') . '</li>';
+		print '<li data-tab="resources">' . esc_html__('Resources') . '</li>';
+		print '<li data-tab="status">' . esc_html__('System Status') . '</li>';
 		print '</ul>';
 
 		// Your data and available functions.
@@ -850,24 +850,33 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	public function section_data() {
 		print '<div class="wpgm-data"><h3>' . esc_html__( 'Your Spatial Data' ) . '<span id="yourdata-spinner"></span></h3><div id="wpgmmap"></div><div class="posttypegeotable">';
 		print '<h4>' . esc_html__( 'Found Spatial Metadata Types' ) . '</h4>';
-		print '<table><tr>';
-		print '<th>' . esc_html__( 'Type' ) . '</th>';
-		print '<th>' . esc_html__( 'Meta Key' ) . '</th>';
-		print '<th>' . esc_html__( 'Number of Records' ) . '</th>';
-		print '<th>' . esc_html__( 'View Sample Data (500 records max)' ) . '</th></tr>';
 
-		foreach ( $this->get_geometa_stats() as $meta_stat ) {
-			print '<tr>';
-			print '<td>' . esc_html( $meta_stat['name'] ) . '</td>';
-			print '<td>' . esc_html( $meta_stat['the_meta_key'] ). '</td>';
-			print '<td>' . esc_html( $meta_stat['quantity'] ). '</td>';
-			print '<td data-subtype="' . ( isset( $meta_stat['sub_type'] ) ? esc_html( $meta_stat['sub_type'] ) : '' ) . '" data-color="' . esc_attr( $meta_stat['color'] ) . '" data-type="' . esc_attr( $meta_stat['type'] ) . '" data-meta_key="' . esc_attr( $meta_stat['the_meta_key'] ). '">';
-			print '<button class="wpgmsampledata">' . esc_html__( 'View Data' ) . '</button>';
-			print '<div class="colorswatch" style="background-color:' . esc_attr( $meta_stat['color'] ) . '"></div></td>';
-			print '</tr>';
+		$meta_stats = $this->get_geometa_stats();
+
+		if ( empty( $meta_stats ) ) {
+			print '<p>' . sprintf( __( 'You don\'t have any spatial data stored yet! To get started see the %1$s%2$s%3$s tab. If you think you should have spatial data, check out the %4$s%5$s%6$s tab.'), '<span class="wpgmmenulink" data-tab="quickstart">', __('Quick Start'),'</span>', '<span class="wpgmmenulink" data-tab="status">', __('System Status'), '</span>' ). '</p>';
+		} else {
+			print '<table><tr>';
+			print '<th>' . esc_html__( 'Type' ) . '</th>';
+			print '<th>' . esc_html__( 'Meta Key' ) . '</th>';
+			print '<th>' . esc_html__( 'Number of Records' ) . '</th>';
+			print '<th>' . esc_html__( 'View Sample Data (500 records max)' ) . '</th></tr>';
+
+			foreach ( $meta_stats as $meta_stat ) {
+				print '<tr>';
+				print '<td>' . esc_html( $meta_stat['name'] ) . '</td>';
+				print '<td>' . esc_html( $meta_stat['the_meta_key'] ). '</td>';
+				print '<td>' . esc_html( $meta_stat['quantity'] ). '</td>';
+				print '<td data-subtype="' . ( isset( $meta_stat['sub_type'] ) ? esc_html( $meta_stat['sub_type'] ) : '' ) . '" data-color="' . esc_attr( $meta_stat['color'] ) . '" data-type="' . esc_attr( $meta_stat['type'] ) . '" data-meta_key="' . esc_attr( $meta_stat['the_meta_key'] ). '">';
+				print '<button class="wpgmsampledata">' . esc_html__( 'View Data' ) . '</button>';
+				print '<div class="colorswatch" style="background-color:' . esc_attr( $meta_stat['color'] ) . '"></div></td>';
+				print '</tr>';
+			}
+
+			print '</table>';
 		}
-
-		print '</table></div></div>';
+		
+		print '</div></div>';
 	}
 
 	/**

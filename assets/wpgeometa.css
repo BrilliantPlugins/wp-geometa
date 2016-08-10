@@ -330,6 +330,12 @@ ul.wpgmtabctrl {
 	cursor: pointer;
 }
 
+.wpgmmenulink {
+	background-color: #eee;
+	cursor: pointer;
+	text-decoration: underline;
+}
+
 .wpgmtab > div {
 	margin-bottom: 30px;
 }
