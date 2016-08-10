@@ -15,6 +15,8 @@ jQuery(document).ready(function(){
 	jQuery('.wpgmsampledata').on('click',function(e){
 		var this_layer_info = jQuery(e.target).parent();
 		var color = this_layer_info.data('color');
+
+		jQuery('#yourdata-spinner').addClass('spinny');
 		jQuery.getJSON(ajaxurl, {
 			'action' : 'wpgm_get_sample_data',
 			'type' : this_layer_info.data('type'),
@@ -50,9 +52,11 @@ jQuery(document).ready(function(){
 				if ( bounds.isValid() ){
 					wpgmmap.fitBounds( bounds );
 				}
+				jQuery('#yourdata-spinner').removeClass('spinny');
 			},
 
 			function(failure){
+				jQuery('#yourdata-spinner').removeClass('spinny');
 				console.log('Failure is not acceptable (yet).');
 			});
 	});
@@ -79,6 +83,18 @@ jQuery(document).ready(function(){
 				jQuery('#danger-spinner').removeClass('spinny');
 			}
 			);
+		}
+	});
+
+	jQuery('.wpgmtabctrl li').on('click', function(e) {
+		var target = jQuery(e.target).data('tab');
+		jQuery('.wpgmtabctrl li.shown').removeClass('shown');
+		jQuery(e.target).addClass('shown');
+		jQuery('.wpgmtab.shown').removeClass('shown');
+		jQuery('.wpgmtab[data-tab="' + target + '"]').addClass('shown');
+
+		if ( target === 'yourmeta' ) {
+			wpgmmap.invalidateSize();
 		}
 	});
 });

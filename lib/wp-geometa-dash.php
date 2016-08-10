@@ -311,12 +311,49 @@ class WP_GeoMeta_Dash {
 	public function show_dashboard() {
 		print '<div class="wp-geometa-dash">';
 		$this->section_header();
-		$this->section_data();
-		$this->section_quickstart();
-		$this->section_functions();
+
+		print '<ul class="wpgmtabctrl">';
+		print '<li data-tab="home" class="shown">Home</li>';
+		print '<li data-tab="installs">Installs</li>';
+		print '<li data-tab="yourmeta">Your WP GeoMeta</li>';
+		print '<li data-tab="functions">Your Functions</li>';
+		print '<li data-tab="quickstart">Quick Start</li>';
+		print '<li data-tab="resources">Resources</li>';
+		print '<li data-tab="danger">Danger Zone</li>';
+		print '</ul>';
+
+		// Home.
+		print '<div class="wpgmtab shown" data-tab="home">';
+		$this->section_status_summary();
+		print '</div>';
+
+		print '<div class="wpgmtab" data-tab="installs">';
 		$this->section_installs();
+		print '</div>';
+
+		// Your data and available functions.
+		print '<div class="wpgmtab" data-tab="yourmeta">';
+		$this->section_data();
+		print '</div>';
+
+		print '<div class="wpgmtab" data-tab="functions">';
+		$this->section_functions();
+		print '</div>';
+
+		// Quickstart and resources.
+		print '<div class="wpgmtab" data-tab="quickstart">';
+		$this->section_quickstart();
+		print '</div>';
+
+		print '<div class="wpgmtab" data-tab="resources">';
 		$this->section_resources();
+		print '</div>';
+
+		// Danger zone!
+		print '<div class="wpgmtab" data-tab="danger">';
 		$this->section_dragons();
+		print '</div>';
+
 		print '</div>';
 	}
 
@@ -395,11 +432,11 @@ class WP_GeoMeta_Dash {
 		$version_info = $wpdb->get_var( 'SELECT VERSION()' ); // @codingStandardsIgnoreLine
 
 		if ( in_array( 'st_intersects', $our_caps, true ) ) {
-			$this->make_status_block( 'good', esc_html__( 'Good Database!' ), sprintf( esc_html__( 'Your database version (%1$s) supports a wide variety of useful spatial functions.' ), $version_info ) );
+			$this->make_status_block( 'good', esc_html__( 'Good Database Version!' ), sprintf( esc_html__( 'Your database version (%1$s) supports a wide variety of useful spatial functions.' ), $version_info ) );
 		} else if ( in_array( 'geometrycollection', $our_caps, true ) ) {
-			$this->make_status_block( 'fair', esc_html__( 'OK Database' ), sprintf( esc_html__( 'Your database version (%1$s) has some spatial support, but doesn\'t support key spatial functions. Consider upgrading to MySQL 5.6.1 or higher, or MariaDB 5.3.3 or higher.' ), $version_info ) );
+			$this->make_status_block( 'fair', esc_html__( 'OK Database Version' ), sprintf( esc_html__( 'Your database version (%1$s) has some spatial support, but doesn\'t support key spatial functions. Consider upgrading to MySQL 5.6.1 or higher, or MariaDB 5.3.3 or higher.' ), $version_info ) );
 		} else {
-			$this->make_status_block( 'poor', esc_html__( 'Bad Database' ), sprintf( esc_html__( 'Your database version (%1$s) doesn\'t appear to have spatial support. You won\'t be able to store or use spatial data.' ), $version_info ) );
+			$this->make_status_block( 'poor', esc_html__( 'Bad Database Version!' ), sprintf( esc_html__( 'Your database version (%1$s) doesn\'t appear to have spatial support. You won\'t be able to store or use spatial data.' ), $version_info ) );
 		}
 	}
 
@@ -420,11 +457,11 @@ class WP_GeoMeta_Dash {
 		 */
 
 		if ( empty( $all_plugins[ $this_plugin ] ) ) {
-			$this->make_status_block( 'good', esc_html__( 'Up To Date!' ), sprintf( esc_html__( 'You are running the most recent version of WP-GeoMeta (%1$s).' ), WP_GEOMETA_VERSION ) );
+			$this->make_status_block( 'good', esc_html__( 'Up To Date!' ), sprintf( esc_html__( 'You are running the most recent version of WP GeoMeta (%1$s).' ), WP_GEOMETA_VERSION ) );
 		} else if ( 0 === version_compare( WP_GEOMETA_VERSION, $all_plugins[ $this_plugin ]->Version ) && -1 === version_compare( WP_GEOMETA_DASH_VERSION, $all_plugins[ $this_plugin ]->Version ) ) {
-			$this->make_status_block( 'fair', esc_html__( 'Out Of Date.' ), sprintf( esc_html__( 'A plugin you are using is providing the most recent version of the WP-GeoMeta library (%1$s), but this plugin is out of date.', WP_GEOMETA_VERSION ) ) );
+			$this->make_status_block( 'fair', esc_html__( 'Out Of Date.' ), sprintf( esc_html__( 'A plugin you are using is providing the most recent version of the WP GeoMeta library (%1$s), but this plugin is out of date.', WP_GEOMETA_VERSION ) ) );
 		} else {
-			$this->make_status_block( 'poor', esc_html__( 'Out Of Date!' ), sprintf( esc_html__( 'You are running an outdated version of WP-GeoMeta (%1$s). Please upgrade!', WP_GEOMETA_VERSION ) ) );
+			$this->make_status_block( 'poor', esc_html__( 'Out Of Date!' ), sprintf( esc_html__( 'You are running an outdated version of WP GeoMeta (%1$s). Please upgrade!', WP_GEOMETA_VERSION ) ) );
 		}
 	}
 
@@ -757,23 +794,23 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 			case 'remove-tables':
 				$wpgm = WP_GeoMeta::get_instance();
 				$wpgm->uninstall();
-				print esc_html__( 'The WP-GeoMeta tables should be gone now.' );
+				print esc_html__( 'The WP GeoMeta tables should be gone now.' );
 				break;
 			case 'create-tables':
 				$wpgm = WP_GeoMeta::get_instance();
 				$wpgm->create_geo_tables();
-				print esc_html__( 'The WP-GeoMeta tables should exist now.' );
+				print esc_html__( 'The WP GeoMeta tables should exist now.' );
 				break;
 			case 'truncate-tables':
 				$wpgm = WP_GeoMeta::get_instance();
 				$wpgm->truncate_tables();
-				print esc_html__( 'The WP-GeoMeta tables should be empty now.' );
+				print esc_html__( 'The WP GeoMeta tables should be empty now.' );
 				break;
 				break;
 			case 'populate-tables':
 				$wpgm = WP_GeoMeta::get_instance();
 				$wpgm->populate_geo_tables();
-				print esc_html__( 'The WP-GeoMeta tables should be populated now.' );
+				print esc_html__( 'The WP GeoMeta tables should be populated now.' );
 				break;
 			default:
 				print esc_html__( "I don't understand what I'm supposed to do." );
@@ -787,7 +824,11 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	 */
 	public function section_header() {
 		$icon = plugin_dir_url( __FILE__ ) . '/../../assets/icon.png';
-		print '<div class="wpgm-header header noborder"><h2><img src="' . esc_attr( $icon ). '" title="WP GeoMeta Logo"/>WP GeoMeta</h2></div><div class="wpgm-status noborder"><div class="status-table">';
+		print '<div class="wpgm-header header noborder"><h2><img src="' . esc_attr( $icon ). '" title="WP GeoMeta Logo"/>WP GeoMeta</h2></div>';
+	}
+
+	public function section_status_summary() {
+		print '<div class="wpgm-status noborder"><div class="status-table">';
 		print '<table class="summary">';
 		$this->block_updates();
 		$this->block_table_list();
@@ -802,7 +843,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	 * Print the section that shows stored spatial object types, their meta keys and how many records of that type there are.
 	 */
 	public function section_data() {
-		print '<div class="wpgm-data"><h3>' . esc_html__( 'Your Spatial Data' ) . '</h3><div id="wpgmmap"></div><div class="posttypegeotable">';
+		print '<div class="wpgm-data"><h3>' . esc_html__( 'Your Spatial Data' ) . '<span id="yourdata-spinner"></span></h3><div id="wpgmmap"></div><div class="posttypegeotable">';
 		print '<h4>' . esc_html__( 'Found Spatial Metadata Types' ) . '</h4>';
 		print '<table><tr>';
 		print '<th>' . esc_html__( 'Type' ) . '</th>';
@@ -830,12 +871,14 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	public function section_quickstart() {
 		print '<div><h3>' . esc_html__('Quick Start') .'</h3>';
 
+		print '<p>' . esc_html__('WP GeoMeta uses the standard WordPress metadata functions. If you are familiar with these functions, you already know how to use WP GeoMeta.') . '</p>';
+
 		print '<p>' . esc_html__('WP GeoMeta watches for GeoJSON metadata values being saved to the database. It saves the GeoJSON like WordPress expects, but also converts the GeoJSON into a spatial format MySQL understands and saves that to special geo-meta tables which can handle spatial data and which have spatial indexes.') . '</p>';
 
 		print '<h4>' . esc_html__('Adding and Updating Data') . '</h4>';
 		print '<p>' . esc_html__('To add spatial data, use the usual add_post_meta or update_post_meta functions like you would for any other metadata, but use GeoJSON for the value.') . '</p>';
 
-		print '<pre>';
+		print '<pre><code>';
 		print '$geojson = \'{' . "\n";
 		print '    "type":"Feature",' . "\n";
 		print '    "properties":{"_post_title":"Test post 17"},' . "\n";
@@ -844,24 +887,24 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 		print '$post_id = get_the_ID();' . "\n";
 		print '$meta_property_name = \'location\';' . "\n";
 		print 'update_post_meta( $post_id, $meta_property_name, $geojson );';
-		print '</pre>';
+		print '</code></pre>';
 
 		print '<h4>' . esc_html__('Fetching and Using Data') . '</h4>';
 
 		print '<p>' . esc_html__('WP GeoMeta doesn\'t do anything when fetching data. You will get back the same GeoJSON value that you stored previously.') . '</p>';
 		print '<p>' . esc_html__('GeoJSON can be used by any of the popular web map software available today.') . '</p>';
-		print '<pre>';
+		print '<pre><code>';
 		print '$post_id = get_the_ID();' . "\n";
 		print '$meta_property_name = \'location\';' . "\n";
 		print '$get_single = true;' . "\n";
 		print '$geojson = get_post_meta( $post_id, $meta_property_name, $get_single );' . "\n";
-		print '</pre>';
+		print '</code></pre>';
 
 		print '<h4>' . esc_html__('Running Spatial Queries') . '</h4>';
 
 		print '<p>' . esc_html__('The real power of GIS and Spatial data becomes evident when you start doing real spatial searches. WP GeoMeta integrates with WP_Query, get_posts and other functions that use WP_Meta_Query under the hood.') . '</p>';
 
-		print '<pre>';
+		print '<pre><code>';
 		print '$bounding_box = \'{"type":"Feature","properties":{},\';' . "\n";
 		print '$bounding_box .= \'"geometry":{"type":"Polygon","coordinates":[[\';' . "\n";
 		print '$bounding_box .= \'[-93.45,45.00],\';' . "\n";
@@ -888,7 +931,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 		print '        print ' . esc_html("<li>") . 'get_the_title()' . esc_html("</li>") . "\n";
 		print '   }' . "\n";
 		print '}';
-		print '</pre>';
+		print '</code></pre>';
 
 		print '</div>';
 	}
@@ -916,12 +959,11 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	 */
 	public function section_installs() {
 		print '<div><h3>' . esc_html__( 'List of Installs' ) . '</h3>';
-		print '<p>' . esc_html__('WP-GeoMeta can be installed as a plugin (like this one) or used as a library by 
-			other plugins. If you have any plugins installed that use WP-GeoMeta as a library, they will
-			be listed below along with which version of WP-GeoMeta they were bundled with.') . '</p>';
-		print '<p>' . esc_html__( 'WP-GeoMeta always uses the most up to date version installed, even if a plugin bundles an older version.' ) . '</p>';
+		print '<p>' . esc_html__('WP GeoMeta can be installed as a plugin or used as a library by 
+			other plugins. This list shows all versions of WP GeoMeta you have installed and which plugin it came with.') . '</p>';
+		print '<p>' . esc_html__( 'WP GeoMeta always uses the most up to date version installed, even if a plugin bundles an older version.' ) . '</p>';
 
-		print '<table class="wpgminstalllist"><tr><th>' . esc_html__( 'Plugin Name' ) . '</th><th>' . esc_html__( 'WP-GeoMeta Version' ) . '</th></tr>';
+		print '<table class="wpgminstalllist"><tr><th>' . esc_html__( 'Plugin Name' ) . '</th><th>' . esc_html__( 'WP GeoMeta Version' ) . '</th></tr>';
 
 		$installs = $this->get_list_of_installs();
 		foreach ( $installs as $install ) {
@@ -936,7 +978,9 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	public function section_resources() {
 		print '<div><h3>' . esc_html__( 'WP GeoMeta Meta and Resources' ) . '</h3>';
 		print '<p>' . sprintf( esc_html__( 'WP GeoMeta is a work of love from the GIS+WordPress development team at %1$s' ), '<a href="http://cimbura.com" target="_blank">Cimbura.com</a>' );
+		print ' ';
 		printf( esc_html__( 'We appreciate %1$sbug reports, feature requests%2$s and %3$spull requests (especially with test cases)%4$s.' ), '<a href="https://github.com/cimburadotcom/WP-GeoMeta/issues" target="_blank">', '</a>','<a href="https://github.com/cimburadotcom/WP-GeoMeta/pulls" target="_blank">', '</a>' );
+		print ' ';
 		printf( esc_html__( 'If you need assistance implementing your GIS solution, please %1$scontact us%2$s with details about what you\'d like to do.' ),  '<a href="https://cimbura.com/contact-us/" target="_blank">', '</a>' );
 		print '</p><p>';
 
@@ -968,13 +1012,14 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	 * Print the danger section.
 	 */
 	public function section_dragons() {
+		print '<div class="dragons">';
 		print '<h3 class="dragons">'. esc_html__( 'The Danger Zone' ) . '<span id="danger-spinner"></span></h3>';
-		print '<div class="dragons"><p>';
+		print '<p>';
 		print sprintf( esc_html__( '%1$sImportant%2$s: The following section has funtionality that may destroy your spatial data. Your original metadata is never touched, but deleting data may impact plugins or custom code that expect it to be present.' ),'<strong>','</strong>' );
 		print'</p><table>';
 
 		// Run tests.
-		print '<tr><td><button data-action="run-tests" class="wpgm-danger-action">' . esc_html__( 'Run Tests' ) . '</button></td>';
+		print '<tr><td><button data-action="run-tests" class="wpgm-danger-action">' . esc_html__( 'Run Regression Tests' ) . '</button></td>';
 		print '<td>' . esc_html__( 'Run the built-in regression tests' ) . '</td></tr>';
 
 		// Remove WP GeoMeta Tables.
@@ -991,7 +1036,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 
 		// Populate WP GeoMeta Tables.
 		print '<tr><td><button data-action="populate-tables" class="wpgm-danger-action">' . esc_html__( 'Populate WP GeoMeta Tables' ) . '</button></td>';
-		print '<td>' . esc_html__( 'Detect any spatial data (GeoJSON) in the non-spatial meta tables which is not stored in WP-GeoMeta and load it. This may take a while!' ) . '</td></tr>';
+		print '<td>' . esc_html__( 'Detect any spatial data (GeoJSON) in the non-spatial meta tables which is not stored in WP GeoMeta and load it. This may take a while!' ) . '</td></tr>';
 
 		print '</table><div id="wpgm-danger-results"></div></div>';
 	}
