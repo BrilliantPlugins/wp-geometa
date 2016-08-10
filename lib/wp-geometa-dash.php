@@ -42,8 +42,8 @@ class WP_GeoMeta_Dash {
 
 		$cap_cats = array(
 			'geom_relationship' => array(
-				'label' => 'Spatial Relationship Tests',
-				'desc' => 'Test topological relationships between two geometries. Some functions may work on a shape\'s bounding box rather than the shape itself.',
+				'label' => __('Spatial Relationship Tests'),
+				'desc' => __('Test topological relationships between two geometries.'),
 				'funcs' => array(
 					'Contains',
 					'Crosses',
@@ -77,8 +77,8 @@ class WP_GeoMeta_Dash {
 			),
 
 			'properties' => array(
-				'label' => 'Geometry Properties',
-				'desc' => 'These functions analyize spatial properties of a single geometry.',
+				'label' => __('Geometry Properties'),
+				'desc' => __('Analyize spatial properties of a single geometry.'),
 				'funcs' => array(
 					'Area',
 					'GLength',
@@ -101,8 +101,8 @@ class WP_GeoMeta_Dash {
 			),
 
 			'investigation' => array(
-				'label' => 'Geometry Disection',
-				'desc' => 'Investigate the type and sub-parts of a geometry.',
+				'label' => __('Geometry Disection'),
+				'desc' => __('Investigate the type and sub-parts of a geometry.'),
 				'funcs' => array(
 					'Dimension',
 					'EndPoint',
@@ -132,8 +132,8 @@ class WP_GeoMeta_Dash {
 			),
 
 			'make_new_geom' => array(
-				'label' => 'Generate new Geometry',
-				'desc' => 'Create a new geometry based on existing geometries and spatial operations.',
+				'label' => __('Generate new Geometry'),
+				'desc' => __('Create a new geometry based on existing geometries and spatial operations.'),
 				'funcs' => array(
 					'Boundary',
 					'Buffer',
@@ -154,8 +154,8 @@ class WP_GeoMeta_Dash {
 			),
 
 			'change_format' => array(
-				'label' => 'Data Format Helpers',
-				'desc' => 'Create or convert geometries from various input and output formats.',
+				'label' => __('Data Format Helpers'),
+				'desc' => __('Create or convert geometries from various input and output formats.'),
 				'funcs' => array(
 					'GeomCollFromText',
 					'GeomCollFromWKB',
@@ -226,8 +226,8 @@ class WP_GeoMeta_Dash {
 				),
 			),
 			'other' => array(
-				'label' => 'Miscellaneous Functions',
-				'desc' => 'Other little-used functions.',
+				'label' => __('Miscellaneous Functions'),
+				'desc' => __('Other little-used functions.'),
 				'funcs' => array(
 					'PointOnSurface',
 					'ST_Buffer_Strategy',
@@ -290,7 +290,13 @@ class WP_GeoMeta_Dash {
 		wp_enqueue_script( 'leafletjs', 'https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js', array(), null );
 		wp_enqueue_style( 'leafletcss', 'https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css', array(), null );
 		wp_enqueue_style( 'wpgeometadash', plugin_dir_url( __FILE__ ) . '/../../assets/wpgeometa.css', array( 'leafletcss' ) );
-		wp_enqueue_script( 'wpgeometadashjs', plugin_dir_url( __FILE__ ) . '/../../assets/wpgeometa.js', array( 'leafletjs' ) );
+
+		wp_register_script( 'wpgeometadashjs', plugin_dir_url( __FILE__ ) . '/../../assets/wpgeometa.js', array( 'leafletjs' ) );
+		$translation_array = array(
+			'action_confirm_dialog' => __( 'Are you sure you want to %1$s?' )
+			);
+		wp_localize_script( 'wpgeometadashjs', 'wpgmjs_strings', $translation_array );
+		wp_enqueue_script( 'wpgeometadashjs' );
 
 		// Since we're on the right page, gather the data we need.
 		$this->set_list_of_geotables();
@@ -942,8 +948,8 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	public function section_functions() {
 		print '<div class="wpgm-funcs">';
 		print '<h3>' . esc_html__( 'Available Spatial Functions' ) . '</h3>';
-		print '<p>' . esc_html__( 'These functions are available in your version of MySQL.' ) . '</p>';
-		print '<p>' . sprintf( esc_html__( 'For a list of all spatial functions MySQL and MariaDB support, along with which database versions support which functions, please visit the %2$sMySQL/MariaDB Spatial Support Matrix%2$s page.' ), '<a href="https://mariadb.com/kb/en/mariadb/mysqlmariadb-spatial-support-matrix/" target="_blank">', '</a>' ) . '</p>';
+		print '<p>' . esc_html__( 'These functions are available in this version of MySQL.' ) . '</p>';
+		print '<p>' . sprintf( esc_html__( 'Spatial function support varries widely between versions of MySQL and MariaDB. Visit the %1$sMySQL/MariaDB Spatial Support Matrix%2$s page for a full breakdown.' ), '<a href="https://mariadb.com/kb/en/mariadb/mysqlmariadb-spatial-support-matrix/" target="_blank">', '</a>' ) . '</p>';
 		print '<table class="funclist"><tr><th>' . esc_html__( 'Function Group' ) . '</th><th>' . esc_html__( 'Functions' ) . '</th></tr>';
 		$our_funcs = $this->get_functions_by_type();
 
@@ -960,7 +966,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	public function section_installs() {
 		print '<div><h3>' . esc_html__( 'List of Installs' ) . '</h3>';
 		print '<p>' . esc_html__('WP GeoMeta can be installed as a plugin or used as a library by 
-			other plugins. This list shows all versions of WP GeoMeta you have installed and which plugin it came with.') . '</p>';
+			other plugins. This list includes all installed versions of WP GeoMeta and which plugin they came with.') . '</p>';
 		print '<p>' . esc_html__( 'WP GeoMeta always uses the most up to date version installed, even if a plugin bundles an older version.' ) . '</p>';
 
 		print '<table class="wpgminstalllist"><tr><th>' . esc_html__( 'Plugin Name' ) . '</th><th>' . esc_html__( 'WP GeoMeta Version' ) . '</th></tr>';
@@ -977,7 +983,9 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	 */
 	public function section_resources() {
 		print '<div><h3>' . esc_html__( 'WP GeoMeta Meta and Resources' ) . '</h3>';
-		print '<p>' . sprintf( esc_html__( 'WP GeoMeta is a work of love from the GIS+WordPress development team at %1$s' ), '<a href="http://cimbura.com" target="_blank">Cimbura.com</a>' );
+
+		$logo = plugin_dir_url( __FILE__ ) . '/../../assets/cimbura_logo.png';
+		print '<p><img src="' . esc_attr( $logo ) . '" class="logo">' . sprintf( esc_html__( 'WP GeoMeta is a work of love from the GIS+WordPress development team at %1$s' ), '<a href="http://cimbura.com" target="_blank">Cimbura.com</a>' );
 		print ' ';
 		printf( esc_html__( 'We appreciate %1$sbug reports, feature requests%2$s and %3$spull requests (especially with test cases)%4$s.' ), '<a href="https://github.com/cimburadotcom/WP-GeoMeta/issues" target="_blank">', '</a>','<a href="https://github.com/cimburadotcom/WP-GeoMeta/pulls" target="_blank">', '</a>' );
 		print ' ';
@@ -986,6 +994,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 
 		print '<h4>' . esc_html__( 'Our Sites' ) . '</h4>';
 		print '<ul>';
+		print '<li><a href="https://cimbura.com" target="_blank">Cimbura.com — ' . esc_html__( 'Our home on the web' ) . '</a></li>';
 		print '<li><a href="https://github.com/cimburadotcom/WP-GeoMeta" target="_blank">' . esc_html__( 'WP GeoMeta on GitHub' ) . '</a></li>';
 		print '<li><a href="http://wherepress.com/" target="_blank">' . esc_html__( 'WherePress.com — Our WordPress/GIS Blog Site' ) . '</a></li>';
 		print '</ul>';

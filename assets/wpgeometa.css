@@ -138,6 +138,15 @@ table.summary td:first-child {
 	vertical-align: top;
 }
 
+.funclist td p {
+	margin-left: 15px;
+	font-style: italic;
+}
+
+.funclist td h4 {
+	font-size: 1.2em;
+}
+
 .funcnamelist {
 	-moz-column-count: 9;
 	-webkit-column-count:9;
@@ -248,6 +257,13 @@ div.dragons table button {
 	padding-left: 20px;
 }
 
+.wp-geometa-dash img.logo {
+	max-width: 100%; 
+	margin: 25px 0;
+	clear:both;
+	display: block;
+}
+
 /* Pre */
 .wp-geometa-dash pre {
 	overflow: auto; 
@@ -258,6 +274,8 @@ div.dragons table button {
 
 .wp-geometa-dash pre code {
 	background: none;
+	padding: 0;
+	margin: 0;
 }
 
 /* Tabs control */

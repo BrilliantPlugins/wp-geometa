@@ -65,7 +65,8 @@ jQuery(document).ready(function(){
 		var action_type = jQuery(e.target).data('action');
 		var desc = jQuery(e.target).html();
 
-		if (confirm('Are you sure you want to ' + desc + '?') === true) {
+		var conf_message = wpgmjs_strings.action_confirm_dialog.replace('%1$s',desc);
+		if (confirm(conf_message) === true) {
 
 			jQuery('.wpgm-danger-action').prop('disabled','disabled');
 			jQuery('#danger-spinner').addClass('spinny');
