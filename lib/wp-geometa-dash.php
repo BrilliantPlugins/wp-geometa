@@ -319,31 +319,16 @@ class WP_GeoMeta_Dash {
 		$this->section_header();
 
 		print '<ul class="wpgmtabctrl">';
-		print '<li data-tab="home" class="shown">Home</li>';
-		print '<li data-tab="installs">Installs</li>';
-		print '<li data-tab="yourmeta">Your WP GeoMeta</li>';
-		print '<li data-tab="functions">Your Functions</li>';
+		print '<li data-tab="yourmeta" class="shown">Your Data</li>';
 		print '<li data-tab="quickstart">Quick Start</li>';
+		print '<li data-tab="functions">Your Functions</li>';
 		print '<li data-tab="resources">Resources</li>';
-		print '<li data-tab="danger">Danger Zone</li>';
+		print '<li data-tab="status">System Status</li>';
 		print '</ul>';
 
-		// Home.
-		print '<div class="wpgmtab shown" data-tab="home">';
-		$this->section_status_summary();
-		print '</div>';
-
-		print '<div class="wpgmtab" data-tab="installs">';
-		$this->section_installs();
-		print '</div>';
-
 		// Your data and available functions.
-		print '<div class="wpgmtab" data-tab="yourmeta">';
+		print '<div class="wpgmtab shown" data-tab="yourmeta">';
 		$this->section_data();
-		print '</div>';
-
-		print '<div class="wpgmtab" data-tab="functions">';
-		$this->section_functions();
 		print '</div>';
 
 		// Quickstart and resources.
@@ -351,12 +336,23 @@ class WP_GeoMeta_Dash {
 		$this->section_quickstart();
 		print '</div>';
 
+		// Your functions
+		print '<div class="wpgmtab" data-tab="functions">';
+		$this->section_functions();
+		print '</div>';
+
+		// Resources
 		print '<div class="wpgmtab" data-tab="resources">';
 		$this->section_resources();
 		print '</div>';
 
-		// Danger zone!
-		print '<div class="wpgmtab" data-tab="danger">';
+
+		// System Status
+		print '<div class="wpgmtab" data-tab="status">';
+		$this->section_status_summary();
+
+		$this->section_installs();
+
 		$this->section_dragons();
 		print '</div>';
 
@@ -967,7 +963,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	 * Print the list of WP GeoMeta installs.
 	 */
 	public function section_installs() {
-		print '<div><h3>' . esc_html__( 'List of Installs' ) . '</h3>';
+		print '<div class="listofinstalls"><h3>' . esc_html__( 'List of Installs' ) . '</h3>';
 		print '<p>' . esc_html__('WP GeoMeta can be installed as a plugin or used as a library by 
 			other plugins. This list includes all installed versions of WP GeoMeta and which plugin they came with.') . '</p>';
 		print '<p>' . esc_html__( 'WP GeoMeta always uses the most up to date version installed, even if a plugin bundles an older version.' ) . '</p>';
@@ -1028,7 +1024,11 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 		print '<h3 class="dragons">'. esc_html__( 'The Danger Zone' ) . '<span id="danger-spinner"></span></h3>';
 		print '<p>';
 		print sprintf( esc_html__( '%1$sImportant%2$s: The following section has funtionality that may destroy your spatial data. Your original metadata is never touched, but deleting data may impact plugins or custom code that expect it to be present.' ),'<strong>','</strong>' );
-		print'</p><table>';
+		print'</p>';
+		
+		print '<p><button class="wpgm-danger-action" data-action="show-dangerzone">' . __('Enter The Danger Zone') . '</button></p>';
+
+		print '<table class="dragonactions">';
 
 		// Run tests.
 		print '<tr><td><button data-action="run-tests" class="wpgm-danger-action">' . esc_html__( 'Run Regression Tests' ) . '</button></td>';

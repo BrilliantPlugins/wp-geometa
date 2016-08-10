@@ -68,6 +68,12 @@ jQuery(document).ready(function(){
 		var conf_message = wpgmjs_strings.action_confirm_dialog.replace('%1$s',desc);
 		if (confirm(conf_message) === true) {
 
+			if ( action_type === 'show-dangerzone' ) {
+				jQuery('.dragonactions').addClass('dangerous');
+				jQuery(e.target).hide();
+				return;
+			}
+
 			jQuery('.wpgm-danger-action').prop('disabled','disabled');
 			jQuery('#danger-spinner').addClass('spinny');
 

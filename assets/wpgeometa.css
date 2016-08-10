@@ -211,14 +211,34 @@ table.summary td:first-child {
 	text-align: left;
 }
 
+.listofinstalls {
+	background-color: #e8f1f3;
+}
+
+.listofinstalls p {
+	padding: 0 4px;
+}
+
 /* Here be dragons */
 
 div.dragons {
 	background-color: #f4d9d9;
 }
 
+div.dragons p {
+	padding: 0 4px;
+}
+
 div.dragons table button {
 	width: 100%;
+}
+
+.dragonactions {
+	display: none;
+}
+
+.dragonactions.dangerous {
+	display: block;
 }
 
 .wp-geometa-dash > div h3.dragons {
@@ -309,3 +329,12 @@ ul.wpgmtabctrl {
 	background-color: #eee;
 	cursor: pointer;
 }
+
+.wpgmtab > div {
+	margin-bottom: 30px;
+}
+
+.wpgmtab > div:last-child {
+	margin-bottom: 0;
+}
+
