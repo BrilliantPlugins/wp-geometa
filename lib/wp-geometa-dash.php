@@ -828,9 +828,67 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	 * Print the section showing some basic quick-start info.
 	 */
 	public function section_quickstart() {
-		print '<div><h3>QUICKSTART</h3>';
+		print '<div><h3>' . esc_html__('Quick Start') .'</h3>';
 
-		print 'GeoJSON, adding meta, updating meta, deleting meta, querying, link to  more info';
+		print '<p>' . esc_html__('WP GeoMeta watches for GeoJSON metadata values being saved to the database. It saves the GeoJSON like WordPress expects, but also converts the GeoJSON into a spatial format MySQL understands and saves that to special geo-meta tables which can handle spatial data and which have spatial indexes.') . '</p>';
+
+		print '<h4>' . esc_html__('Adding and Updating Data') . '</h4>';
+		print '<p>' . esc_html__('To add spatial data, use the usual add_post_meta or update_post_meta functions like you would for any other metadata, but use GeoJSON for the value.') . '</p>';
+
+		print '<pre>';
+		print '$geojson = \'{' . "\n";
+		print '    "type":"Feature",' . "\n";
+		print '    "properties":{"_post_title":"Test post 17"},' . "\n";
+		print '    "geometry":{"type":"Point","coordinates":[-93.27949941158295,45.063696581607836]}' . "\n";
+		print '}\';' . "\n";
+		print '$post_id = get_the_ID();' . "\n";
+		print '$meta_property_name = \'location\';' . "\n";
+		print 'update_post_meta( $post_id, $meta_property_name, $geojson );';
+		print '</pre>';
+
+		print '<h4>' . esc_html__('Fetching and Using Data') . '</h4>';
+
+		print '<p>' . esc_html__('WP GeoMeta doesn\'t do anything when fetching data. You will get back the same GeoJSON value that you stored previously.') . '</p>';
+		print '<p>' . esc_html__('GeoJSON can be used by any of the popular web map software available today.') . '</p>';
+		print '<pre>';
+		print '$post_id = get_the_ID();' . "\n";
+		print '$meta_property_name = \'location\';' . "\n";
+		print '$get_single = true;' . "\n";
+		print '$geojson = get_post_meta( $post_id, $meta_property_name, $get_single );' . "\n";
+		print '</pre>';
+
+		print '<h4>' . esc_html__('Running Spatial Queries') . '</h4>';
+
+		print '<p>' . esc_html__('The real power of GIS and Spatial data becomes evident when you start doing real spatial searches. WP GeoMeta integrates with WP_Query, get_posts and other functions that use WP_Meta_Query under the hood.') . '</p>';
+
+		print '<pre>';
+		print '$bounding_box = \'{"type":"Feature","properties":{},\';' . "\n";
+		print '$bounding_box .= \'"geometry":{"type":"Polygon","coordinates":[[\';' . "\n";
+		print '$bounding_box .= \'[-93.45,45.00],\';' . "\n";
+		print '$bounding_box .= \'[-93.45,45.10],\';' . "\n";
+		print '$bounding_box .= \'[-93.09,45.10],\';' . "\n";
+		print '$bounding_box .= \'[-93.09,45.00],\';' . "\n";
+		print '$bounding_box .= \'[-93.45,45.00]\';' . "\n";
+		print '$bounding_box .= \']]}}\';' . "\n";
+		print "\n";
+		print '$rectangle_query = new WP_Query( array(' . "\n";
+		print '    "meta_query" =&gt; array(' . "\n";
+		print '        array(' . "\n";
+		print '            "key" =&gt; "location",' . "\n";
+		print '            "compare" =&gt; "INTERSECTS",' . "\n";
+		print '            "value" =&gt; $bounding_box' . "\n";
+		print '        )' . "\n";
+		print '    )' . "\n";
+		print '));' . "\n";
+		print "\n";
+		print 'if ( $rectangle_query->have_posts() ) {' . "\n";
+		print '   print ' . esc_html("<ul>") . ';' . "\n";
+		print '    while ( $rectangle_query->have_posts() ) {' . "\n";
+		print '        $rectangle_query->the_post();' . "\n";
+		print '        print ' . esc_html("<li>") . 'get_the_title()' . esc_html("</li>") . "\n";
+		print '   }' . "\n";
+		print '}';
+		print '</pre>';
 
 		print '</div>';
 	}

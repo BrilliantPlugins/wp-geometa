@@ -1,5 +1,5 @@
 jQuery(document).ready(function(){
-	var wpgmmap = L.map('wpgmmap', {
+	window.wpgmmap = L.map('wpgmmap', {
 		scrollWheelZoom: false
 	}).setView([0,0],1);
 	var wpgmlayer;

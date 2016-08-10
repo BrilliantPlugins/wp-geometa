@@ -166,7 +166,6 @@ table.summary td:first-child {
 	height: 400px;
 	margin-right: 20px;
 	max-height: 100vh;
-	min-width: 350px;
 	width: 100%;
 }
 .posttypegeotable {
