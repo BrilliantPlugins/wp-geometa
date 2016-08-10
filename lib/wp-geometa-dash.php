@@ -42,8 +42,8 @@ class WP_GeoMeta_Dash {
 
 		$cap_cats = array(
 			'geom_relationship' => array(
-				'label' => __('Spatial Relationship Tests'),
-				'desc' => __('Test topological relationships between two geometries.'),
+				'label' => __( 'Spatial Relationship Tests' ),
+				'desc' => __( 'Test topological relationships between two geometries.' ),
 				'funcs' => array(
 					'Contains',
 					'Crosses',
@@ -77,8 +77,8 @@ class WP_GeoMeta_Dash {
 			),
 
 			'properties' => array(
-				'label' => __('Geometry Properties'),
-				'desc' => __('Analyize spatial properties of a single geometry.'),
+				'label' => __( 'Geometry Properties' ),
+				'desc' => __( 'Analyize spatial properties of a single geometry.' ),
 				'funcs' => array(
 					'Area',
 					'GLength',
@@ -101,8 +101,8 @@ class WP_GeoMeta_Dash {
 			),
 
 			'investigation' => array(
-				'label' => __('Geometry Disection'),
-				'desc' => __('Investigate the type and sub-parts of a geometry.'),
+				'label' => __( 'Geometry Disection' ),
+				'desc' => __( 'Investigate the type and sub-parts of a geometry.' ),
 				'funcs' => array(
 					'Dimension',
 					'EndPoint',
@@ -132,8 +132,8 @@ class WP_GeoMeta_Dash {
 			),
 
 			'make_new_geom' => array(
-				'label' => __('Generate new Geometry'),
-				'desc' => __('Create a new geometry based on existing geometries and spatial operations.'),
+				'label' => __( 'Generate new Geometry' ),
+				'desc' => __( 'Create a new geometry based on existing geometries and spatial operations.' ),
 				'funcs' => array(
 					'Boundary',
 					'Buffer',
@@ -154,8 +154,8 @@ class WP_GeoMeta_Dash {
 			),
 
 			'change_format' => array(
-				'label' => __('Data Format Helpers'),
-				'desc' => __('Create or convert geometries from various input and output formats.'),
+				'label' => __( 'Data Format Helpers' ),
+				'desc' => __( 'Create or convert geometries from various input and output formats.' ),
 				'funcs' => array(
 					'GeomCollFromText',
 					'GeomCollFromWKB',
@@ -226,8 +226,8 @@ class WP_GeoMeta_Dash {
 				),
 			),
 			'other' => array(
-				'label' => __('Miscellaneous Functions'),
-				'desc' => __('Other little-used functions.'),
+				'label' => __( 'Miscellaneous Functions' ),
+				'desc' => __( 'Other little-used functions.' ),
 				'funcs' => array(
 					'PointOnSurface',
 					'ST_Buffer_Strategy',
@@ -293,7 +293,7 @@ class WP_GeoMeta_Dash {
 
 		wp_register_script( 'wpgeometadashjs', plugin_dir_url( __FILE__ ) . '/../../assets/wpgeometa.js', array( 'leafletjs' ) );
 		$translation_array = array(
-			'action_confirm_dialog' => __( 'Are you sure you want to %1$s?' )
+			'action_confirm_dialog' => __( 'Are you sure you want to %1$s?' ),
 			);
 		wp_localize_script( 'wpgeometadashjs', 'wpgmjs_strings', $translation_array );
 		wp_enqueue_script( 'wpgeometadashjs' );
@@ -833,6 +833,9 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 		print '<div class="wpgm-header header noborder"><h2><img src="' . esc_attr( $icon ). '" title="WP GeoMeta Logo"/>WP GeoMeta</h2></div>';
 	}
 
+	/**
+	 * Print the status summary section.
+	 */
 	public function section_status_summary() {
 		print '<div class="wpgm-status noborder"><div class="status-table">';
 		print '<table class="summary">';
@@ -875,14 +878,14 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	 * Print the section showing some basic quick-start info.
 	 */
 	public function section_quickstart() {
-		print '<div><h3>' . esc_html__('Quick Start') .'</h3>';
+		print '<div><h3>' . esc_html__( 'Quick Start' ) .'</h3>';
 
-		print '<p>' . esc_html__('WP GeoMeta uses the standard WordPress metadata functions. If you are familiar with these functions, you already know how to use WP GeoMeta.') . '</p>';
+		print '<p>' . esc_html__( 'WP GeoMeta uses the standard WordPress metadata functions. If you are familiar with these functions, you already know how to use WP GeoMeta.' ) . '</p>';
 
-		print '<p>' . esc_html__('WP GeoMeta watches for GeoJSON metadata values being saved to the database. It saves the GeoJSON like WordPress expects, but also converts the GeoJSON into a spatial format MySQL understands and saves that to special geo-meta tables which can handle spatial data and which have spatial indexes.') . '</p>';
+		print '<p>' . esc_html__( 'WP GeoMeta watches for GeoJSON metadata values being saved to the database. It saves the GeoJSON like WordPress expects, but also converts the GeoJSON into a spatial format MySQL understands and saves that to special geo-meta tables which can handle spatial data and which have spatial indexes.' ) . '</p>';
 
-		print '<h4>' . esc_html__('Adding and Updating Data') . '</h4>';
-		print '<p>' . esc_html__('To add spatial data, use the usual add_post_meta or update_post_meta functions like you would for any other metadata, but use GeoJSON for the value.') . '</p>';
+		print '<h4>' . esc_html__( 'Adding and Updating Data' ) . '</h4>';
+		print '<p>' . esc_html__( 'To add spatial data, use the usual add_post_meta or update_post_meta functions like you would for any other metadata, but use GeoJSON for the value.' ) . '</p>';
 
 		print '<pre><code>';
 		print '$geojson = \'{' . "\n";
@@ -895,10 +898,10 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 		print 'update_post_meta( $post_id, $meta_property_name, $geojson );';
 		print '</code></pre>';
 
-		print '<h4>' . esc_html__('Fetching and Using Data') . '</h4>';
+		print '<h4>' . esc_html__( 'Fetching and Using Data' ) . '</h4>';
 
-		print '<p>' . esc_html__('WP GeoMeta doesn\'t do anything when fetching data. You will get back the same GeoJSON value that you stored previously.') . '</p>';
-		print '<p>' . esc_html__('GeoJSON can be used by any of the popular web map software available today.') . '</p>';
+		print '<p>' . esc_html__( 'WP GeoMeta doesn\'t do anything when fetching data. You will get back the same GeoJSON value that you stored previously.' ) . '</p>';
+		print '<p>' . esc_html__( 'GeoJSON can be used by any of the popular web map software available today.' ) . '</p>';
 		print '<pre><code>';
 		print '$post_id = get_the_ID();' . "\n";
 		print '$meta_property_name = \'location\';' . "\n";
@@ -906,9 +909,9 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 		print '$geojson = get_post_meta( $post_id, $meta_property_name, $get_single );' . "\n";
 		print '</code></pre>';
 
-		print '<h4>' . esc_html__('Running Spatial Queries') . '</h4>';
+		print '<h4>' . esc_html__( 'Running Spatial Queries' ) . '</h4>';
 
-		print '<p>' . esc_html__('The real power of GIS and Spatial data becomes evident when you start doing real spatial searches. WP GeoMeta integrates with WP_Query, get_posts and other functions that use WP_Meta_Query under the hood.') . '</p>';
+		print '<p>' . esc_html__( 'The real power of GIS and Spatial data becomes evident when you start doing real spatial searches. WP GeoMeta integrates with WP_Query, get_posts and other functions that use WP_Meta_Query under the hood.' ) . '</p>';
 
 		print '<pre><code>';
 		print '$bounding_box = \'{"type":"Feature","properties":{},\';' . "\n";
@@ -931,10 +934,10 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 		print '));' . "\n";
 		print "\n";
 		print 'if ( $rectangle_query->have_posts() ) {' . "\n";
-		print '   print ' . esc_html("<ul>") . ';' . "\n";
+		print '   print ' . esc_html( '<ul>' ) . ';' . "\n";
 		print '    while ( $rectangle_query->have_posts() ) {' . "\n";
 		print '        $rectangle_query->the_post();' . "\n";
-		print '        print ' . esc_html("<li>") . 'get_the_title()' . esc_html("</li>") . "\n";
+		print '        print ' . esc_html( '<li>' ) . 'get_the_title()' . esc_html( '</li>' ) . "\n";
 		print '   }' . "\n";
 		print '}';
 		print '</code></pre>';
