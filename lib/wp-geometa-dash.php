@@ -336,17 +336,17 @@ class WP_GeoMeta_Dash {
 		$this->section_quickstart();
 		print '</div>';
 
-		// Your functions
+		// Your functions.
 		print '<div class="wpgmtab" data-tab="functions">';
 		$this->section_functions();
 		print '</div>';
 
-		// Resources
+		// Resources.
 		print '<div class="wpgmtab" data-tab="resources">';
 		$this->section_resources();
 		print '</div>';
 
-		// System Status
+		// System Status.
 		print '<div class="wpgmtab" data-tab="status">';
 		$this->section_status_summary();
 
@@ -853,7 +853,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 		$meta_stats = $this->get_geometa_stats();
 
 		if ( empty( $meta_stats ) ) {
-			print '<p>' . sprintf( __( 'You don\'t have any spatial data stored yet! To get started see the %1$s%2$s%3$s tab. If you think you should have spatial data, check out the %4$s%5$s%6$s tab.', 'wp-geometa' ), '<span class="wpgmmenulink" data-tab="quickstart">', __( 'Quick Start', 'wp-geometa' ),'</span>', '<span class="wpgmmenulink" data-tab="status">', __( 'System Status', 'wp-geometa' ), '</span>' ). '</p>';
+			print '<p>' . sprintf( esc_html__( 'You don\'t have any spatial data stored yet! To get started see the %1$s%2$s%3$s tab. If you think you should have spatial data, check out the %4$s%5$s%6$s tab.', 'wp-geometa' ), '<span class="wpgmmenulink" data-tab="quickstart">', esc_html__( 'Quick Start', 'wp-geometa' ),'</span>', '<span class="wpgmmenulink" data-tab="status">', esc_html__( 'System Status', 'wp-geometa' ), '</span>' ). '</p>';
 		} else {
 			print '<table><tr>';
 			print '<th>' . esc_html__( 'Type' , 'wp-geometa' ) . '</th>';
@@ -1033,7 +1033,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 		print sprintf( esc_html__( '%1$sImportant%2$s: The following section has funtionality that may destroy your spatial data. Your original metadata is never touched, but deleting data may impact plugins or custom code that expect it to be present.' , 'wp-geometa' ),'<strong>','</strong>' );
 		print'</p>';
 
-		print '<p><button class="wpgm-danger-action" data-action="show-dangerzone">' . __( 'Enter The Danger Zone', 'wp-geometa' ) . '</button></p>';
+		print '<p><button class="wpgm-danger-action" data-action="show-dangerzone">' . esc_html__( 'Enter The Danger Zone', 'wp-geometa' ) . '</button></p>';
 
 		print '<table class="dragonactions">';
 
