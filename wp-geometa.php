@@ -8,8 +8,8 @@
  * Plugin Name: WP-GeoMeta
  * Author: Michael Moore
  * Author URI: http://cimbura.com
- * Version: 0.1.1
- * Code Name: Perfect Tommy - Let her out?
+ * Version: 0.2.0-alpha
+ * Code Name: Penny Priddy
  * Text Domain: wp-geometa
  * Domain Path: /lang
  *
@@ -25,7 +25,6 @@ $this_plugin_info = get_plugin_data( __FILE__, false, false );
 $wp_geometa_version = $this_plugin_info['Version'];
 $wp_geometa_max_version = get_option( 'wp_geometa_version', '0.0.0' );
 $wp_geometa_db_version = get_option( 'wp_geometa_db_version', '0.0.0' );
-$wp_geometa_load_this_instance = false;
 
 /**
  * -1 means that our version is lower.

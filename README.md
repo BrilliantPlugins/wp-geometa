@@ -255,8 +255,11 @@ Changes
 ### 0.2.0: Penny Priddy
  * Upgrading no longer truncates and rebuilds the meta tables. 
  * Fix for joins so user meta should work again (umeta_id vs meta_id key name issue).
- * A dashboard! 
+ * A beautiful dashboard! 
  * Plugin activation hooks so that deactivating/activating without upgrading will recreate database tables
+ * Translation ready!
+ * Portuguese translation!
+ * Code documentation!
 
 ### 0.1.1
  * Only x.x.0 releases will get code names
