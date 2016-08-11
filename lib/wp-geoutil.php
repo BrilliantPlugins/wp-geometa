@@ -2,7 +2,7 @@
 /**
  * This class has geo utils that users and WP_Geo* classes might need.
  *
- * @package WP-GeoMeta
+ * @package wp-geometa
  * @link https://github.com/cimburadotcom/WP-GeoMeta
  * @author Michael Moore / michael_m@cimbura.com / https://profiles.wordpress.org/stuporglue/
  * @copyright Cimbura.com, 2016

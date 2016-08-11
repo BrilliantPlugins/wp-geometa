@@ -20,10 +20,10 @@ require_once( WP_GEOMETA_TESTDIR . '/tests/__SqlFormatter.php');
 
 // A post type for testing with.
 $args = array(
-	"label" => __( 'GeoTests', '' ),
+	"label" => 'GeoTests',
 	"labels" => array(
-		"name" => __( 'GeoTests', '' ),
-		"singular_name" => __( 'GeoTest', '' ),
+		"name" => 'GeoTests',
+		"singular_name" => 'GeoTest',
 	),
 	"description" => "",
 	"public" => true,

@@ -1,0 +1,655 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WP-GeoMeta\n"
+"POT-Creation-Date: 2016-08-11 11:37-0500\n"
+"PO-Revision-Date: 2016-08-11 11:38-0500\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.8\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-KeywordsList: __;_e;esc_html__;_n;_x;_ex;_nx;esc_attr__;esc_attr_e;"
+"esc_html_e;esc_html_x\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: lib\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: lib/wp-geometa-dash.php:45
+msgid "Spatial Relationship Tests"
+msgstr "Testes Relação Espacial"
+
+#: lib/wp-geometa-dash.php:46
+msgid "Test topological relationships between two geometries."
+msgstr "Teste relações topológicas entre duas geometrias."
+
+#: lib/wp-geometa-dash.php:80
+msgid "Geometry Properties"
+msgstr "Propriedades de Geometria"
+
+#: lib/wp-geometa-dash.php:81
+msgid "Analyize spatial properties of a single geometry."
+msgstr "Analisar propriedades de uma geometria."
+
+#: lib/wp-geometa-dash.php:104
+msgid "Geometry Disection"
+msgstr "Dissecação de Geometria"
+
+#: lib/wp-geometa-dash.php:105
+msgid "Investigate the type and sub-parts of a geometry."
+msgstr "Pesquisar o tipo e sub-partes de uma geometria."
+
+#: lib/wp-geometa-dash.php:135
+msgid "Generate new Geometry"
+msgstr "Gerar novo Geometria"
+
+#: lib/wp-geometa-dash.php:136
+msgid ""
+"Create a new geometry based on existing geometries and spatial operations."
+msgstr ""
+"Criar uma nova geometria com base de geometrias existentes e operações "
+"espaciais."
+
+#: lib/wp-geometa-dash.php:157
+msgid "Data Format Helpers"
+msgstr "Ajudantes de Formatar Dados"
+
+#: lib/wp-geometa-dash.php:158
+msgid "Create or convert geometries from various input and output formats."
+msgstr "Criar ou converter geometrias de vários formas de entrada e saída."
+
+#: lib/wp-geometa-dash.php:229
+msgid "Miscellaneous Functions"
+msgstr "Funções Diversas"
+
+#: lib/wp-geometa-dash.php:230
+msgid "Other little-used functions."
+msgstr "Outros funções poucos usados."
+
+#: lib/wp-geometa-dash.php:296
+#, php-format
+msgid "Are you sure you want to %1$s?"
+msgstr "Tem certeza que você quer %1$s?"
+
+#: lib/wp-geometa-dash.php:322
+msgid "Your Data"
+msgstr "Seus Dados"
+
+#: lib/wp-geometa-dash.php:323 lib/wp-geometa-dash.php:856
+#: lib/wp-geometa-dash.php:885
+msgid "Quick Start"
+msgstr "Inicio Rapido"
+
+#: lib/wp-geometa-dash.php:324
+msgid "Your Functions"
+msgstr "Seus Funções"
+
+#: lib/wp-geometa-dash.php:325
+msgid "Resources"
+msgstr "Recursos"
+
+#: lib/wp-geometa-dash.php:326 lib/wp-geometa-dash.php:856
+msgid "System Status"
+msgstr "Status do Sistema"
+
+#: lib/wp-geometa-dash.php:390
+msgid "Geo Tables Exist!"
+msgstr "Tabelas Geo Existem!"
+
+#: lib/wp-geometa-dash.php:390
+msgid "All geometa tables exist."
+msgstr "Todos as tabelas de geometa existem."
+
+#: lib/wp-geometa-dash.php:392
+msgid "Some Geo Tables Exist"
+msgstr "Algumas Tabelas Geo Existem"
+
+#: lib/wp-geometa-dash.php:392
+#, php-format
+msgid ""
+"Some geo tables are missing. If this wasn't intentional, there could be a "
+"problem. %1$s all exist. %2$s don't exist"
+msgstr ""
+"Algumas tabelas geo estão faultando. Se esse não fosse de proposito, pode "
+"ter uma problema. %1$s existem. %2$s não existem."
+
+#: lib/wp-geometa-dash.php:394
+msgid "No Geo Tables Exist!"
+msgstr "Nenhum Tabela Geo Existe!"
+
+#: lib/wp-geometa-dash.php:394
+msgid ""
+"No geo tables exist. You can try recreating them with the tools at the "
+"bottom of this page."
+msgstr ""
+"Nenhum tabela geo existe. Pode tentar os-recriar com os ferramentos no final "
+"deste pagina."
+
+#: lib/wp-geometa-dash.php:418
+msgid "Geo Tables Indexed!"
+msgstr "Tabelas Geo Indexado!"
+
+#: lib/wp-geometa-dash.php:418
+#, php-format
+msgid "All %1$s geometa tables have spatial indexes"
+msgstr "Todas as %1$s tabelas geometa tem índices espaciais"
+
+#: lib/wp-geometa-dash.php:420
+msgid "Some Geo Tables Not Indexed"
+msgstr "Algumas tabelas geo não indexados"
+
+#: lib/wp-geometa-dash.php:420
+#, php-format
+msgid ""
+"Some geo tables are not indexed. The following tables could have performance "
+"issues: %1$s"
+msgstr ""
+"Algumas tabelas geo não estão indexados. Realização de pesquisas pode ser "
+"lento nos seguintes tabelas: %1$s"
+
+#: lib/wp-geometa-dash.php:422
+msgid "No Spatial Indexes!"
+msgstr "Nenhum Índice Espacial!"
+
+#: lib/wp-geometa-dash.php:422
+msgid "No spatial indexes found. Spatial queries will be slow."
+msgstr "Nenhum Índice espacial encontrado. Pesquisas espaciais vão ser lentos."
+
+#: lib/wp-geometa-dash.php:436
+msgid "Good Database Version!"
+msgstr "Banco de Dados Versão Boa!"
+
+#: lib/wp-geometa-dash.php:436
+#, php-format
+msgid ""
+"Your database version (%1$s) supports a wide variety of useful spatial "
+"functions."
+msgstr ""
+"Seu versão de banco de dados (%1$s) suporte vários funções espaciais úteis."
+
+#: lib/wp-geometa-dash.php:438
+msgid "OK Database Version"
+msgstr "Banco de Dados Versão OK"
+
+#: lib/wp-geometa-dash.php:438
+#, php-format
+msgid ""
+"Your database version (%1$s) has some spatial support, but doesn't support "
+"key spatial functions. Consider upgrading to MySQL 5.6.1 or higher, or "
+"MariaDB 5.3.3 or higher."
+msgstr ""
+"Seu versão de banco de dados (%1$s) tem alguma suporte espaciais, mas esta "
+"faltando funções chaves. Considera atualizando até MySQL 5.6.1 ou superior, "
+"ou MariaDB 5.3.3 ou superior."
+
+#: lib/wp-geometa-dash.php:440
+msgid "Bad Database Version!"
+msgstr "Banco de Dados Versão Ruim!"
+
+#: lib/wp-geometa-dash.php:440
+#, php-format
+msgid ""
+"Your database version (%1$s) doesn't appear to have spatial support. You "
+"won't be able to store or use spatial data."
+msgstr ""
+"Seu versão de banco de dados (%1$s) parece não ter suporte espacial. Você "
+"não poderia guardar ou utilizar dados espaciais."
+
+#: lib/wp-geometa-dash.php:461
+msgid "Up To Date!"
+msgstr "Atualizado!"
+
+#: lib/wp-geometa-dash.php:461
+#, php-format
+msgid "You are running the most recent version of WP GeoMeta (%1$s)."
+msgstr "Você esta usando o versão mais recente de WP GeoMeta (%1$s)."
+
+#: lib/wp-geometa-dash.php:463
+msgid "Out Of Date."
+msgstr "Desactualizado."
+
+#: lib/wp-geometa-dash.php:463
+#, php-format
+msgid ""
+"A plugin you are using is providing the most recent version of the WP "
+"GeoMeta library (%1$s), but this plugin is out of date."
+msgstr ""
+"Um plugin você esta usando esta providenciando o versão mais recente do "
+"módulo WP GeoMeta (%1$s), mas este plugin esta desactualizado."
+
+#: lib/wp-geometa-dash.php:465
+msgid "Out Of Date!"
+msgstr "Desactualizado!"
+
+#: lib/wp-geometa-dash.php:465
+#, php-format
+msgid ""
+"You are running an outdated version of WP GeoMeta (%1$s). Please upgrade!"
+msgstr ""
+"Você esta usando um versão desatualizado de WP GeoMeta (%1$s). Atualiza "
+"porfavor!"
+
+#: lib/wp-geometa-dash.php:514
+msgid "All Spatial Data Loaded!"
+msgstr "Todos os dados espaciais carregado!"
+
+#: lib/wp-geometa-dash.php:514
+#, php-format
+msgid "All %1$s spatial records are loaded!"
+msgstr "Todos os %1$s recordes espaciais foram carregado!"
+
+#: lib/wp-geometa-dash.php:516
+msgid "Some Spatial Data Loaded"
+msgstr "Algumas dados espaciais carregado!"
+
+#: lib/wp-geometa-dash.php:516
+#, php-format
+msgid ""
+"%1$s of spatial records are loaded (%2$s records not loaded). Try using the "
+"%3$s%4$s%5$s tool below to load them."
+msgstr ""
+"%1$s recordes espaciais estão carregados (%2$s recordes não carregados). "
+"Tenta usa o ferimento %3$s%4$s%5$s para carregá-los."
+
+#: lib/wp-geometa-dash.php:516 lib/wp-geometa-dash.php:518
+#: lib/wp-geometa-dash.php:1057
+msgid "Populate WP GeoMeta Tables"
+msgstr "Popular as tabelas WP GeoMeta"
+
+#: lib/wp-geometa-dash.php:518
+msgid "No Spatial Data Loaded!"
+msgstr "Nenhum Dados Espacial Carregado!"
+
+#: lib/wp-geometa-dash.php:518
+#, php-format
+msgid ""
+"Please verify that the spatial tables exist, then use the %1$s%2$s%3$s tool "
+"below to load the data."
+msgstr ""
+"Por favor verifica que as tabelas espaciais existem, então utiliza o "
+"ferramenta %1$s%2$s%3$s em baixo para carregar os dados."
+
+#: lib/wp-geometa-dash.php:798
+msgid "The WP GeoMeta tables should be gone now."
+msgstr "As tabelas WP GeoMeta devem ser ido agora."
+
+#: lib/wp-geometa-dash.php:803
+msgid "The WP GeoMeta tables should exist now."
+msgstr "As tabelas WP GeoMeta devem existir agora."
+
+#: lib/wp-geometa-dash.php:808
+msgid "The WP GeoMeta tables should be empty now."
+msgstr "As tabelas WP GeoMeta devem estar vazios agora."
+
+#: lib/wp-geometa-dash.php:814
+msgid "The WP GeoMeta tables should be populated now."
+msgstr "As tabelas WP GeoMeta devem estar preenchido agora."
+
+#: lib/wp-geometa-dash.php:817
+msgid "I don't understand what I'm supposed to do."
+msgstr "Eu não entendo que eu devo fazer."
+
+#: lib/wp-geometa-dash.php:850
+msgid "Your Spatial Data"
+msgstr "Seus Dados Espaciais."
+
+#: lib/wp-geometa-dash.php:851
+msgid "Found Spatial Metadata Types"
+msgstr "Tipos de Metadados Espaciais Encontrados"
+
+#: lib/wp-geometa-dash.php:856
+#, php-format
+msgid ""
+"You don't have any spatial data stored yet! To get started see the %1$s%2$s"
+"%3$s tab. If you think you should have spatial data, check out the %4$s%5$s"
+"%6$s tab."
+msgstr ""
+"Você não tem dados espaciais guardados ainda! Para começar, veja a aba %1$s"
+"%2$s%3$s. Se você acha que já deve ter dados espaciais, veja a aba %4$s%5$s"
+"%6$s."
+
+#: lib/wp-geometa-dash.php:859
+msgid "Type"
+msgstr "Tipo"
+
+#: lib/wp-geometa-dash.php:860
+msgid "Meta Key"
+msgstr "Chave Meta"
+
+#: lib/wp-geometa-dash.php:861
+msgid "Number of Records"
+msgstr "Número de Recordes"
+
+#: lib/wp-geometa-dash.php:862
+msgid "View Sample Data (500 records max)"
+msgstr "Veja Amostra De Dados (500 recordes no máximo)"
+
+#: lib/wp-geometa-dash.php:870
+msgid "View Data"
+msgstr "Veja Dados"
+
+#: lib/wp-geometa-dash.php:887
+msgid ""
+"WP GeoMeta uses the standard WordPress metadata functions. If you are "
+"familiar with these functions, you already know how to use WP GeoMeta."
+msgstr ""
+"WP GeoMeta usa os funções WordPress metadata padrão. Se você já tem "
+"familiaridade com estes funções, você ja sabe como usar o WP GeoMeta."
+
+#: lib/wp-geometa-dash.php:889
+msgid ""
+"WP GeoMeta watches for GeoJSON metadata values being saved to the database. "
+"It saves the GeoJSON like WordPress expects, but also converts the GeoJSON "
+"into a spatial format MySQL understands and saves that to special geo-meta "
+"tables which can handle spatial data and which have spatial indexes."
+msgstr ""
+"WP GeoMeta fica de olho para valores metadados tipo GeoJSON sendo guardados "
+"no banco de dados. O escreve o GeoJSON como WordPress espera, mas também "
+"converta o GeoJSON em um formato espaciais que MySQL compreende, e guarda "
+"aquele em tabelas especiais de geo-meta que podem utilizar dados espaciais e "
+"que tem índices espaciais."
+
+#: lib/wp-geometa-dash.php:891
+msgid "Adding and Updating Data"
+msgstr "Adição e Atualização de Dados"
+
+#: lib/wp-geometa-dash.php:892
+msgid ""
+"To add spatial data, use the usual add_post_meta or update_post_meta "
+"functions like you would for any other metadata, but use GeoJSON for the "
+"value."
+msgstr ""
+"Para adicionar dados use os funções típicos add_post_meta ou "
+"update_post_meta como você faria para qualquer outro metadados, mas use "
+"GeoJSON para o valor. "
+
+#: lib/wp-geometa-dash.php:905
+msgid "Fetching and Using Data"
+msgstr "Buscando e Usando Dados"
+
+#: lib/wp-geometa-dash.php:907
+msgid ""
+"WP GeoMeta doesn't do anything when fetching data. You will get back the "
+"same GeoJSON value that you stored previously."
+msgstr ""
+"WP GeoMeta não faz nada quando buscando dados. Você receberá o mesmo valor "
+"de GeoJSON que você adicionou anteriormente."
+
+#: lib/wp-geometa-dash.php:908
+msgid ""
+"GeoJSON can be used by any of the popular web map software available today."
+msgstr ""
+"GeoJSON pode ser usado com todos os populares software de web map disponível "
+"hoje."
+
+#: lib/wp-geometa-dash.php:916
+msgid "Running Spatial Queries"
+msgstr "Executando Consultas Espaciais"
+
+#: lib/wp-geometa-dash.php:918
+msgid ""
+"The real power of GIS and Spatial data becomes evident when you start doing "
+"real spatial searches. WP GeoMeta integrates with WP_Query, get_posts and "
+"other functions that use WP_Meta_Query under the hood."
+msgstr ""
+"O verdadero pode de SIG e dados espaciais se tornam evidente quando você "
+"começa a fazer buscas espaciais reais. WP GeoMeta integra com WP_Query, "
+"get_posts e outros funções que usam WP_Meta_Query sob o capô."
+
+#: lib/wp-geometa-dash.php:957
+msgid "Available Spatial Functions"
+msgstr "Funções Espaciais Disponíveis"
+
+#: lib/wp-geometa-dash.php:958
+msgid "These functions are available in this version of MySQL."
+msgstr "Estes funções estão disponíveis em este versão de MySQL."
+
+#: lib/wp-geometa-dash.php:959
+#, php-format
+msgid ""
+"Spatial function support varries widely between versions of MySQL and "
+"MariaDB. Visit the %1$sMySQL/MariaDB Spatial Support Matrix%2$s page for a "
+"full breakdown."
+msgstr ""
+"Apoio de funções espaciais varia muito entre os vários versões de MySQL e "
+"MariaDB. Visite a pagina %1$sMatriz de Apoio Espacial MySQL/MariaDB%2$s para "
+"um analise completa."
+
+#: lib/wp-geometa-dash.php:960
+msgid "Function Group"
+msgstr "Grupo de Funções"
+
+#: lib/wp-geometa-dash.php:960
+msgid "Functions"
+msgstr "Funções"
+
+#: lib/wp-geometa-dash.php:974
+msgid "List of Installs"
+msgstr "Lista de Instalações"
+
+#: lib/wp-geometa-dash.php:975
+msgid ""
+"WP GeoMeta can be installed as a plugin or used as a library by other "
+"plugins. This list includes all installed versions of WP GeoMeta and which "
+"plugin they came with."
+msgstr ""
+"WP GeoMeta pode ser instalado como um plugin ou utilizado como um biblioteca "
+"por outros plugins. Este lista inclui todos os versões de WP GeoMeta "
+"installados e com qual plugin eles foram incluídos."
+
+#: lib/wp-geometa-dash.php:976
+msgid ""
+"WP GeoMeta always uses the most up to date version installed, even if a "
+"plugin bundles an older version."
+msgstr ""
+"WP GeoMeta sempre usa o versão mais recente instalado, mesmo se um plugin "
+"inclue um versão mais velho."
+
+#: lib/wp-geometa-dash.php:978
+msgid "Plugin Name"
+msgstr "Nome do Plugin"
+
+#: lib/wp-geometa-dash.php:978
+msgid "WP GeoMeta Version"
+msgstr "Versão de WP GeoMeta"
+
+#: lib/wp-geometa-dash.php:991
+msgid "WP GeoMeta Meta and Resources"
+msgstr "WP GeoMeta Meta e Recursos"
+
+#: lib/wp-geometa-dash.php:994
+#, php-format
+msgid ""
+"WP GeoMeta is a work of love from the GIS+WordPress development team at %1$s"
+msgstr ""
+"WP GeoMeta é um obra de amor to time de desenvolvimento de GIS+WordPress de "
+"%1$s."
+
+#: lib/wp-geometa-dash.php:996
+#, php-format
+msgid ""
+"We appreciate %1$sbug reports, feature requests%2$s and %3$spull requests "
+"(especially with test cases)%4$s."
+msgstr ""
+"Apreciamos %1$sreportagem de bus, pedidos de recursos%2$s e %3$spull "
+"requests (especialmente com casos teste)%4$s."
+
+#: lib/wp-geometa-dash.php:998
+#, php-format
+msgid ""
+"If you need assistance implementing your GIS solution, please %1$scontact us"
+"%2$s with details about what you'd like to do."
+msgstr ""
+"Se você precisa de ajuda implementando seu solução SIG, por favor %1$sno "
+"contacta%2$s com detalhes sobre que você quer fazer."
+
+#: lib/wp-geometa-dash.php:1001
+msgid "Our Sites"
+msgstr "Nossos Sites"
+
+#: lib/wp-geometa-dash.php:1003
+msgid "Our home on the web"
+msgstr "Nossa lar no web"
+
+#: lib/wp-geometa-dash.php:1004
+msgid "WP GeoMeta on GitHub"
+msgstr "WP GeoMeta no GitHub"
+
+#: lib/wp-geometa-dash.php:1005
+msgid "WherePress.com — Our WordPress/GIS Blog Site"
+msgstr "WherePress.com — Nossa Blog de WordPress/SIG "
+
+#: lib/wp-geometa-dash.php:1008
+msgid "Documentation"
+msgstr "Documentação"
+
+#: lib/wp-geometa-dash.php:1010
+msgid "MySQL (5.7) Spatial Analysis Functions Documentation"
+msgstr "Documentação de Funções de Analise Espacial de MySQL (5.7)"
+
+#: lib/wp-geometa-dash.php:1011
+msgid "MariaDB Geographic Features Documentation"
+msgstr "Documentação de Objectos Geográficas MariaDB"
+
+#: lib/wp-geometa-dash.php:1012
+msgid "MySQL/MariaDB Spatial Support Matrix"
+msgstr "Matriz de Apoio Espacial MySQL/MariaDB"
+
+#: lib/wp-geometa-dash.php:1013
+#, php-format
+msgid "%1$sAdd%2$s, %3$sUpdate%4$s and %5$sDelete%6$s post meta"
+msgstr "%1$sAdicionar%2$s, %3$sAtualizar%4$s e %5$sDelete%6$s post meta"
+
+#: lib/wp-geometa-dash.php:1014
+#, php-format
+msgid "%1$sWP_Query%2$s and %3$sWP_Meta_Query%4$s"
+msgstr "%1$sWP_Query%2$s e %3$sWP_Meta_Query%4$s"
+
+#: lib/wp-geometa-dash.php:1015
+msgid "GeoJSON Specification"
+msgstr "Specificação GeoJSON"
+
+#: lib/wp-geometa-dash.php:1016
+msgid "Leaflet.js - Our recommended map software"
+msgstr "Leaflet.js - Nosso software de mapas recomendado"
+
+#: lib/wp-geometa-dash.php:1019
+msgid "GIS Communities"
+msgstr "Communidades SIG"
+
+#: lib/wp-geometa-dash.php:1021
+msgid "GIS StackExchange"
+msgstr "StackExchange SIG"
+
+#: lib/wp-geometa-dash.php:1031
+msgid "The Danger Zone"
+msgstr "Zona Perigosa"
+
+#: lib/wp-geometa-dash.php:1033
+#, php-format
+msgid ""
+"%1$sImportant%2$s: The following section has funtionality that may destroy "
+"your spatial data. Your original metadata is never touched, but deleting "
+"data may impact plugins or custom code that expect it to be present."
+msgstr ""
+"%1$sImportate%2$s: O secção seguinte tem funcionalidade que pode destruir "
+"seus dados espaciais. Seus metadados originais nunca são mudados, mas "
+"apagando dados pode impactar plugins ou código personalizado que espera que "
+"os existem."
+
+#: lib/wp-geometa-dash.php:1036
+msgid "Enter The Danger Zone"
+msgstr "Entre a Zona Perigosa"
+
+#: lib/wp-geometa-dash.php:1041
+msgid "Run Regression Tests"
+msgstr "Corre Provas de Regressão"
+
+#: lib/wp-geometa-dash.php:1042
+msgid "Run the built-in regression tests"
+msgstr "Corre as provas de regressão integral."
+
+#: lib/wp-geometa-dash.php:1045
+msgid "Remove WP GeoMeta Tables"
+msgstr "Remover Tabelas WP GeoMeta"
+
+#: lib/wp-geometa-dash.php:1046
+msgid ""
+"All WP GeoMeta data is stored in its own tables. Your original data is "
+"untouched. Removing WP GeoMeta tables will break any spatial queries you may "
+"be using."
+msgstr ""
+"Todos os dados de WP GeoMeta estão salvados em seus próprios tabelas. Seus "
+"dados originais não é modificados. Apagando as tabelas WP GeoMeta vai "
+"quebrar qualquer pesquisas espaciais você pode estar usando."
+
+#: lib/wp-geometa-dash.php:1049
+msgid "Create WP GeoMeta Tables"
+msgstr "Criar Tabelas WP GeoMeta"
+
+#: lib/wp-geometa-dash.php:1050
+msgid ""
+"WP GeoMeta tables are created on plugin activation or upgrade, but you can "
+"manually create them here. WP GeoMeta uses dbDelta, so running this multiple "
+"times will have no bad effects."
+msgstr ""
+"Tabelas WP GeoMeta estão criados quando o plugin esta activado ou "
+"atualizado, mas você pode as criar aqui manualmente. WP GeoMeta usa dbDelta, "
+"então fazendo isso vários vezes não teria efeitos maus."
+
+#: lib/wp-geometa-dash.php:1053
+msgid "Truncate WP GeoMeta Tables"
+msgstr "Truncar Tabelas WP GeoMeta"
+
+#: lib/wp-geometa-dash.php:1054
+msgid "Clears existing spatial data, but doesn't remove the tables."
+msgstr "Apagar dados espaciais atuais, mas não apagar as tabelas."
+
+#: lib/wp-geometa-dash.php:1058
+msgid ""
+"Detect any spatial data (GeoJSON) in the non-spatial meta tables which is "
+"not stored in WP GeoMeta and load it. This may take a while!"
+msgstr ""
+"Detectar dados espaciais (GeoJSON) nas tabelas meta não-espaciais que não "
+"esta salvado em WP GeoMeta, e carregá-lo. Este ação pode demorar!"
+
+#~ msgid "GeoTests"
+#~ msgstr "Geotests"
+
+#~ msgid ""
+#~ "%1$s of spatial records are loaded (%2$s records not loaded). Try using "
+#~ "the %3$s%4$s%5s tool below to load them."
+#~ msgstr ""
+#~ "%1$s recordes espaciais estão carregados (%2$s recordes não carregados). "
+#~ "Tenta usa o ferimento %3$s%4$s%5$s para carregá-los."
+
+#~ msgid ""
+#~ "%1$s of spatial records are loaded (%2$s records not loaded). Try using "
+#~ "the %3$sPopulate WP GeoMeta Tables%4$s tool below to load them."
+#~ msgstr ""
+#~ "%1$s recordes espaciais estão carregados (%2$s recordes não carregados). "
+#~ "Tenta usa o ferimento %3$s%4$s%5$s"
+
+#~ msgid ""
+#~ "%1$s spatial records are loaded (%2$s records not loaded). Try using the "
+#~ "%3$s%4$s%5s tool below to load them."
+#~ msgstr ""
+#~ "%1$s recordes espaciais estão carregados (%2$s recordes não carregados). "
+#~ "Tenta usa o ferimento %3$s%4$s%5$s"
+
+#~ msgid ""
+#~ "%1$s% of spatial records are loaded (%2$s records not loaded). Try using "
+#~ "the %3$sPopulate WP GeoMeta Tables%4$s tool below to load them."
+#~ msgstr ""
+#~ "%1$s recordes espaciais foram carregados (%2$s recordes não carregados). "
+#~ "Tenta usar o %3$s"
+
+#~ msgid ""
+#~ "Some geo tables are missing. If this wasn't intentional, there could be a "
+#~ "problem. %1%s all exist. %2$s don't exist"
+#~ msgstr ""
+#~ "Algumas tabelas geo estão faultando. Se esse não fosse de proposito, pode "
+#~ "ter uma problema. %1$s"

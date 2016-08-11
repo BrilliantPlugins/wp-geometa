@@ -11,8 +11,9 @@
  * Version: 0.1.1
  * Code Name: Perfect Tommy - Let her out?
  * Text Domain: wp-geometa
+ * Domain Path: /lang
  *
- * @package WP-GeoMeta
+ * @package wp-geometa
  */
 
 /**
@@ -178,6 +179,15 @@ if ( is_admin() ) {
 		define( 'WP_GEOMETA_DASH_VERSION', $wp_geometa_version );
 		require_once( dirname( __FILE__ ) . '/lib/wp-geometa-dash.php' );
 		WP_GeoMeta_Dash::get_instance();
+
+		add_action( 'plugins_loaded', 'wpgeometa_load_textdomain' );
+
+		/**
+		 * Set up the I18N path.
+		 */
+		function wpgeometa_load_textdomain() {
+			load_plugin_textdomain( 'wp-geometa', false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
+		}
 	}
 }
 

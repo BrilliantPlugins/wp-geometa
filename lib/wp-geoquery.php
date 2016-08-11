@@ -3,7 +3,7 @@
  * This class handles query interception and
  * modification in order to handle geo queries
  *
- * @package WP-GeoMeta
+ * @package wp-geometa
  * @link https://github.com/cimburadotcom/WP-GeoMeta
  * @author Michael Moore / michael_m@cimbura.com / https://profiles.wordpress.org/stuporglue/
  * @copyright Cimbura.com, 2016
