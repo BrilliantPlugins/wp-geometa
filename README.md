@@ -244,11 +244,9 @@ spatial operators.
 Next Todos
 ----------
  * Live examples
- * Some sort of useful UI so we can release it in the plugin directory
 
 Future Enhancements
 -------------------
- * Where do errors go / who sees them? Eg. inside added_meta callback
  * Buffering is a very common operation, but it doesn't work well in EPSG:4326. 
  * Add filter to let users/devs explicitly define meta keys to filter on w/constant to enable the filter
  * Lat/Lng migration tool or plugin that detects coord pairs
@@ -256,6 +254,15 @@ Future Enhancements
 
 Changes
 -------
+
+### 0.2.0: Penny Priddy
+ * Upgrading no longer truncates and rebuilds the meta tables. 
+ * Fix for joins so user meta should work again (umeta_id vs meta_id key name issue).
+ * A beautiful dashboard! 
+ * Plugin activation hooks so that deactivating/activating without upgrading will recreate database tables
+ * Translation ready!
+ * Portuguese translation!
+ * Code documentation!
 
 ### 0.1.1
  * Only x.x.0 releases will get code names

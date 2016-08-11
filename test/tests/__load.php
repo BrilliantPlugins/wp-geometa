@@ -12,6 +12,7 @@ if ( ! file_exists( $wp_load ) ) {
 	die( "Couldn't find wp-load. Tests are meant to be run when WP_GeoMeta is installed as a plugin.\n" ); 
 }
 require_once( $wp_load );
+defined('ABSPATH') or die('No direct access');
 
 // Load WP GeoMeta in case it's not active.
 require_once( WP_GEOMETA_TESTDIR . '/../wp-geometa.php');
@@ -19,10 +20,10 @@ require_once( WP_GEOMETA_TESTDIR . '/tests/__SqlFormatter.php');
 
 // A post type for testing with.
 $args = array(
-	"label" => __( 'GeoTests', '' ),
+	"label" => 'GeoTests',
 	"labels" => array(
-		"name" => __( 'GeoTests', '' ),
-		"singular_name" => __( 'GeoTest', '' ),
+		"name" => 'GeoTests',
+		"singular_name" => 'GeoTest',
 	),
 	"description" => "",
 	"public" => true,

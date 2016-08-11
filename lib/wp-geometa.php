@@ -2,12 +2,14 @@
 /**
  * This class handles creating spatial tables saving geo metadata
  *
- * @package WP_GeoMeta
- * @link https://github.com/cimburadotcom/WP_GeoMeta
+ * @package wp-geometa
+ * @link https://github.com/cimburadotcom/WP-GeoMeta
  * @author Michael Moore / michael_m@cimbura.com / https://profiles.wordpress.org/stuporglue/
  * @copyright Cimbura.com, 2016
  * @license GNU GPL v2
  */
+
+defined( 'ABSPATH' ) or die( 'No direct access' );
 
 /**
  * This class uses GeoUtil
@@ -63,7 +65,12 @@ class WP_GeoMeta {
 	 */
 	protected function __construct() {
 		define( 'WP_GEOMETA_HOME', dirname( dirname( __FILE__ ) ) );
-		$this->setup_filters();
+
+		foreach ( $this->meta_types as $type ) {
+			foreach ( $this->meta_actions as $action ) {
+				add_action( "{$action}_{$type}_meta", array( $this, "{$action}_{$type}_meta" ),10,4 );
+			}
+		}
 	}
 
 	/**
@@ -139,8 +146,10 @@ class WP_GeoMeta {
 		";
 
 		/*
-		So, dbDelta has a problem with SPATIAL INDEX, so we run those separate
+		Pre WP 4.6, dbDelta had a problem with SPATIAL INDEX, so we run those separate.
 		https://core.trac.wordpress.org/ticket/36948
+
+		Once WP 4.6 is out we can revisit this.
 		 */
 		dbDelta( $geotables );
 
@@ -166,21 +175,35 @@ class WP_GeoMeta {
 	 */
 	public function uninstall() {
 		global $wpdb;
+
+		$suppress = $wpdb->suppress_errors( true );
+		$errors = $wpdb->show_errors( false );
+
 		foreach ( $this->meta_types as $type ) {
 			$drop = 'DROP TABLE ' . _get_meta_table( $type ) . '_geo';
 			$wpdb->query( $drop ); // @codingStandardsIgnoreLine
 		}
+
+		$wpdb->suppress_errors( $suppress );
+		$wpdb->show_errors( $errors );
 	}
 
 	/**
-	 * Set up the filters that will listen to meta being added and removed
+	 * Truncate the geo tables
 	 */
-	protected function setup_filters() {
+	public function truncate_tables() {
+		global $wpdb;
+
+		$suppress = $wpdb->suppress_errors( true );
+		$errors = $wpdb->show_errors( false );
+
 		foreach ( $this->meta_types as $type ) {
-			foreach ( $this->meta_actions as $action ) {
-				add_action( "{$action}_{$type}_meta", array( $this, "{$action}_{$type}_meta" ),10,4 );
-			}
+			$drop = 'TRUNCATE TABLE ' . _get_meta_table( $type ) . '_geo';
+			$wpdb->query( $drop ); // @codingStandardsIgnoreLine
 		}
+
+		$wpdb->suppress_errors( $suppress );
+		$wpdb->show_errors( $errors );
 	}
 
 	/**
@@ -386,11 +409,17 @@ class WP_GeoMeta {
 				$meta_pkey = 'umeta_id';
 			}
 
-			$truncate = "TRUNCATE $geotable";
-			$wpdb->query( $truncate ); // @codingStandardsIgnoreLine
 			$maxid = -1;
 			do {
-				$q = "SELECT * FROM $metatable WHERE meta_value LIKE '%{%Feature%geometry%}%' AND $meta_pkey > $maxid LIMIT 100";
+				$q = "SELECT $metatable.* 
+					FROM $metatable 
+					LEFT JOIN {$metatable}_geo ON ({$metatable}_geo.fk_meta_id = $metatable.$meta_pkey )
+					WHERE $metatable.meta_value LIKE '%{%Feature%geometry%}%' 
+					AND {$metatable}_geo.fk_meta_id IS NULL
+					AND $metatable.$meta_pkey > $maxid 
+					ORDER BY $metatable.$meta_pkey
+					LIMIT 100";
+
 				$res = $wpdb->get_results( $q,ARRAY_A ); // @codingStandardsIgnoreLine
 				$found_rows = count( $res );
 

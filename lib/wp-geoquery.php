@@ -3,12 +3,14 @@
  * This class handles query interception and
  * modification in order to handle geo queries
  *
- * @package WP_GeoMeta
- * @link https://github.com/cimburadotcom/WP_GeoMeta
+ * @package wp-geometa
+ * @link https://github.com/cimburadotcom/WP-GeoMeta
  * @author Michael Moore / michael_m@cimbura.com / https://profiles.wordpress.org/stuporglue/
  * @copyright Cimbura.com, 2016
  * @license GNU GPL v2
  */
+
+defined( 'ABSPATH' ) or die( 'No direct access' );
 
 /**
  * This class uses GeoUtil
@@ -150,7 +152,7 @@ class WP_GeoQuery {
 	 */
 	private function make_join_spatial( &$clauses, $meta_query, $type, $primary_table, $primary_id_column, $context, $metatable, $geotable, $id_column, $new_meta_value ) {
 		/*
-		 * Replace the original join with a named subquery that hits the spatial table and performs the 
+         * Replace the original join with a named subquery that hits the spatial table and performs the
 		 * requested spatial operations. It's given the same name as the original table so that we don't
 		 * have to touch ORDERBY.
 		 *
@@ -173,7 +175,7 @@ class WP_GeoQuery {
 		}
 
 		$orig_join = 'JOIN ' . $realmetatable . $alias . ' ON ( ' . $primary_table . '.' . $primary_id_column . ' = ' . $metatable . '.' . $type . '_id )';
-		$new_join  = 'JOIN ( SELECT meta_id, ' . $type . '_id, meta_key, ' . $new_meta_value . ' AS meta_value FROM ' . $realmetatable . '_geo ) AS ' . $metatable . ' ON ( ' . $primary_table . '.' . $primary_id_column . ' = ' . $metatable . '.' . $type . '_id )';
+		$new_join  = 'JOIN ( SELECT ' . $id_column . ', ' . $type . '_id, meta_key, ' . $new_meta_value . ' AS meta_value FROM ' . $realmetatable . '_geo ) AS ' . $metatable . ' ON ( ' . $primary_table . '.' . $primary_id_column . ' = ' . $metatable . '.' . $type . '_id )';
 
 		if ( WP_GEOMETA_DEBUG > 1 ) {
 			print "\n";

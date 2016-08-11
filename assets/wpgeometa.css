@@ -1,0 +1,346 @@
+.wp-geometa-dash {
+	margin-top: 10px;
+	background-color: white;
+	margin-right: 10px;
+	padding: 10px;
+}
+
+.wp-geometa-dash > .noborder {
+	border: none;
+}
+
+.wp-geometa-dash .wpgm-header img{
+	display: inline-block; 
+	vertical-align: middle; 
+	padding-right: 20px;
+}
+
+.wp-geometa-dash .wpgm-header h2 {
+	font-size: 75px; 
+	font-family: Garamond, Baskerville, “Baskerville Old Face”, “Hoefler Text”, “Times New Roman”, serif;
+	font-family: Rockwell, “Courier Bold”, Courier, Georgia, Times, “Times New Roman”, serif;
+	display: inline-block; 
+	vertical-align: middle; 
+	margin-top: 0;
+	margin-bottom: 0;
+	line-height: 1em;
+}
+
+.wp-geometa-dash > div {
+	border: 1px solid #ccc;
+	border-radius: 2px;
+	margin-bottom: 20px;
+	padding: 10px;
+	color: #555;
+}
+
+.wp-geometa-dash div.header {
+	border-bottom: 3px solid #ccc;
+}
+
+.wp-geometa-dash > div h3 {
+	background-color: #45a3b8;
+	color: #fff;
+	margin-top: 0;
+	padding: 6px 4px;
+}
+
+/* System status shapes */
+
+.status-circle {
+	height: 25px;
+	width: 25px;
+	display: inline-block;
+	border-radius: 25px;
+	color: #000000;
+	border-width: 6px;
+	border-style: solid;
+	vertical-align: middle
+}
+
+.status-circle:before {
+	display: block;
+	position: absolute;
+	font-size: 25px;
+	line-height: 28px; 
+	width: 25px;
+	text-align: center;
+}
+
+.status-circle.good {
+	border-color: #499b44; /* grey green */
+	background-color: #29df20; /* bright green */
+}
+
+.status-circle.good:before {
+	content: '✔';
+}
+
+.status-circle.fair {
+	border-color: #98752c; /* grey orange */
+	background-color: #f6b01b; /* bright orange */
+}
+
+.status-circle.fair:before {
+	content: '❋';
+}
+
+.status-circle.poor {
+	border-color: #9b4544; /* grey red */
+	background-color: #fe2624; /* bright red*/
+}
+
+.status-circle.poor:before {
+	content: '✗';
+}
+
+.status-title {
+	display: inline-block;
+	font-size: 18px;
+	font-weight: bold;
+	max-width: calc(100% - 45px);
+	padding-left: 10px;
+	padding-right: 10px;
+	text-align: left;
+	vertical-align: middle;
+	white-space: normal;
+}
+
+.status-table {
+	display: table;
+	width: 100%;
+}
+
+.status-table .status-block {
+	padding: 3px 5px;
+	text-align: left;
+	white-space: nowrap;
+	width: 100%;
+}
+
+table.summary td:first-child {
+	text-align: center;
+}
+
+/* Function list table */
+.funclist {
+	border: 1px solid #000;
+	border-collapse: collapse;
+	max-width: 100%;
+}
+.funclist th {
+	text-align: left;
+}
+.funclist tr, .funclist td, .funclist th {
+	border: 1px solid #000;
+	border-collapse: collapse;
+	padding: 5px;
+	vertical-align: top;
+}
+
+.funclist td p {
+	margin-left: 15px;
+	font-style: italic;
+}
+
+.funclist td h4 {
+	font-size: 1.2em;
+}
+
+.funcnamelist {
+	-moz-column-count: 9;
+	-webkit-column-count:9;
+	column-count:9;
+
+	-moz-column-gap: 10px;
+	-webkit-column-gap:10px;
+	column-gap:10px;
+
+	-moz-column-rule: 1px dotted #ddd;
+	-webkit-column-rule:1px dotted #ddd;
+	column-rule:1px dotted #ddd;
+
+	-moz-column-width: 180px;
+	-webkit-column-width:180px;
+	column-width:180px;
+}
+
+.wordclear {
+	display: block;
+	clear: both;
+}
+
+
+/* Map */
+#wpgmmap {
+	height: 400px;
+	margin-right: 20px;
+	max-height: 100vh;
+	width: 100%;
+}
+.posttypegeotable {
+	margin-top: 10px;
+}
+
+/* All tables...  */
+.wp-geometa-dash table {
+	border-collapse: collapse;
+	width: 100%;
+}
+.wp-geometa-dash table th {
+	text-align: left;
+}
+.wp-geometa-dash td, 
+.wp-geometa-dash th {
+	border: 1px solid #ccc;
+	padding: 2px 5px;
+}
+
+
+.colorswatch {
+	width: 25px;
+	height: 25px;
+	display: inline-block;
+	vertical-align: middle;
+	margin-left: 10px;
+}
+
+/* List of installs */
+
+.wpgminstalllist th {
+	text-align: left;
+}
+
+.listofinstalls {
+	background-color: #e8f1f3;
+}
+
+.listofinstalls p {
+	padding: 0 4px;
+}
+
+/* Here be dragons */
+
+div.dragons {
+	background-color: #f4d9d9;
+}
+
+div.dragons p {
+	padding: 0 4px;
+}
+
+div.dragons table button {
+	width: 100%;
+}
+
+.dragonactions {
+	display: none;
+}
+
+.dragonactions.dangerous {
+	display: block;
+}
+
+.wp-geometa-dash > div h3.dragons {
+	background-color: #d36363;
+	color: #ffffff;
+}
+
+#wpgm-danger-results {
+	background-color: #fff;
+	padding: 5px;
+	white-space: nowrap;
+	unicode-bidi: embed;
+	font-family: monospace;
+	white-space: pre;
+}
+
+#wpgm-danger-results:empty {
+	display: none;
+}
+
+#danger-spinner, #yourdata-spinner {
+	background: rgba(0, 0, 0, 0) url("wheel.gif") no-repeat scroll 0 0 / contain ;
+	height: 15px;
+	margin-left: 5px;
+	width: 15px;
+	display: none;
+}
+
+#danger-spinner.spinny, #yourdata-spinner.spinny {
+	display: inline-block;
+}
+
+/* Resources */
+.wp-geometa-dash ul {
+	list-style: disc;
+	padding-left: 20px;
+}
+
+.wp-geometa-dash img.logo {
+	max-width: 100%; 
+	margin: 25px 0;
+	clear:both;
+	display: block;
+}
+
+/* Pre */
+.wp-geometa-dash pre {
+	overflow: auto; 
+	max-width: 100%;
+	background-color: #dceaed;
+	padding: 5px;
+}
+
+.wp-geometa-dash pre code {
+	background: none;
+	padding: 0;
+	margin: 0;
+}
+
+/* Tabs control */
+
+.wpgmtab {
+	display: none;
+}
+
+.wpgmtab.shown {
+	display: block; 
+}
+
+ul.wpgmtabctrl {
+	padding-left: 0;
+}
+
+.wpgmtabctrl li.shown {
+	background-color: #ccc;
+}
+
+.wpgmtabctrl li {
+	background-color: #fff;
+	list-style: none;
+	display: inline-block;
+	border: 2px solid #208da4;
+	padding: 6px 15px;
+	margin-right: 5px;
+}
+
+.wpgmtabctrl li:hover{
+	background-color: #eee;
+	cursor: pointer;
+}
+
+.wpgmmenulink {
+	background-color: #eee;
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.wpgmtab > div {
+	margin-bottom: 30px;
+}
+
+.wpgmtab > div:last-child {
+	margin-bottom: 0;
+}
+
