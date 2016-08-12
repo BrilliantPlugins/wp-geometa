@@ -287,7 +287,7 @@ class WP_GeoMeta {
 					$meta_id,
 					$meta_key,
 					$meta_value, 
-					$this->srid,
+					WP_GeoUtil::get_srid(),
 				)
 			)
 		);
@@ -336,7 +336,7 @@ class WP_GeoMeta {
 		$id_column = 'user' === $meta_type ? 'umeta_id' : 'meta_id';
 
 		$q = "UPDATE $table SET meta_value=GeomFromText(%s,%d) WHERE fk_meta_id=(%d)";
-		$sql = $wpdb->prepare( $q,array( $meta_value, $this->srid, $meta_id ) ); // @codingStandardsIgnoreLine 
+		$sql = $wpdb->prepare( $q,array( $meta_value, WP_GeoUtil::get_srid(), $meta_id ) ); // @codingStandardsIgnoreLine 
 		$count = $wpdb->query( $sql );
 
 		if ( ! $count ) {
