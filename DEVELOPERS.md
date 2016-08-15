@@ -1,103 +1,77 @@
+This document is for developers who wish to use WP-GeoMeta in their own plugin. 
+
+For developers interested in helping out with WP-GeoMeta, see the (HACKING.md) file.
+
 Developers
 ==========
-Send me your bug reports, suggestions and pull requests!
 
-Please feel free to use this library in **your** plugin! Standardization makes
-life easier for everyone. If this plugin isn't meeting your needs, lets talk!
+Thanks for considering using WP-GeoMeta! 
 
-If you've got ideas about how spatial should work in WordPress, let's talk!
+WP-GeoMeta is meant to be a spatial foundation for WordPress. It provides a solid foundation
+for spatial data using MySQL's native spatial support.
 
-The Big Plan
---------------
+WP-GeoMeta marries the power of true spatial queries with the tidy abstraction of 
+WP_Query and the other capabilites of WordPress.
 
-WP_GeoMeta should be light and tight. It should focus on core spatial functionality
-and leave the rest for plugin developers.
+WP-GeoMeta was created with developers in mind. If you find it cumbersome, buggy or 
+missing features, let us know! 
 
-### High Level
-Two classes: WP_GeoQuery and WP_GeoMeta
 
-* WP_GeoMeta will just worry about getting and setting meta values as GeoJSON (or GeoJSON fragments)
-* WP_GeoQuery will worry about intercepting WP_Query requests and making them into spatial queries
+Why WP-GeoMeta?
+---------------
 
-When a user runs add_post_meta (etc.) and passes in a GeoJSON string or array
-WP_GeoMeta will store the geometry in a spatial column. 
+### Why not separate lat and long fields?
 
-WP_GeoQuery will provide a way for users to query posts (etc.) in a similar
-way to how they use WP_Query's post_meta arguments.
+Storing lat and long in separate fields means that you have to implement your own 
+(complicated queries)[http://stackoverflow.com/questions/20795835/wordpress-and-haversine-formula] 
+if you want to search by distance. 
 
-It may also provide some convenience wrapper functions to handle required
-spatial operations in a WordPressy way.
+You'll only be able to store points, and you won't have indexing available. 
 
-### A Bit Deeper 
 
-WP_GeoMeta will build on both MySQL's spatial support and the WordPress meta
-data system.
+### Integration with Other Plugins
 
-On plugin activation WP_GeoMeta will create a parallel spatial <del>universe</del> set of
-meta tables. Where only wp_postmeta existed you will also find wp_postmeta_geo. 
+You might not need spatial queries yourself, but by using WP-GeoMeta you allow other developers to 
+query your data more easily. 
 
-WP_GeoMeta will use the actions (added|updated|delete)_(comment|post|term|user)_meta to
-do the right thing AFTER add_post_meta (etc.) have done their jobs. 
+For example, if you were creating a restaurant locations plugin, and someone else had a neighborhood
+boundary plugin, the website developer could query which neighborhood a restaurant is in, or which
+restaurants are within a given neighborhood. 
 
-    $single_feature = '{ 
-					"type": "Feature", 
-					"geometry": {
-						"type": "Point", 
-						"coordinates": [-93.5, 45]
-					}, 
-					"properties": {
-						"prop0": "value0"
-					} 
-	}';
-    update_post_meta(48,'my_shape',$single_feature);
 
-Since GeoJSON is the one true format for spatial data on the web, all getting and
-setting of spatial data will be done in this format - until someone adds a plugin 
-to support other formats!
+How to Use WP-GeoMeta
+--------------------- 
 
-FeatureClass objects and individual Feature objects will both be accepted. String
-object and array representations of GeoJSON will be accepted.
+1. Download (the latest version)[https://github.com/cimburadotcom/WP-GeoMeta/releases] of WP-GeoMeta to 
+a sub-directory inside your plugin — `myplugin/wp-geometa`
 
-WP_GeoMeta will store data in EPSG:4326 by default, which is (a) the default format
-for GeoJSON and (b) the most common format for web maps.
+2. Within your plugin require *wp-geometa.php* — `require_once( dirname( __FILE__ ) . 'wp-geometa/wp-geometa.php' )`
 
-WP_GeoMeta won't act on any of the *get_{$meta_type}_meta* filters because we want the 
-orignal input data to be returned to the user with the GeoJSON properties it had at the
-beginning. 
+3. Add an activation hook to your plugin to create the spatial tables
 
-Since *pre_get_posts* is intimidating and since querying with spatial queries is a 
-bit funky, WP_GeoQuery will handle that part for the user. 
+    function my_activation_hook() {
+        $wpgeo = WP_GeoMeta::get_instance();
+        $wpgeo->create_geo_tables();
+    }
+    register_activation_hook( __FILE__ , 'wpgeometa_activation_hook' );
 
-WP_GeoQuery adds support to *meta_query* for known spatial comparison operations.
-It expects that the value will be a GeoJSON string (either Feature or FeatureCollection). 
+4. Use the usual postmeta functions within your plugin (update_post_meta, update_user_meta, etc.) 
+   using GeoJSON as the values. 
 
-A list of [spatial functions is available here](https://mariadb.com/kb/en/mariadb/mysqlmariadb-spatial-support-matrix/). 
+5. See the [README.md] document for instructions on how to query your data. 
 
-As with WP_GeoMeta, arguments will be passed to the *meta_query* argument as GeoJSON. 
 
-    $q = new WP_Query( array(
-    	'meta_query' => array(
-    		array(
-    			'key' => 'my_shape',
-    			'compare' => 'ST_INTERSECTS',
-    			'value' => '{"type":"Feature","geometry":{"type":"Point","coordinates":[-93.5,45]}}',
-    		)
-    	)
-    ));
+Important Notes
+---------------
 
-In pre_get_posts WP_GeoQuery will take those arguments, prepare a properly formatted subquery and append it 
-back into the post_meta parameter where it.
+* When WP-GeoMeta is installed as a plugin, it presents a dashboard page with information about the user's
+spatial storage status. When it is used as a library the dashboard is not shown.
 
-An additional class, WP_GeoUtil, currently exists in the test code. It currently
-contains some common functions that both WP_GeoQuery and WP_GeoMeta use. It may
-also include other utility functions.
+* For more complex spatial operations you can always use `$wpdb->query()` with custom SQL.
 
-Rants
------
-Can you believe that MySQL doesn't have ST_TRANSFORM and doesn't use the SRID?
+* MySQL 5.6.1 brought **HUGE** improvements to its spatial capabilities. You should use `WP_GeoUtil::get_capabilities()` 
+to see if the function you're about to use is available.
 
-Related Projects
-----------------
-* https://github.com/cimburadotcom/WP-GeoJSON-Loader
-* https://github.com/cimburadotcom/MySQL_Stored_Geo_Functions
-* https://github.com/cimburadotcom/wp-spatial-capabilities-check
+* Some MySQL spatial functions only work on the Bounding Box of the shape and not the actual geometry. For details about
+when and why this is a problem, see (this 2013 blog post from Percona)[https://www.percona.com/blog/2013/10/21/using-the-new-mysql-spatial-functions-5-6-for-geo-enabled-applications/].
+

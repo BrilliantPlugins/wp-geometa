@@ -16,6 +16,8 @@
  * @package wp-geometa
  */
 
+defined( 'ABSPATH' ) or die( 'No direct access' );
+
 /**
  * Gather some self metadata so that if WP-GeoMeta is included as a lib in multiple plugins
  * and/or as a plugin itself, we can determine which one to load.
