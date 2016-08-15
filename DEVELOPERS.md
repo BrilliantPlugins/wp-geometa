@@ -54,7 +54,7 @@ a sub-directory inside your plugin — ```myplugin/wp-geometa```
         $wpgeo = WP_GeoMeta::get_instance();
         $wpgeo->create_geo_tables();
     }
-    register_activation_hook( __FILE__ , 'wpgeometa_activation_hook' );
+    register_activation_hook( __FILE__ , 'my_activation_hook' );
 ```
 
 

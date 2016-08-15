@@ -1,6 +1,6 @@
 This document is for developers who wish to help out with WP-GeoMeta.
 
-For developers interested in using WP-GeoMeta in their own project, see the (DEVELOPERS.md) file.
+For developers interested in using WP-GeoMeta in their own project, see the [DEVELOPERS.md](DEVELOPERS.md) file.
 
 Hackers
 =======
@@ -20,27 +20,27 @@ and leave the rest to plugin developers.
 
 ### The Basics
 
-There are two main classes: WP_GeoQuery and WP-GeoMeta
+There are two main classes: WP_GeoQuery and WP_GeoMeta
 
-* WP-GeoMeta — Handles adding, updating and deleting spatial values.
-* WP_GeoQuery — Handles spatial meta queries.
+* ```WP_GeoMeta``` — Handles adding, updating and deleting spatial values.
+* ```WP_GeoQuery``` — Handles spatial meta queries.
 
 When a user runs add_post_meta (etc.) and passes in a GeoJSON string or GeoJSON compatible
-array, WP-GeoMeta will store the geometry in a spatial column. 
+array, WP_GeoMeta will store the geometry in a spatial column. 
 
-WP-GeoQuery sets up a handler for the *get_meta_sql* action to spatial queries and orderby operations.
+WP_GeoQuery sets up a handler for the ```get_meta_sql``` action to spatial queries and orderby operations.
 
-An additional class *WP_GeoUtil* handles data checking and conversion.
+An additional class ```WP_GeoUtil``` handles data checking and conversion.
 
 ### A Bit Deeper 
 
-WP-GeoMeta builds on both MySQL's spatial support and the WordPress meta data system.
+WP_GeoMeta builds on both MySQL's spatial support and the WordPress meta data system.
 
 On plugin activation WP-GeoMeta will create a parallel spatial set of meta tables. Where 
 only wp_postmeta existed you will now also find wp_postmeta_geo. 
 
 WP-GeoMeta uses the actions (added|updated|delete)_(comment|post|term|user)_meta to
-do the right thing AFTER add_post_meta (etc.) have done their jobs. 
+do the right thing AFTER ```add_post_meta``` (etc.) have done their jobs. 
 
     $single_feature = '{ 
 					"type": "Feature", 
@@ -64,11 +64,11 @@ object and array representations of GeoJSON are be accepted.
 WP-GeoMeta stores data in EPSG:4326 by default, which is (a) the default format
 for GeoJSON and (b) the most common format for web maps.
 
-WP-GeoMeta does't act on any of the *get_{$meta_type}_meta* filters because we want the 
+WP-GeoMeta does't act on any of the ```get_{$meta_type}_meta``` filters because we want the 
 orignal input data to be returned to the user with the GeoJSON properties it had at the
 beginning. 
 
-WP_GeoQuery adds support to the *meta_query* argument (in WP_Query, get_posts, WP_User_Query, get_users, WP_Comment_Query and get_comments) for known spatial comparison operations.
+WP_GeoQuery adds support to the ```meta_query``` argument (in WP_Query, get_posts, WP_User_Query, get_users, WP_Comment_Query and get_comments) for known spatial comparison operations.
 
 See the (README.md) for examples of how to use WP_GeoQuery.
 
