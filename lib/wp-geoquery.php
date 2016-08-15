@@ -211,6 +211,8 @@ class WP_GeoQuery {
 
 		$meta_type = $context->meta_query->get_cast_for_type( $meta_query['type'] );
 
+		$std_queries = array();
+
 		// If we have a geometry for our value, then we're doing a two-geometry function that returns a boolean.
 		$geometry = WP_GeoUtil::metaval_to_geom( $meta_query['value'] );
 		if ( ! empty( $geometry ) ) {
@@ -218,14 +220,21 @@ class WP_GeoQuery {
 			$new_meta_value = $wpdb->prepare( $new_meta_value, array( $geometry, WP_GeoUtil::get_srid() ) ); // @codingStandardsIgnoreLine
 
 			$std_query = "( $metatable.meta_key = %s AND CAST($metatable.meta_value AS $meta_type) = %s )";
-			$std_query = $wpdb->prepare( $std_query, array( $meta_query['key'], $meta_query['value'] ) ); // @codingStandardsIgnoreLine
+			$std_queries[] = $wpdb->prepare( $std_query, array( $meta_query['key'], $meta_query['value'] ) ); // @codingStandardsIgnoreLine
+
+			// In WP 4.6 and above CHAR values aren't cast anymore, so we do a replace on both versions
+			// so that we maintain 4.5.x capabilities too.
+			if ( 'CHAR' === $meta_type ) {
+				$std_query = "( $metatable.meta_key = %s AND $metatable.meta_value = %s )";
+				$std_queries[] = $wpdb->prepare( $std_query, array( $meta_query['key'], $meta_query['value'] ) ); // @codingStandardsIgnoreLine
+			}
 		} else {
 			// If we don't have a value, then our subquery gets written without parenthesis wraps.
 			// IDK why.
 			$new_meta_value = "{$meta_query['compare']}( meta_value )";
 
 			$std_query = "  $metatable.meta_key = %s";
-			$std_query = $wpdb->prepare( $std_query, array( $meta_query['key'] ) ); // @codingStandardsIgnoreLine
+			$std_queries[] = $wpdb->prepare( $std_query, array( $meta_query['key'] ) ); // @codingStandardsIgnoreLine
 		}
 
 		// Our geom_query will be against our aliased meta table so we just need to check for boolean true.
@@ -239,7 +248,10 @@ class WP_GeoQuery {
 			print 'WPGM Search Patterns: ---' . esc_attr( str_replace( ' ','*',$std_query ) ) . "---\n";
 			print 'WPGM Replacement Pattern: ----' . esc_attr( $geom_query ) . "---\n";
 		}
-		$clauses['where'] = str_replace( $std_query, $geom_query, $clauses['where'] );
+
+		foreach ( $std_queries as $std_query ) {
+			$clauses['where'] = str_replace( $std_query, $geom_query, $clauses['where'] );
+		}
 
 		return true;
 	}

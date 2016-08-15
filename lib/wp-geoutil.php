@@ -344,7 +344,20 @@ class WP_GeoUtil {
 		}
 
 		try {
-			return self::$geowkt->write( $geom );
+			$wkt = self::$geowkt->write( $geom );
+
+			/*
+             * MUTLI all the things because MySQL 5.7 (at least, maybe others) doesn't
+             * like Geometry in GeometryCollection columns.
+			 */
+			if ( false === strpos( $wkt, 'MULTI' ) ) {
+				$wkt = str_replace( 'POINT ', 'MULTIPOINT(', $wkt );
+				$wkt = str_replace( 'LINE ', 'MULTILINE(', $wkt );
+				$wkt = str_replace( 'POLYGON ', 'MULTIPOLYGON(', $wkt );
+				$wkt .= ')';
+			}
+
+			return $wkt;
 		} catch (Exception $e) {
 			return false;
 		}
