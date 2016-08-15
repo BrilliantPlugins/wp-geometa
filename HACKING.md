@@ -5,12 +5,11 @@ For developers interested in using WP-GeoMeta in their own project, see the [DEV
 Hackers
 =======
 
-Send me your bug reports, suggestions and pull requests!
+Send me your bug reports, suggestions and pull requests.
 
-Please feel free to use this library in **your** plugin! Standardization makes
-life easier for everyone. If this plugin isn't meeting your needs, lets talk!
-
-If you've got ideas about how spatial should work in WordPress, let's talk!
+Please feel free to use this library in **your** plugin. Standardization makes
+life easier for everyone. If this plugin isn't meeting your needs, or you have other 
+great ideas, lets talk!
 
 The Big Plan
 --------------
