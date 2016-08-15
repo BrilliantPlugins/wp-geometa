@@ -49,12 +49,13 @@ a sub-directory inside your plugin — ```myplugin/wp-geometa```
 
 3. Add an activation hook to your plugin to create the spatial tables
 
-
+```
     function my_activation_hook() {
         $wpgeo = WP_GeoMeta::get_instance();
         $wpgeo->create_geo_tables();
     }
     register_activation_hook( __FILE__ , 'wpgeometa_activation_hook' );
+```
 
 
 4. Use the usual postmeta functions within your plugin (update_post_meta, update_user_meta, etc.) 
