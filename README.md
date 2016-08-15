@@ -9,7 +9,7 @@ you do any other metadata, but using MySQL spatial indexes.
 WP GeoMeta lets you take advantage MySQL's spatial data types and spatial 
 indexes when storing and searching spatial metadata. 
 
-It detects when GeoJSON metadata is being stored, and transparently 
+It detects when [GeoJSON](http://geojson.org/) metadata is being stored, and transparently 
 stores a copy in a spatial meta table. 
 
 WP GeoMeta also adds support for spatial search operators. When a spatial

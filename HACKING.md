@@ -53,7 +53,7 @@ do the right thing AFTER ```add_post_meta``` (etc.) have done their jobs.
 	}';
     update_post_meta(48,'my_shape',$single_feature);
 
-Since GeoJSON is the one true format for spatial data on the web, all getting and
+Since [GeoJSON](http://geojson.org/) is the one true format for spatial data on the web, all getting and
 setting of spatial data is done in this format. Someone could add a plugin 
 to support other formats though!
 
@@ -69,7 +69,7 @@ beginning.
 
 WP_GeoQuery adds support to the ```meta_query``` argument (in WP_Query, get_posts, WP_User_Query, get_users, WP_Comment_Query and get_comments) for known spatial comparison operations.
 
-See the (README.md) for examples of how to use WP_GeoQuery.
+See the [README.md](README.md) for examples of how to use WP_GeoQuery.
 
 Related Projects
 ----------------
