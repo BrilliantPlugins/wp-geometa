@@ -9,6 +9,7 @@ Changes
  * Translation ready!
  * Portuguese translation!
  * Code documentation!
+ * Changed geometry type so that all geometries are stored as multipoint to work across MySQL versions
 
 ### 0.1.1
  * Only x.x.0 releases will get code names
