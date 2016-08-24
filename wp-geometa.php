@@ -54,7 +54,6 @@ if ( 1 === $wp_geometa_version_status ) {
 		// changes that the latest version of WP_GeoMeta might have added.
 		if ( version_compare( $wp_geometa_version, $wp_geometa_db_version ) > 0 ) {
 			$wpgeo->create_geo_tables();
-			$wpgeo->populate_geo_tables();
 
 			$wp_geoutil = WP_GeoUtil::get_instance();
 			$wp_geoutil::get_capabilities( true );
@@ -78,16 +77,22 @@ if ( ! function_exists( 'wp_geometa_load_older_version' ) ) {
 	 */
 	function wp_geometa_load_older_version() {
 		if ( ! class_exists( 'WP_GeoMeta' ) ) {
+
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 			require_once( dirname( __FILE__ ) . '/lib/wp-geoquery.php' );
 			require_once( dirname( __FILE__ ) . '/lib/wp-geometa.php' );
 			$wpgeo = WP_GeoMeta::get_instance();
 			$wpgq = WP_GeoQuery::get_instance();
 
+			$this_plugin_info = get_plugin_data( __FILE__, false, false );
+			$wp_geometa_version = $this_plugin_info['Version'];
+			$wp_geometa_max_version = get_option( 'wp_geometa_version', '0.0.0' );
+			$wp_geometa_db_version = get_option( 'wp_geometa_db_version', '0.0.0' );
+
 			// Since we just got loaded, make sure that the database reflects any
 			// changes that the latest version of WP_GeoMeta might have added.
 			if ( version_compare( $wp_geometa_version, $wp_geometa_db_version ) > 0 ) {
 				$wpgeo->create_geo_tables();
-				$wpgeo->populate_geo_tables();
 
 				$wp_geoutil = WP_GeoUtil::get_instance();
 				$wp_geoutil::get_capabilities( true );
@@ -202,6 +207,7 @@ if ( ! function_exists( 'wpgeometa_activation_hook' ) ) {
 	 * Simple callback for the activation hook. Creates the spatial tables.
 	 */
 	function wpgeometa_activation_hook() {
+		require_once( dirname( __FILE__ ) . '/lib/wp-geometa.php' );
 		$wpgeo = WP_GeoMeta::get_instance();
 		$wpgeo->create_geo_tables();
 	}

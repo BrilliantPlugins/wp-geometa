@@ -23,6 +23,17 @@ require_once( dirname( __FILE__ ) . '/wp-geoutil.php' );
  */
 class WP_GeoMeta {
 	/**
+	 * Seems like if we call dbDelta twice in rapid succession then we end up
+	 * with a MySQL error, at least on MySQL 5.5. Other versions untested.
+	 *
+	 * This gets set to true after calling create_geo_tables the first time
+	 * which prevents it from running again.
+	 *
+	 * @var $create_geo_tables_called
+	 */
+	private $create_geo_tables_called = false;
+
+	/**
 	 * What kind of meta are we handling?
 	 *
 	 * @var $meta_types
@@ -75,8 +86,16 @@ class WP_GeoMeta {
 
 	/**
 	 * Run SQL to create geo tables
+	 *
+	 * @param bool $force Should we force re-creation.
 	 */
-	public function create_geo_tables() {
+	public function create_geo_tables( $force = false ) {
+		if ( $this->create_geo_tables_called && ! $force ) {
+			return;
+		} else {
+			$this->create_geo_tables_called = true;
+		}
+
 		global $wpdb;
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
