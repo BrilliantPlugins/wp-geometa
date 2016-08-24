@@ -279,7 +279,7 @@ class WP_GeoUtil {
 				$fragment = json_decode( $fragment,true );
 			}
 
-			if ( !is_array( $fragment ) ) {
+			if ( ! is_array( $fragment ) ) {
 				return false;
 			}
 
@@ -423,7 +423,7 @@ class WP_GeoUtil {
 	 */
 	public static function is_geom( $maybe_geom ) {
 		try {
-			if ( !is_string( $maybe_geom ) ) {
+			if ( ! is_string( $maybe_geom ) ) {
 				return false;
 			}
 

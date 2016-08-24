@@ -209,13 +209,13 @@ class WP_GeoQuery {
 	private function handle_two_geom_bool_meta( &$clauses, $meta_query, $type, $primary_table, $primary_id_column, $context, $metatable, $geotable, $id_column ) {
 		global $wpdb;
 
-		$meta_type = ( array_key_exists( 'type', $meta_query ) ? $meta_query[ 'type' ] : '' );
+		$meta_type = ( array_key_exists( 'type', $meta_query ) ? $meta_query['type'] : '' );
 		$meta_type = $context->meta_query->get_cast_for_type( $meta_type );
 
 		$std_queries = array();
 
 		// If we have a geometry for our value, then we're doing a two-geometry function that returns a boolean.
-		$meta_value = ( array_key_exists( 'value', $meta_query ) ? $meta_query[ 'value' ] : '' );
+		$meta_value = ( array_key_exists( 'value', $meta_query ) ? $meta_query['value'] : '' );
 		$geometry = WP_GeoUtil::metaval_to_geom( $meta_value );
 		if ( ! empty( $geometry ) ) {
 			$new_meta_value = "{$meta_query['compare']}( meta_value,GeomFromText( %s, %d ) )";
