@@ -309,6 +309,11 @@ class WP_GeoUtil {
 	public static function metaval_to_geom( $metaval = '' ) {
 		// Let other plugins support non GeoJSON geometry.
 		$maybe_geom = apply_filters( 'wpgq_metaval_to_geom', $metaval );
+
+		if ( empty( $metaval ) ) {
+			return $metaval;
+		}
+
 		if ( self::is_geom( $maybe_geom ) ) {
 			return $maybe_geom;
 		}
