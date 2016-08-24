@@ -154,7 +154,7 @@ terms. Searching term metadata arrived in WordPress 4.4, but other
 functionality should still work in older versions of WordPress.
 
 ### MySQL
-MySQL 5.6.1 or higher is strongly recommended. 
+MySQL 5.6.1 or higher is strongly recommended. Lower than MySQL 5.5 is untested.
 
 WP_GeoMeta will probably work on MySQL 5.4, but spatial support was pretty weak 
 before version 5.6.1. 

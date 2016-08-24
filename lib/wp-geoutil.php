@@ -468,7 +468,7 @@ class WP_GeoUtil {
 
 		if ( ! $retest ) {
 			if ( empty( self::$found_funcs ) ) {
-				self::$found_funcs = get_option( 'geometa_capabilities',array() );
+				self::$found_funcs = get_option( 'wp_geometa_capabilities',array() );
 			}
 
 			if ( ! empty( self::$found_funcs ) ) {
@@ -496,7 +496,7 @@ class WP_GeoUtil {
 		$wpdb->suppress_errors( $suppress );
 		$wpdb->show_errors( $errors );
 
-		update_option( 'geometa_capabilities',self::$found_funcs, false );
+		update_option( 'wp_geometa_capabilities',self::$found_funcs, false );
 
 		return self::get_capabilities( false, $lower );
 	}

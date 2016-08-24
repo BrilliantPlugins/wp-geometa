@@ -47,7 +47,8 @@ foreach ( $results as $res ) {
 	$meta_post_ids[] = $res->post_id;
 }
 
-if ( ! empty( array_diff( $post_ids, $meta_post_ids ) ) ) {
+$diffed = array_diff( $post_ids, $meta_post_ids );
+if ( ! empty( $diffed ) ) {
 	fail();
 } else {
 	pass();

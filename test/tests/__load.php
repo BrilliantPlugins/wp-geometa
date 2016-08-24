@@ -44,7 +44,8 @@ $args = array(
 register_post_type( "geo_test", $args );
 
 function fail( $wpq = null ) {
-	if ( empty( getenv( 'STY' ) ) ) {
+	$sty = getenv('STY');
+	if ( empty( $sty ) ) {
 		print "😡\n";
 	} else {
 		print ":-(\n";
@@ -60,7 +61,8 @@ function fail( $wpq = null ) {
 }
 
 function pass(){
-	if ( empty( getenv('STY') ) ) {
+	$sty = getenv('STY');
+	if ( empty( $sty ) ) {
 		print "😎\n";
 	} else {
 		print ":-)\n";
@@ -68,7 +70,8 @@ function pass(){
 }
 
 function unsupported( $unsupported_func = '' ) {
-	if ( empty( getenv('STY') ) ) {
+	$sty = getenv('STY');
+	if ( empty( $sty ) ) {
 		print "😐\n";
 	} else {
 		print ":-|\n";
