@@ -44,7 +44,11 @@ $args = array(
 register_post_type( "geo_test", $args );
 
 function fail( $wpq = null ) {
-	print "😡\n";
+	if ( empty( getenv( 'STY' ) ) ) {
+		print "😡\n";
+	} else {
+		print ":-(\n";
+	}
 
 	if ( WP_GEOMETA_DEBUG > 0) {
 		$bt = debug_backtrace();
@@ -56,7 +60,11 @@ function fail( $wpq = null ) {
 }
 
 function pass(){
-	print "😎\n";
+	if ( empty( getenv('STY') ) ) {
+		print "😎\n";
+	} else {
+		print ":-)\n";
+	}
 }
 
 function prettyQuery( $wpq = null ) {

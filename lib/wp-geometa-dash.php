@@ -501,19 +501,23 @@ class WP_GeoMeta_Dash {
 				continue;
 			}
 
-			$percents_loaded[ $meta_type ] = $num_geo / $num_meta;
+			if ( empty( $num_meta ) ) {
+				$percents_loaded[ $meta_type ] = 0;
+			} else {
+				$percents_loaded[ $meta_type ] = $num_geo / $num_meta;
+			}
 		}
 
 		if ( 0 === $total_meta ) {
 			$total_percent = 100;
 		} else {
-			$total_percent = $total_geo / $total_meta * 100;
+			$total_percent = (int) ($total_geo / $total_meta * 100);
 		}
 
 		if ( 100 === $total_percent ) {
 			$this->make_status_block( 'good', esc_html__( 'All Spatial Data Loaded!' , 'wp-geometa' ), sprintf( esc_html__( 'All %1$s spatial records are loaded!' , 'wp-geometa' ), $total_meta ) );
 		} else if ( $total_percent > 0 ) {
-			$this->make_status_block( 'fair', esc_html__( 'Some Spatial Data Loaded' , 'wp-geometa' ), sprintf( esc_html__( '%1$s of spatial records are loaded (%2$s records not loaded). Try using the %3$s%4$s%5$s tool below to load them.', 'wp-geometa' ), $total_percent, ( $total_meta - $total_geo ), '<em>', esc_html__( 'Populate WP GeoMeta Tables', 'wp-geometa' ), '</em>' ) );
+			$this->make_status_block( 'fair', esc_html__( 'Some Spatial Data Loaded' , 'wp-geometa' ), sprintf( esc_html__( '%1$s%% of spatial records are loaded (%2$s records not loaded). Try using the %3$s%4$s%5$s tool below to load them.', 'wp-geometa' ), $total_percent, ( $total_meta - $total_geo ), '<em>', esc_html__( 'Populate WP GeoMeta Tables', 'wp-geometa' ), '</em>' ) );
 		} else {
 			$this->make_status_block( 'poor', esc_html__( 'No Spatial Data Loaded!' , 'wp-geometa' ), sprintf( esc_html__( 'Please verify that the spatial tables exist, then use the %1$s%2$s%3$s tool below to load the data.' , 'wp-geometa' ), '<em>', esc_html__( 'Populate WP GeoMeta Tables' ), '</em>' ) );
 		}

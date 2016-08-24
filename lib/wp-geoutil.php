@@ -351,10 +351,13 @@ class WP_GeoUtil {
              * like Geometry in GeometryCollection columns.
 			 */
 			if ( false === strpos( $wkt, 'MULTI' ) ) {
-				$wkt = str_replace( 'POINT ', 'MULTIPOINT(', $wkt );
-				$wkt = str_replace( 'LINE ', 'MULTILINE(', $wkt );
-				$wkt = str_replace( 'POLYGON ', 'MULTIPOLYGON(', $wkt );
-				$wkt .= ')';
+				if ( 0 === strpos( $wkt, 'POINT' ) ) {
+					$wkt = str_replace( 'POINT ', 'MULTIPOINT', $wkt );
+				} else {
+					$wkt = str_replace( 'LINE ', 'MULTILINE(', $wkt );
+					$wkt = str_replace( 'POLYGON ', 'MULTIPOLYGON(', $wkt );
+					$wkt .= ')';
+				}
 			}
 
 			return $wkt;

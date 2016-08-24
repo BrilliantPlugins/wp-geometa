@@ -268,6 +268,27 @@ class WP_GeoMeta {
 		$table .= '_geo';
 
 		// @codingStandardsIgnoreStart
+		$sql = $wpdb->prepare(
+				"INSERT INTO $table 
+				(
+					{$meta_type}_id,
+					fk_meta_id,
+					meta_key,
+					meta_value
+				) VALUES (
+					%d,
+					%d,
+					%s,
+					GeomFromText(%s,%d)
+				)",
+				array(
+					$object_id,
+					$meta_id,
+					$meta_key,
+					$meta_value, 
+					WP_GeoUtil::get_srid(),
+				)
+			);
 		$result = $wpdb->query( 
 			$wpdb->prepare(
 				"INSERT INTO $table 
