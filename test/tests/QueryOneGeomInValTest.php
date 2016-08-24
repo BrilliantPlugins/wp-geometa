@@ -15,7 +15,7 @@ $wpq = new WP_Query(array(
 		'key' => 'wpgeometa_test',
 		'compare' => 'BETWEEN',
 		'value' => array(1,10),
-		'geom_op' => 'IsSimple',
+		'geom_op' => 'Dimension',
 		'type' => 'NUMERIC',  // 'NUMERIC', 'BINARY', 'CHAR', 'DATE', 'DATETIME', 'DECIMAL', 'SIGNED', 'TIME', 'UNSIGNED'. Default value is 'CHAR'. 
 	)
 	))); 

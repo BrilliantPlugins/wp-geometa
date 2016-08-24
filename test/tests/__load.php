@@ -67,6 +67,22 @@ function pass(){
 	}
 }
 
+function unsupported( $unsupported_func = '' ) {
+	if ( empty( getenv('STY') ) ) {
+		print "😐\n";
+	} else {
+		print ":-|\n";
+	}
+
+	if ( WP_GEOMETA_DEBUG > 0 ) {
+		$bt = debug_backtrace();
+		$caller = array_shift($bt);
+		print "\n" . basename($caller['file']) . ':' . $caller['line'] . "\n";
+
+		print "This test uses $unsupported_func, a function not supported by your install\n";
+	}
+}
+
 function prettyQuery( $wpq = null ) {
 	if ( !empty( $wpq ) ) {
 		ob_start();

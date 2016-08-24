@@ -109,7 +109,7 @@ class WP_GeoQuery {
 			$depth++;
 
 			// Is our compare a spatial compare? If, so, it has to be in our list of allowed compares.
-			if ( in_array( strtolower( $meta_query['compare'] ),WP_GeoUtil::get_capabilities(), true ) ) {
+			if ( array_key_exists( 'compare', $meta_query ) && in_array( strtolower( $meta_query['compare'] ),WP_GeoUtil::get_capabilities(), true ) ) {
 				$worked = $this->handle_two_geom_bool_meta( $clauses,$meta_query,$type,$primary_table,$primary_id_column,$context, $metatable, $geotable, $id_column );
 			} else if ( array_key_exists( 'geom_op', $meta_query ) && in_array( strtolower( $meta_query['geom_op'] ),WP_GeoUtil::get_capabilities(), true ) ) {
 				// Single arg functions that get cast and compared just need to re-alias the meta table. We can leave the rest of the WHERE clause alone.
@@ -209,12 +209,14 @@ class WP_GeoQuery {
 	private function handle_two_geom_bool_meta( &$clauses, $meta_query, $type, $primary_table, $primary_id_column, $context, $metatable, $geotable, $id_column ) {
 		global $wpdb;
 
-		$meta_type = $context->meta_query->get_cast_for_type( $meta_query['type'] );
+		$meta_type = ( array_key_exists( 'type', $meta_query ) ? $meta_query[ 'type' ] : '' );
+		$meta_type = $context->meta_query->get_cast_for_type( $meta_type );
 
 		$std_queries = array();
 
 		// If we have a geometry for our value, then we're doing a two-geometry function that returns a boolean.
-		$geometry = WP_GeoUtil::metaval_to_geom( $meta_query['value'] );
+		$meta_value = ( array_key_exists( 'value', $meta_query ) ? $meta_query[ 'value' ] : '' );
+		$geometry = WP_GeoUtil::metaval_to_geom( $meta_value );
 		if ( ! empty( $geometry ) ) {
 			$new_meta_value = "{$meta_query['compare']}( meta_value,GeomFromText( %s, %d ) )";
 			$new_meta_value = $wpdb->prepare( $new_meta_value, array( $geometry, WP_GeoUtil::get_srid() ) ); // @codingStandardsIgnoreLine

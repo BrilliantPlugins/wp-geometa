@@ -13,12 +13,19 @@ $wpq = new WP_Query(array(
 	'meta_query' => array(
 		array( 
 		'key' => 'wpgeometa_test',
-		'compare' => 'IsSimple'
+		'compare' => 'Dimension'
 	)
 	))); 
 
 if ( ! $wpq->have_posts() ) {
 	fail($wpq);
+	return;
+}
+
+$capabilities = WP_GeoUtil::get_capabilities();
+
+if ( !in_array('st_isempty',$capabilities) ){
+	unsupported( 'ST_IsEmpty' );
 	return;
 }
 

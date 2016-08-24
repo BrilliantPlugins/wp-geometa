@@ -419,6 +419,10 @@ class WP_GeoUtil {
 	 */
 	public static function is_geom( $maybe_geom ) {
 		try {
+			if ( !is_string( $maybe_geom ) ) {
+				return false;
+			}
+
 			$what = self::$geowkt->read( (string) $maybe_geom );
 			if ( null !== $what ) {
 				return true;

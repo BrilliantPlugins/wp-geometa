@@ -3,6 +3,13 @@ require_once( dirname( __FILE__ ) . '/__load.php' );
 
 print str_pad( "Testing OrderBy Distance", WP_GEOMETA_TEST_WIDTH, '.' );
 
+$capabilities = WP_GeoUtil::get_capabilities();
+
+if ( !in_array('st_distance',$capabilities) ){
+	unsupported( 'ST_Distance' );
+	return;
+}
+
 $wpq = new WP_Query(array(
 	'post_type' => 'geo_test',
 	'posts_per_page' => -1,

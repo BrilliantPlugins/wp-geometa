@@ -14,8 +14,8 @@ $wpq = new WP_Query(array(
 		array( 
 		'key' => 'wpgeometa_test',
 		'compare' => '=',
-		'value' => '1',
-		'geom_op' => 'IsSimple'
+		'value' => '2',
+		'geom_op' => 'Dimension'
 	)
 	))); 
 
