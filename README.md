@@ -150,11 +150,14 @@ Server Requirements
 
 ### WordPress
 This plugin supports storing spatial metadata for posts, users, comments and
-terms. Searching term metadata arrived in WordPress 4.4, but other
+terms. 
+
+Setting, getting and querying values should work in 4.1 with some missing functionality. 
+Running orderby doesn't work until 4.2
+Searching term metadata arrived in WordPress 4.4, but other
 functionality should still work in older versions of WordPress.
 
-### MySQL
-MySQL 5.6.1 or higher is strongly recommended. Lower than MySQL 5.5 is untested.
+MySQL 5.6.1 or higher is strongly recommended. Lower than MySQL 7.5 is untested.
 
 WP_GeoMeta will probably work on MySQL 5.4, but spatial support was pretty weak 
 before version 5.6.1. 
@@ -169,7 +172,7 @@ If you are using MySQL 5.7, good for you, and consider converting your geo table
 to InnoDB! (and let me know how it goes).
 
 ### PHP
-The goal is PHP 5.2 support, just like WordPress's minimum version
+PHP 5.2.4 and higher are support, just like WordPress's minimum version.
 Please report any PHP errors you come across and we'll fix them up.
 
 Frequently Asked Questions

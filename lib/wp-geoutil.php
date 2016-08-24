@@ -279,6 +279,10 @@ class WP_GeoUtil {
 				$fragment = json_decode( $fragment,true );
 			}
 
+			if ( !is_array( $fragment ) ) {
+				return false;
+			}
+
 			$fragment = array_change_key_case( $fragment );
 
 			if ( ! array_key_exists( 'type',$fragment ) ) {
