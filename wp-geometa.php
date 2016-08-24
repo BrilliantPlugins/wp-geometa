@@ -213,6 +213,3 @@ if ( ! function_exists( 'wpgeometa_activation_hook' ) ) {
 	}
 	register_activation_hook( __FILE__ , 'wpgeometa_activation_hook' );
 }
-
-$wp_geoutil = WP_GeoUtil::get_instance();
-$wp_geoutil->get_capabilities( true );
