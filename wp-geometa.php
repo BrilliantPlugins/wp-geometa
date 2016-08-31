@@ -5,10 +5,13 @@
  * WP-GeoMeta targets MySQL 5.6 because 5.5 only used MBR based spatial functions
  * https://dev.mysql.com/doc/refman/5.6/en/spatial-relation-functions-object-shapes.html
  *
+ * It should still work on 5.5, but you'll be limited in what you can do with it.
+ *
  * Plugin Name: WP-GeoMeta
+ * Description: Store and search spatial metadata while taking advantage of MySQL spatial types and indexes.
  * Author: Michael Moore
  * Author URI: http://cimbura.com
- * Version: 0.2.0-alpha
+ * Version: 0.2.0
  * Code Name: Penny Priddy
  * Text Domain: wp-geometa
  * Domain Path: /lang

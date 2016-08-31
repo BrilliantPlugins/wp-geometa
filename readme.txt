@@ -8,7 +8,7 @@ Stable tag: trunk
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Store and search spatial metadata like you do any other metadata, but while taking advantage of MySQL native spatial types and indexes.
+Store and search spatial metadata like any other metadata, but while taking advantage of MySQL spatial types and indexes.
 
 == Description == 
 
@@ -61,6 +61,46 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 4. Built-in regression tests
 
 == Changelog ==
+
+= 0.2.0 =
+ * Upgrading no longer truncates and rebuilds the meta tables. 
+ * Fix for joins so user meta should work again (umeta_id vs meta_id key name issue).
+ * A beautiful dashboard! 
+ * Plugin activation hooks so that deactivating/activating without upgrading will recreate database tables
+ * Translation ready!
+ * Portuguese translation!
+ * Code documentation!
+ * Changed geometry type so that all geometries are stored as multipoint to work across MySQL versions
+
+= 0.1.1 =
+ * orderby should now work
+ * Much cleaner joins
+ * Minor fix for when upgrades occurs
+
+= 0.1.0 =
+ * Will now work as a library or a plugin. 
+ * Additional functions for getting data back into GeoJSON format.
+ * Working well enough to submit to the plugin repo.
+ * Support for single geometry functions in meta_queries.
+
+= 0.0.2 =
+ * Improved meta query capabilities. Now support sub queries, and uses standard meta-query syntax
+ * Whitelist of known spatial functions in meta_query args. Allowed args set by detecting MySQL capabilities.
+ * We now delete the spatial index on activation so that we don't end up with duplicate spatial keys
+ * Populate geo tables on activation with any existing geojson values
+ * Submitted ticket to dbDelta SPATIAL INDEX support: https://core.trac.wordpress.org/ticket/36948
+ * Conform to WP coding standards
+ * Explicitly set visibility on properties and methods
+
+= 0.0.1 =
+ * Initial Release
+
+== Upgrade Notice ==
+
+= 0.2.0 =
+* You probably don't have a version installed yet, so you should definately
+check out 0.2.0.
+
 
 
 
