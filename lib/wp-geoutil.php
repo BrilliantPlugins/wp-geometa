@@ -361,11 +361,9 @@ class WP_GeoUtil {
 			 */
 			if ( false === strpos( $wkt, 'MULTI' ) ) {
 				if ( 0 === strpos( $wkt, 'POINT' ) ) {
-					$wkt = str_replace( 'POINT ', 'MULTIPOINT', $wkt );
-				} else {
-					$wkt = str_replace( 'LINE ', 'MULTILINE(', $wkt );
-					$wkt = str_replace( 'POLYGON ', 'MULTIPOLYGON(', $wkt );
-					$wkt .= ')';
+					$wkt = preg_replace( '@^POINT@','MULTIPOINT', $wkt );
+				} else if ( 0 === strpos( $wkt, 'LINE' ) || 0 === strpos( $wkt, 'POLYGON' ) ) {
+					$wkt = preg_replace( '@^(LINE|POLYGON)(\s*)(\(.*?\))@','MULTI$1$2($3)', $wkt );
 				}
 			}
 

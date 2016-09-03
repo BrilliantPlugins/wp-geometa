@@ -429,7 +429,7 @@ class WP_GeoMeta_Dash {
 	public function block_db_versions() {
 		global $wpdb;
 
-		$our_caps = WP_GeoUtil::get_capabilities(true);
+		$our_caps = WP_GeoUtil::get_capabilities( true );
 		$version_info = $wpdb->get_var( 'SELECT VERSION()' ); // @codingStandardsIgnoreLine
 
 		if ( in_array( 'st_intersects', $our_caps, true ) ) {

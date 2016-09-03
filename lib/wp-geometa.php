@@ -123,7 +123,7 @@ class WP_GeoMeta {
 		meta_value geometrycollection NOT NULL,
 		PRIMARY KEY  (meta_id),
 		KEY post_id (post_id),
-		KEY fk_meta_id (fk_meta_id),
+		UNIQUE KEY fk_meta_id (fk_meta_id),
 		KEY meta_key (meta_key($max_index_length))
 		) ENGINE=MyISAM $charset_collate;
 
@@ -135,7 +135,7 @@ class WP_GeoMeta {
 		meta_value geometrycollection NOT NULL,
 		PRIMARY KEY  (meta_id),
 		KEY comment_id (comment_id),
-		KEY fk_meta_id (fk_meta_id),
+		UNIQUE KEY fk_meta_id (fk_meta_id),
 		KEY meta_key (meta_key($max_index_length))
 		) ENGINE=MyISAM $charset_collate;
 
@@ -147,7 +147,7 @@ class WP_GeoMeta {
 		meta_value geometrycollection NOT NULL,
 		PRIMARY KEY  (meta_id),
 		KEY term_id (term_id),
-		KEY fk_meta_id (fk_meta_id),
+		UNIQUE KEY fk_meta_id (fk_meta_id),
 		KEY meta_key (meta_key($max_index_length))
 		) ENGINE=MyISAM $charset_collate;
 
@@ -159,7 +159,7 @@ class WP_GeoMeta {
 		meta_value geometrycollection NOT NULL,
 		PRIMARY KEY  (umeta_id),
 		KEY user_id (user_id),
-		KEY fk_meta_id (fk_meta_id),
+		UNIQUE KEY fk_meta_id (fk_meta_id),
 		KEY meta_key (meta_key($max_index_length))
 		) ENGINE=MyISAM $charset_collate;
 		";
@@ -254,20 +254,25 @@ class WP_GeoMeta {
 
 		if ( $geometry || 'deleted' === $action ) {
 			array_unshift( $arguments,$type );
-			return call_user_func_array( array( $this, "{$action}_meta" ), $arguments );
+			return call_user_func_array( array( $this, 'deleted_meta' ), $arguments );
+		} else if ( $geometry ) {
+			array_unshift( $arguments,$type );
+			return call_user_func_array( array( $this, 'upsert_meta' ), $arguments );
 		}
 	}
 
 	/**
-	 * Callback for adding meta
+	 * Callback for adding or updating meta
 	 *
 	 * @param string $meta_type The type of meta we are targeting.
 	 * @param int    $meta_id The ID of the non-geo meta object which was just saved.
 	 * @param int    $object_id The ID of the object the meta is for.
 	 * @param mixed  $meta_key The key for this metadata pair.
 	 * @param mixed  $meta_value The value for this metadata pair.
+	 *
+	 * The function uses INSERT ... ON DUPLICATE KEY UPDATE so it handles meta added and updated cases.
 	 */
-	private function added_meta( $meta_type, $meta_id, $object_id, $meta_key, $meta_value ) {
+	private function upsert_meta( $meta_type, $meta_id, $object_id, $meta_key, $meta_value ) {
 		global $wpdb;
 
 		if ( ! $meta_type || ! $meta_key || ! is_numeric( $object_id ) ) {
@@ -287,27 +292,6 @@ class WP_GeoMeta {
 		$table .= '_geo';
 
 		// @codingStandardsIgnoreStart
-		$sql = $wpdb->prepare(
-				"INSERT INTO $table 
-				(
-					{$meta_type}_id,
-					fk_meta_id,
-					meta_key,
-					meta_value
-				) VALUES (
-					%d,
-					%d,
-					%s,
-					GeomFromText(%s,%d)
-				)",
-				array(
-					$object_id,
-					$meta_id,
-					$meta_key,
-					$meta_value, 
-					WP_GeoUtil::get_srid(),
-				)
-			);
 		$result = $wpdb->query( 
 			$wpdb->prepare(
 				"INSERT INTO $table 
@@ -321,12 +305,14 @@ class WP_GeoMeta {
 					%d,
 					%s,
 					GeomFromText(%s,%d)
-				)",
+				) ON DUPLICATE KEY UPDATE meta_value=GeomFromText(%s,%d)",
 				array(
 					$object_id,
 					$meta_id,
 					$meta_key,
-					$meta_value, 
+					$meta_value,
+					WP_GeoUtil::get_srid(),
+					$meta_value,
 					WP_GeoUtil::get_srid(),
 				)
 			)
@@ -342,50 +328,6 @@ class WP_GeoMeta {
 		wp_cache_delete( $object_id, $meta_type . '_metageo' );
 
 		return $mid;
-	}
-
-	/**
-	 * Callback for updating meta
-	 *
-	 * @param string $meta_type The type of meta we are targeting.
-	 * @param int    $meta_id The ID of the non-geo meta object which was just saved.
-	 * @param int    $object_id The ID of the object the meta is for.
-	 * @param mixed  $meta_key The key for this metadata pair.
-	 * @param mixed  $meta_value The value for this metadata pair.
-	 */
-	private function updated_meta( $meta_type, $meta_id, $object_id, $meta_key, $meta_value ) {
-		global $wpdb;
-
-		if ( ! $meta_type || ! $meta_key || ! is_numeric( $object_id ) ) {
-			return false;
-		}
-
-		$object_id = absint( $object_id );
-		if ( ! $object_id ) {
-			return false;
-		}
-
-		$table = _get_meta_table( $meta_type );
-		if ( ! $table ) {
-			return false;
-		}
-
-		$table .= '_geo';
-
-		$column = sanitize_key( $meta_type . '_id' );
-		$id_column = 'user' === $meta_type ? 'umeta_id' : 'meta_id';
-
-		$q = "UPDATE $table SET meta_value=GeomFromText(%s,%d) WHERE fk_meta_id=(%d)";
-		$sql = $wpdb->prepare( $q,array( $meta_value, WP_GeoUtil::get_srid(), $meta_id ) ); // @codingStandardsIgnoreLine 
-		$count = $wpdb->query( $sql );
-
-		if ( ! $count ) {
-			return false;
-		}
-
-		wp_cache_delete( $object_id, $meta_type . '_metageo' );
-
-		return true;
 	}
 
 	/**
@@ -466,7 +408,7 @@ class WP_GeoMeta {
 				foreach ( $res as $row ) {
 					$geometry = WP_GeoUtil::metaval_to_geom( $row['meta_value'] );
 					if ( $geometry ) {
-						$this->added_meta( $meta_type,$row[ $meta_pkey ],$row[ $meta_type . '_id' ],$row['meta_key'],$geometry );
+						$this->upsert_meta( $meta_type,$row[ $meta_pkey ],$row[ $meta_type . '_id' ],$row['meta_key'],$geometry );
 					}
 					$maxid = $row[ $meta_pkey ];
 				}

@@ -5,8 +5,10 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-phpcbf --standard=WordPress $DIR/../wp-geometa.php
-phpcbf --standard=WordPress $DIR/../lib/wp-geoutil.php
-phpcbf --standard=WordPress $DIR/../lib/wp-geometa.php
-phpcbf --standard=WordPress $DIR/../lib/wp-geometa-dash.php
-phpcbf --standard=WordPress $DIR/../lib/wp-geoquery.php
+cd $DIR/..
+
+phpcbf --standard=WordPress ./wp-geometa.php
+phpcbf --standard=WordPress ./lib/wp-geoutil.php
+phpcbf --standard=WordPress ./lib/wp-geometa.php
+phpcbf --standard=WordPress ./lib/wp-geometa-dash.php
+phpcbf --standard=WordPress ./lib/wp-geoquery.php

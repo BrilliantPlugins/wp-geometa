@@ -1,6 +1,10 @@
 Changes
 -------
 
+### 0.2.1
+ * Handle multi-feature GeoJSON correctly in MySQL 5.7 (convert to GEOMETRYCOLLECTION)
+ * Use ON DUPLICATE KEY UPDATE to combine added and updated postmeta handlers.
+
 ### 0.2.0: Penny Priddy
  * Upgrading no longer truncates and rebuilds the meta tables. 
  * Fix for joins so user meta should work again (umeta_id vs meta_id key name issue).
