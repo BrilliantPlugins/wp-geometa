@@ -252,7 +252,7 @@ class WP_GeoMeta {
 			$arguments[3] = $geometry;
 		}
 
-		if ( $geometry || 'deleted' === $action ) {
+		if ( 'deleted' === $action ) {
 			array_unshift( $arguments,$type );
 			return call_user_func_array( array( $this, 'deleted_meta' ), $arguments );
 		} else if ( $geometry ) {
