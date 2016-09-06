@@ -11,7 +11,7 @@
  * Description: Store and search spatial metadata while taking advantage of MySQL spatial types and indexes.
  * Author: Michael Moore
  * Author URI: http://cimbura.com
- * Version: 0.2.0
+ * Version: 0.2.1
  * Code Name: Penny Priddy
  * Text Domain: wp-geometa
  * Domain Path: /lang

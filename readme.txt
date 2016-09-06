@@ -62,6 +62,10 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 
 == Changelog ==
 
+= 0.2.1 =
+ * Handle multi-feature GeoJSON correctly in MySQL 5.7 (convert to GEOMETRYCOLLECTION)
+ * Use ON DUPLICATE KEY UPDATE to combine added and updated postmeta handlers.
+
 = 0.2.0 =
  * Upgrading no longer truncates and rebuilds the meta tables. 
  * Fix for joins so user meta should work again (umeta_id vs meta_id key name issue).
@@ -100,10 +104,3 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 = 0.2.0 =
 * You probably don't have a version installed yet, so you should definately
 check out 0.2.0.
-
-
-
-
-
-
-
