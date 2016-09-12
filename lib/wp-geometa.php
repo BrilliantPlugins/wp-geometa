@@ -239,7 +239,6 @@ class WP_GeoMeta {
 
 		$action = $parts[0];
 		$type = $parts[1];
-		$meta_value = $parts[2];
 
 		if ( ! in_array( $action, $this->meta_actions, true ) || ! in_array( $type, $this->meta_types, true ) ) {
 			return;
@@ -248,6 +247,7 @@ class WP_GeoMeta {
 		if ( 'deleted' === $action ) {
 			$geometry = false;
 		} else {
+			$arguments = apply_filters( 'wpgm_process_separate_geo_keys', $arguments, $type );
 			$geometry = WP_GeoUtil::metaval_to_geom( $arguments[3] );
 			$arguments[3] = $geometry;
 		}
@@ -414,5 +414,7 @@ class WP_GeoMeta {
 				}
 			} while ($found_rows);
 		}
+
+		do_action( 'wpgm_populate_separate_geo_keys' );
 	}
 }

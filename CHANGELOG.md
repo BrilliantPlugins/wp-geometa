@@ -1,6 +1,10 @@
 Changes
 -------
 
+### 0.2.2
+ * Added built-in support for the WordPress Geodata standard
+ * Added filter and action to handle arbitrary lat/lng pair metavalues
+
 ### 0.2.1
  * Handle multi-feature GeoJSON correctly in MySQL 5.7 (convert to GEOMETRYCOLLECTION)
  * Use ON DUPLICATE KEY UPDATE to combine added and updated postmeta handlers.

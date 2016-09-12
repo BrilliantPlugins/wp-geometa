@@ -89,7 +89,7 @@ class WP_GeoQuery {
 
 		$geotable = $metatable . '_geo';
 
-		$id_column = 'user' === $type ? 'umeta_id' : 'meta_id';
+		$id_column = ( 'user' === $type ? 'umeta_id' : 'meta_id' );
 
 		foreach ( $queries as $k => $meta_query ) {
 			if ( ! is_array( $meta_query ) ) {
