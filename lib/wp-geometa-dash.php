@@ -287,8 +287,8 @@ class WP_GeoMeta_Dash {
 			return;
 		}
 
-		wp_enqueue_script( 'leafletjs', 'https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js', array(), null );
-		wp_enqueue_style( 'leafletcss', 'https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css', array(), null );
+		wp_enqueue_script( 'leafletjs', 'https://unpkg.com/leaflet@1.0.0-rc.3/dist/leaflet.js', array(), null );
+		wp_enqueue_style( 'leafletcss', 'https://unpkg.com/leaflet@1.0.0-rc.3/dist/leaflet.css', array(), null );
 		wp_enqueue_style( 'wpgeometadash', plugin_dir_url( __FILE__ ) . '/../../assets/wpgeometa.css', array( 'leafletcss' ) );
 
 		wp_register_script( 'wpgeometadashjs', plugin_dir_url( __FILE__ ) . '/../../assets/wpgeometa.js', array( 'leafletjs' ) );
