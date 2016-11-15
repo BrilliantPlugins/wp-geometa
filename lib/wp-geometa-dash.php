@@ -287,11 +287,14 @@ class WP_GeoMeta_Dash {
 			return;
 		}
 
-		wp_enqueue_script( 'leafletjs', 'https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js', array(), null );
-		wp_enqueue_style( 'leafletcss', 'https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css', array(), null );
-		wp_enqueue_style( 'wpgeometadash', plugin_dir_url( __FILE__ ) . '/../../assets/wpgeometa.css', array( 'leafletcss' ) );
+		$plugin_dir = plugin_dir_url( __FILE__ ) . '/../../assets/';
 
-		wp_register_script( 'wpgeometadashjs', plugin_dir_url( __FILE__ ) . '/../../assets/wpgeometa.js', array( 'leafletjs' ) );
+
+		wp_enqueue_script( 'leafletjs', $plugin_dir . 'leaflet/leaflet.js', array(), null );
+		wp_enqueue_style( 'leafletcss', $plugin_dir . 'leaflet/leaflet.css', array(), null );
+		wp_enqueue_style( 'wpgeometadash', $plugin_dir . '/wpgeometa.css', array( 'leafletcss' ) );
+
+		wp_register_script( 'wpgeometadashjs', $plugin_dir . 'wpgeometa.js', array( 'leafletjs' ) );
 		$translation_array = array(
 			'action_confirm_dialog' => __( 'Are you sure you want to %1$s?' , 'wp-geometa' ),
 			);
