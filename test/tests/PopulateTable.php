@@ -9,6 +9,7 @@ require_once( dirname( __FILE__ ) . '/__load.php' );
 
 global $wpdb;
 
+print str_pad( "Populating tables with existing data", WP_GEOMETA_TEST_WIDTH, '.' );
 
 $wpgm = WP_GeoMeta::get_instance();
 

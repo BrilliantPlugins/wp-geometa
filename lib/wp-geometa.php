@@ -101,6 +101,7 @@ class WP_GeoMeta {
 
 		add_filter( 'wpgm_pre_metaval_to_geom', array( $this, 'handle_latlng_meta' ), 10, 2 );
 		add_filter( 'wpgm_populate_geo_tables', array( $this, 'populate_latlng_geo' ) );
+		add_filter( 'wpgm_pre_delete_geometa', array( $this, 'delete_latlng_geo' ), 10, 5 );
 	}
 
 	/**
@@ -135,53 +136,53 @@ class WP_GeoMeta {
 			Spatial indexes can only contain non-null columns.
 		 */
 		$geotables = 'CREATE TABLE ' . _get_meta_table( 'post' ) . "_geo (
-		meta_id bigint(20) unsigned NOT NULL auto_increment,
-		post_id bigint(20) unsigned NOT NULL default '0',
-		fk_meta_id bigint(20) unsigned NOT NULL default '0',
-		meta_key varchar(255) default NULL,
-		meta_value geometrycollection NOT NULL,
-		PRIMARY KEY  (meta_id),
+			meta_id bigint(20) unsigned NOT NULL auto_increment,
+			post_id bigint(20) unsigned NOT NULL default '0',
+			fk_meta_id bigint(20) unsigned NOT NULL default '0',
+			meta_key varchar(255) default NULL,
+			meta_value geometrycollection NOT NULL,
+			PRIMARY KEY  (meta_id),
 		KEY post_id (post_id),
 		UNIQUE KEY fk_meta_id (fk_meta_id),
 		KEY meta_key (meta_key($max_index_length))
-		) ENGINE=MyISAM $charset_collate;
+	) ENGINE=MyISAM $charset_collate;
 
 		CREATE TABLE " . _get_meta_table( 'comment' ) . "_geo (
-		meta_id bigint(20) unsigned NOT NULL auto_increment,
-		comment_id bigint(20) unsigned NOT NULL default '0',
-		fk_meta_id bigint(20) unsigned NOT NULL default '0',
-		meta_key varchar(255) default NULL,
-		meta_value geometrycollection NOT NULL,
-		PRIMARY KEY  (meta_id),
+			meta_id bigint(20) unsigned NOT NULL auto_increment,
+			comment_id bigint(20) unsigned NOT NULL default '0',
+			fk_meta_id bigint(20) unsigned NOT NULL default '0',
+			meta_key varchar(255) default NULL,
+			meta_value geometrycollection NOT NULL,
+			PRIMARY KEY  (meta_id),
 		KEY comment_id (comment_id),
 		UNIQUE KEY fk_meta_id (fk_meta_id),
 		KEY meta_key (meta_key($max_index_length))
-		) ENGINE=MyISAM $charset_collate;
+	) ENGINE=MyISAM $charset_collate;
 
 		CREATE TABLE " . _get_meta_table( 'term' ) . "_geo (
-		meta_id bigint(20) unsigned NOT NULL auto_increment,
-		term_id bigint(20) unsigned NOT NULL default '0',
-		fk_meta_id bigint(20) unsigned NOT NULL default '0',
-		meta_key varchar(255) default NULL,
-		meta_value geometrycollection NOT NULL,
-		PRIMARY KEY  (meta_id),
+			meta_id bigint(20) unsigned NOT NULL auto_increment,
+			term_id bigint(20) unsigned NOT NULL default '0',
+			fk_meta_id bigint(20) unsigned NOT NULL default '0',
+			meta_key varchar(255) default NULL,
+			meta_value geometrycollection NOT NULL,
+			PRIMARY KEY  (meta_id),
 		KEY term_id (term_id),
 		UNIQUE KEY fk_meta_id (fk_meta_id),
 		KEY meta_key (meta_key($max_index_length))
-		) ENGINE=MyISAM $charset_collate;
+	) ENGINE=MyISAM $charset_collate;
 
 		CREATE TABLE " . _get_meta_table( 'user' ) . "_geo (
-		umeta_id bigint(20) unsigned NOT NULL auto_increment,
-		user_id bigint(20) unsigned NOT NULL default '0',
-		fk_meta_id bigint(20) unsigned NOT NULL default '0',
-		meta_key varchar(255) default NULL,
-		meta_value geometrycollection NOT NULL,
-		PRIMARY KEY  (umeta_id),
+			umeta_id bigint(20) unsigned NOT NULL auto_increment,
+			user_id bigint(20) unsigned NOT NULL default '0',
+			fk_meta_id bigint(20) unsigned NOT NULL default '0',
+			meta_key varchar(255) default NULL,
+			meta_value geometrycollection NOT NULL,
+			PRIMARY KEY  (umeta_id),
 		KEY user_id (user_id),
 		UNIQUE KEY fk_meta_id (fk_meta_id),
 		KEY meta_key (meta_key($max_index_length))
-		) ENGINE=MyISAM $charset_collate;
-		";
+	) ENGINE=MyISAM $charset_collate;
+";
 
 		/*
 		Pre WP 4.6, dbDelta had a problem with SPATIAL INDEX, so we run those separate.
@@ -189,23 +190,23 @@ class WP_GeoMeta {
 
 		Once WP 4.6 is out we can revisit this.
 		 */
-		dbDelta( $geotables );
+dbDelta( $geotables );
 
-		$suppress = $wpdb->suppress_errors( true );
-		$errors = $wpdb->show_errors( false );
+$suppress = $wpdb->suppress_errors( true );
+$errors = $wpdb->show_errors( false );
 
-		foreach ( $drop_indexes as $index ) {
-			$wpdb->query( $index ); // @codingStandardsIgnoreLine
-		}
+foreach ( $drop_indexes as $index ) {
+	$wpdb->query( $index ); // @codingStandardsIgnoreLine
+}
 
-		$wpdb->suppress_errors( $suppress );
-		$wpdb->show_errors( $errors );
+$wpdb->suppress_errors( $suppress );
+$wpdb->show_errors( $errors );
 
-		foreach ( $add_indexes as $index ) {
-			// @codingStandardsIgnoreStart
-			$wpdb->query( $index );
-			// @codingStandardsIgnoreEnd
-		}
+foreach ( $add_indexes as $index ) {
+	// @codingStandardsIgnoreStart
+	$wpdb->query( $index );
+	// @codingStandardsIgnoreEnd
+}
 	}
 
 	/**
@@ -315,38 +316,38 @@ class WP_GeoMeta {
 			$wpdb->prepare(
 				"INSERT INTO $table 
 				(
-					{$meta_type}_id,
-					fk_meta_id,
-					meta_key,
-					meta_value
-				) VALUES (
-					%d,
-					%d,
-					%s,
-					GeomFromText(%s,%d)
-				) ON DUPLICATE KEY UPDATE meta_value=GeomFromText(%s,%d)",
-				array(
-					$object_id,
-					$meta_id,
-					$meta_key,
-					$meta_value,
-					WP_GeoUtil::get_srid(),
-					$meta_value,
-					WP_GeoUtil::get_srid(),
-				)
+		{$meta_type}_id,
+		fk_meta_id,
+		meta_key,
+		meta_value
+	) VALUES (
+		%d,
+		%d,
+		%s,
+		GeomFromText(%s,%d)
+	) ON DUPLICATE KEY UPDATE meta_value=GeomFromText(%s,%d)",
+array(
+	$object_id,
+	$meta_id,
+	$meta_key,
+	$meta_value,
+	WP_GeoUtil::get_srid(),
+	$meta_value,
+	WP_GeoUtil::get_srid(),
+)
 			)
 		);
-		// @codingStandardsIgnoreEnd
+// @codingStandardsIgnoreEnd
 
-		if ( ! $result ) {
-			return false;
-		}
+if ( ! $result ) {
+	return false;
+}
 
-		$mid = (int) $wpdb->insert_id;
+$mid = (int) $wpdb->insert_id;
 
-		wp_cache_delete( $object_id, $meta_type . '_metageo' );
+wp_cache_delete( $object_id, $meta_type . '_metageo' );
 
-		return $mid;
+return $mid;
 	}
 
 	/**
@@ -379,6 +380,8 @@ class WP_GeoMeta {
 
 		$type_column = sanitize_key( $meta_type . '_id' );
 		$id_column = 'user' === $meta_type ? 'umeta_id' : 'meta_id';
+
+		$meta_ids = apply_filters( 'wpgm_pre_delete_geometa', $meta_ids, $meta_type, $object_id, $meta_key, $meta_value );
 
 		$meta_ids = array_map( 'intval', $meta_ids );
 
@@ -416,24 +419,24 @@ class WP_GeoMeta {
 					FROM $metatable 
 					LEFT JOIN {$metatable}_geo ON ({$metatable}_geo.fk_meta_id = $metatable.$meta_pkey )
 					WHERE 
-						( $metatable.meta_value LIKE '{%{%Feature%geometry%}%' -- By using a leading { we can get some small advantage from MySQL indexes
-						OR $metatable.meta_value LIKE 'a:%{%Feature%geometry%}%' -- But we also need to handle serialized GeoJSON arrays
-						)
-					AND {$metatable}_geo.fk_meta_id IS NULL
-					AND $metatable.$meta_pkey > $maxid 
-					ORDER BY $metatable.$meta_pkey
-					LIMIT 100";
+					( $metatable.meta_value LIKE '{%{%Feature%geometry%}%' -- By using a leading { we can get some small advantage from MySQL indexes
+					OR $metatable.meta_value LIKE 'a:%{%Feature%geometry%}%' -- But we also need to handle serialized GeoJSON arrays
+				)
+				AND {$metatable}_geo.fk_meta_id IS NULL
+				AND $metatable.$meta_pkey > $maxid 
+				ORDER BY $metatable.$meta_pkey
+				LIMIT 100";
 
-				$res = $wpdb->get_results( $q,ARRAY_A ); // @codingStandardsIgnoreLine
-				$found_rows = count( $res );
+$res = $wpdb->get_results( $q,ARRAY_A ); // @codingStandardsIgnoreLine
+$found_rows = count( $res );
 
-				foreach ( $res as $row ) {
-					$geometry = WP_GeoUtil::metaval_to_geom( $row['meta_value'] );
-					if ( $geometry ) {
-						$this->upsert_meta( $meta_type,$row[ $meta_pkey ],$row[ $meta_type . '_id' ],$row['meta_key'],$geometry );
-					}
-					$maxid = $row[ $meta_pkey ];
-				}
+foreach ( $res as $row ) {
+	$geometry = WP_GeoUtil::metaval_to_geom( $row['meta_value'] );
+	if ( $geometry ) {
+		$this->upsert_meta( $meta_type,$row[ $meta_pkey ],$row[ $meta_type . '_id' ],$row['meta_key'],$geometry );
+	}
+	$maxid = $row[ $meta_pkey ];
+}
 			} while ($found_rows);
 		}
 
@@ -472,10 +475,10 @@ class WP_GeoMeta {
 	 * Since the value has already been saved to the regular postmeta table this won't mess with those values.
 	 *
 	 * @param array  $meta_args Array with the meta_id that was just saved, the object_id it was for, the meta_key and meta_values used.
-	 * $meta_args[0] -- meta_id from insert
-	 * $meta_args[1] -- object_id which this applies to 
-	 * $meta_args[2] -- meta key
-	 * $meta_args[3] -- the meta value
+	 *  $meta_args[0] -- meta_id from insert.
+	 *  $meta_args[1] -- object_id which this applies to.
+	 *  $meta_args[2] -- meta key.
+	 *  $meta_args[3] -- the meta value.
 	 *
 	 * @param string $object_type Which WP type is it? (comment/user/post/term).
 	 */
@@ -513,7 +516,7 @@ class WP_GeoMeta {
 				'coordinates' => $coordinates,
 			),
 			'properties' => array(),
-			);
+		);
 
 		$meta_args[2] = $thepair['geo'];
 		$meta_args[3] = wp_json_encode( $geojson );
@@ -550,7 +553,7 @@ class WP_GeoMeta {
 		  pm.meta_value AS `latval`,
 		  COALESCE(pm1.meta_key, pm2.meta_key) AS `lng`,
 		  COALESCE(pm1.meta_value, pm2.meta_value) AS `lngval`
-          FROM
+		  FROM
 		  wp_postmeta pm
 		  LEFT JOIN wp_postmeta pm1 ON ( pm.meta_key='latitude' AND pm1.meta_key='longitude' AND pm.post_id=pm1.post_id)
 		  LEFT JOIN wp_postmeta pm2 ON ( pm.meta_key='thelat' AND pm2.meta_key='thelng' AND pm.post_id=pm2.post_id)
@@ -593,5 +596,43 @@ class WP_GeoMeta {
 				$this->$func( $func, 'updated', $type, $meta_key, $geojson );
 			}
 		}
+	}
+
+	/** 
+	 * For a given set of Meta IDs, determine which meta IDs should actually be deleted.
+	 *
+	 * In the case of lat/lng data, we don't know which one ended up in the geometa table
+	 */
+	public function delete_latlng_geo( $meta_ids, $type, $object_id, $meta_key, $meta_value ) {
+
+		global $wpdb;
+
+		if ( !array_key_exists( $meta_key, WP_GeoMeta::$latlngs_index ) ) {
+			return $meta_ids;
+		}
+
+		$meta_ids = array_map( 'absint', $meta_ids );
+		$meta_ids = array_filter( $meta_ids );
+
+		if ( empty( $meta_ids ) ) {
+			return $meta_ids;
+		}
+
+		$table = _get_meta_table( $type );
+		if ( ! $table ) {
+			return $meta_ids;
+		}
+
+		$thepair = WP_GeoMeta::$latlngs_index[ $meta_key ];
+
+		$the_other_field = ( $thepair['lat'] === $meta_key ? $thepair['lng'] : $thepair['lat'] );
+
+		$meta = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table WHERE {$type}_id = %d AND meta_key = %s", array( $object_id, $the_other_field ) ), ARRAY_A );
+
+		$id_column = ( 'user' == $type ) ? 'umeta_id' : 'meta_id';
+
+		$meta_ids[] = $meta[ $id_column ];
+
+		return $meta_ids;
 	}
 }
