@@ -415,7 +415,10 @@ class WP_GeoMeta {
 				$q = "SELECT $metatable.* 
 					FROM $metatable 
 					LEFT JOIN {$metatable}_geo ON ({$metatable}_geo.fk_meta_id = $metatable.$meta_pkey )
-					WHERE $metatable.meta_value LIKE '{%{%Feature%geometry%}%' -- By using a leading { we can get some small advantage from MySQL indexes
+					WHERE 
+						( $metatable.meta_value LIKE '{%{%Feature%geometry%}%' -- By using a leading { we can get some small advantage from MySQL indexes
+						OR $metatable.meta_value LIKE 'a:%{%Feature%geometry%}%' -- But we also need to handle serialized GeoJSON arrays
+						)
 					AND {$metatable}_geo.fk_meta_id IS NULL
 					AND $metatable.$meta_pkey > $maxid 
 					ORDER BY $metatable.$meta_pkey
@@ -469,11 +472,17 @@ class WP_GeoMeta {
 	 * Since the value has already been saved to the regular postmeta table this won't mess with those values.
 	 *
 	 * @param array  $meta_args Array with the meta_id that was just saved, the object_id it was for, the meta_key and meta_values used.
+	 * $meta_args[0] -- meta_id from insert
+	 * $meta_args[1] -- object_id which this applies to 
+	 * $meta_args[2] -- meta key
+	 * $meta_args[3] -- the meta value
+	 *
 	 * @param string $object_type Which WP type is it? (comment/user/post/term).
 	 */
 	public static function handle_latlng_meta( $meta_args, $object_type ) {
-		$type = $meta_args[1];
+		$object_id = $meta_args[1];
 		$metakey = $meta_args[2];
+		$metaval = $meta_args[3];
 
 		// Quick return if the meta key isn't something we recognize as a lat or lng meta key.
 		if ( ! array_key_exists( $metakey, WP_GeoMeta::$latlngs_index ) ) {
@@ -484,7 +493,7 @@ class WP_GeoMeta {
 
 		$the_other_field = ( $thepair['lat'] === $metakey  ? $thepair['lng'] : $thepair['lat'] );
 
-		$func = 'get_' . $type . '_meta';
+		$func = 'get_' . $object_type. '_meta';
 		$the_other_value = $func( $object_id, $the_other_field, true );
 
 		if ( empty( $the_other_value ) ) {
@@ -516,13 +525,13 @@ class WP_GeoMeta {
 	 *
 	 * It gives us an opportunity to re-populate the meta table if needed.
 	 */
-	public static function populate_latlng_geo() {
+	public function populate_latlng_geo() {
 		global $wpdb;
 
 		$latitude_fields = array();
 		$longitude_fields = array();
 
-		foreach ( WP_GeoMeta::latlngs as $latlng ) {
+		foreach ( WP_GeoMeta::$latlngs as $latlng ) {
 			$latitude_fields[] = $latlng['lat'];
 			$longitude_fields[] = $latlng['lng'];
 		}
@@ -550,7 +559,7 @@ class WP_GeoMeta {
 		  pm.meta_key IN ('latitude', 'thelat')
 		 */
 
-		foreach ( $this->meta_type as $type ) {
+		foreach ( $this->meta_types as $type ) {
 
 			$meta_table = _get_meta_table( $type );
 
