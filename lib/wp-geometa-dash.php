@@ -289,7 +289,6 @@ class WP_GeoMeta_Dash {
 
 		$plugin_dir = plugin_dir_url( __FILE__ ) . '/../../assets/';
 
-
 		wp_enqueue_script( 'leafletjs', $plugin_dir . 'leaflet/leaflet.js', array(), null );
 		wp_enqueue_style( 'leafletcss', $plugin_dir . 'leaflet/leaflet.css', array(), null );
 		wp_enqueue_style( 'wpgeometadash', $plugin_dir . '/wpgeometa.css', array( 'leafletcss' ) );

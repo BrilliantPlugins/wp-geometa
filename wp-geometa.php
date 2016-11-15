@@ -216,3 +216,18 @@ if ( ! function_exists( 'wpgeometa_activation_hook' ) ) {
 	}
 	register_activation_hook( __FILE__ , 'wpgeometa_activation_hook' );
 }
+
+/**
+ * Set up handling for standard latlng fields
+ */
+if ( ! function_exists( 'wpgeometa_setup_latlng_fields' ) ) {
+	/**
+	 * A simple callback function to register the WordPress Geodata standard latitude and longitude fields
+	 *
+	 * See also https://codex.wordpress.org/Geodata for more info.
+	 */
+	function wpgeometa_setup_latlng_fields() {
+		WP_GeoMeta::add_latlng_field( 'geo_latitude', 'geo_longitude', 'geo_' );
+	}
+	add_action( 'init', 'wpgeometa_setup_latlng_fields' );
+}

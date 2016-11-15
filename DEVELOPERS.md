@@ -20,15 +20,6 @@ missing features, let us know!
 Why WP-GeoMeta?
 ---------------
 
-### Why not separate lat and long fields?
-
-Storing lat and long in separate fields means that you have to implement your own 
-[complicated queries](http://stackoverflow.com/questions/20795835/wordpress-and-haversine-formula)
-if you want to search by distance. 
-
-You'll only be able to store points, and you won't have indexing available. 
-
-
 ### Integration with Other Plugins
 
 You might not need spatial queries yourself, but by using WP-GeoMeta you allow other developers to 
@@ -37,6 +28,20 @@ query your data more easily.
 For example, if you were creating a restaurant locations plugin, and someone else had a neighborhood
 boundary plugin, the website developer could query which neighborhood a restaurant is in, or which
 restaurants are within a given neighborhood. 
+
+
+### Why not separate lat and long fields?
+
+Storing lat and long in separate fields means that you have to implement your own 
+[complicated queries](http://stackoverflow.com/questions/20795835/wordpress-and-haversine-formula)
+if you want to search by distance. 
+
+You'll only be able to store points, and you won't have indexing available. 
+
+### OK, fine, but I really need separate fields
+
+Ok, fine, but it's slightly more work for you. 
+
 
 
 How to Use WP-GeoMeta

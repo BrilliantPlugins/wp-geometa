@@ -221,7 +221,6 @@ class WP_GeoUtil {
 	 */
 	private static $found_funcs = array();
 
-
 	/**
 	 * The instance variable
 	 *
@@ -239,9 +238,6 @@ class WP_GeoUtil {
 			self::$geojson = new GeoJSON();
 			self::$geowkt = new WKT();
 			self::$srid = apply_filters( 'wp_geoquery_srid', 4326 );
-
-			add_filter( 'wpgm_process_separate_geo_keys', array( 'WP_GeoUtil', 'process_geodata_standard' ) );
-			add_action( 'wpgm_populate_separate_geo_keys', array( 'WP_GeoUtil', 'populate_geodata_standard' ) );
 		}
 
 		return self::$_instance;
@@ -511,88 +507,6 @@ class WP_GeoUtil {
 	 */
 	public static function get_srid() {
 		return self::$srid;
-	}
-
-	/**
-	 * Handle lat/lng values from the WP Geodata standard: https://codex.wordpress.org/Geodata
-	 *
-	 * Any time geo_latitude or geo_longitude are saved to (eg.) wp_postmeta, this will run.
-	 * We check if the other piece of the coordinate is present so we can make a coordinate pair
-	 * then always modify the args so that we save a single value to the geometa table.
-	 *
-	 * The key we use in the geometa tables is 'geo_'.
-	 *
-	 * Since the value has already been saved to the regular postmeta table this won't mess with those values.
-	 *
-	 * @param array  $meta_args Array with the meta_id that was just saved, the object_id it was for, the meta_key and meta_values used.
-	 * @param string $object_type Which WP type is it? (comment/user/post/term).
-	 */
-	public static function process_geodata_standard( $meta_args, $object_type ) {
-
-		// Quick exit if we're not storing geodata.
-		if ( 'geo_latitude' !== $metakey && 'geo_longitude' !== $metakey ) {
-			return $meta_args;
-		}
-
-		$geojson = array(
-			'type' => 'Feature',
-			'geometry' => array(
-				'type' => 'Point',
-				'coordinates' => array(),
-			),
-			'properties' => array(),
-			);
-
-		$the_other_field = ( 'geo_latitude' === $metakey  ? 'geo_longitude' : 'geo_latitude' );
-
-		$func = 'get_' . $type . '_meta';
-		$the_other_value = $func( $object_id, $the_other_field, true );
-
-		if ( empty( $the_other_value ) ) {
-			return $meta_args;
-		}
-
-		if ( 'geo_latitude' === $metakey ) {
-			$geojson['geometry']['coordinates'] = array( $the_other_value, $metaval );
-		} else {
-			$geojson['geometry']['coordinates'] = array( $metaval, $the_other_value );
-		}
-
-		$meta_args[2] = 'geo_';
-		$meta_args[3] = wp_json_encode( $geojson );
-		return $meta_args;
-	}
-
-	/**
-	 * When WP_GeoMeta::populate_geo_tables() is called, an action will trigger this call.
-	 *
-	 * It gives us an opportunity to re-populate the meta table if needed.
-	 *
-	 * I'm not aware of a better way to get all of the object IDs and meta values for a given meta key.
-	 */
-	public static function populate_geodata_standard() {
-		global $wpdb;
-
-		$queries  = array(
-			'post'		=> 'SELECT * FROM ' . _get_meta_table( 'post' ) .		' WHERE meta_key=\'geo_latitude\'',
-			'comment'	=> 'SELECT * FROM ' . _get_meta_table( 'comment' ) .	' WHERE meta_key=\'geo_latitude\'',
-			'term'	=> 'SELECT * FROM ' . _get_meta_table( 'term' ) .		' WHERE meta_key=\'geo_latitude\'',
-			'user'	=> 'SELECT * FROM ' . _get_meta_table( 'user' ) .		' WHERE meta_key=\'geo_latitude\'',
-		);
-
-		foreach ( $queries as $type => $query ) {
-			$res = $wpdb->get_results( $query, 'ARRAY_A' ); // @codingStandardsIgnoreLine
-			/**
-			 * Call update_post_meta, update_term_meta, etc. for each get_latitude value found.
-			 *
-			 * This will trigger process_geodata_standard which will create the actual insert into the geometa tables.
-			 */
-			$func = 'update_' . $type . '_meta';
-			foreach ( $res as $row ) {
-				$id_column = ( 'user' === $type ? 'umeta_id' : 'meta_id' );
-				$func( $row[ $id_column ], 'geo_latitude', $row['meta_value'] );
-			}
-		}
 	}
 }
 WP_GeoUtil::get_instance();

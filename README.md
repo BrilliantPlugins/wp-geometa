@@ -172,7 +172,7 @@ If you are using MySQL 5.7, good for you, and consider converting your geo table
 to InnoDB! (and let me know how it goes).
 
 ### PHP
-PHP 5.2.4 and higher are support, just like WordPress's minimum version.
+PHP 5.2.4 and higher are supported, just like WordPress's minimum version.
 Please report any PHP errors you come across and we'll fix them up.
 
 Frequently Asked Questions

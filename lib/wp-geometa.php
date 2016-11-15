@@ -53,6 +53,22 @@ class WP_GeoMeta {
 	 */
 	public $meta_actions = array( 'added','updated','deleted' );
 
+
+	/**
+	 * Keep track of our lat/lng fields
+	 *
+	 * @var $latlngs
+	 */
+	private static $latlngs = array();
+
+	/**
+	 * Track just the lat/lng names so we can quickly check if we're processing a
+	 *
+	 * @var $latlngs_index
+	 */
+	private static $latlngs_index = array();
+
+
 	/**
 	 * Singleton variable
 	 *
@@ -82,6 +98,9 @@ class WP_GeoMeta {
 				add_action( "{$action}_{$type}_meta", array( $this, "{$action}_{$type}_meta" ),10,4 );
 			}
 		}
+
+		add_filter( 'wpgm_pre_metaval_to_geom', array( $this, 'handle_latlng_meta' ), 10, 2 );
+		add_filter( 'wpgm_populate_geo_tables', array( $this, 'populate_latlng_geo' ) );
 	}
 
 	/**
@@ -208,7 +227,7 @@ class WP_GeoMeta {
 	}
 
 	/**
-	 * Truncate the geo tables
+	 * Truncate the geo tables.
 	 */
 	public function truncate_tables() {
 		global $wpdb;
@@ -247,7 +266,7 @@ class WP_GeoMeta {
 		if ( 'deleted' === $action ) {
 			$geometry = false;
 		} else {
-			$arguments = apply_filters( 'wpgm_process_separate_geo_keys', $arguments, $type );
+			$arguments = apply_filters( 'wpgm_pre_metaval_to_geom', $arguments, $type );
 			$geometry = WP_GeoUtil::metaval_to_geom( $arguments[3] );
 			$arguments[3] = $geometry;
 		}
@@ -377,7 +396,7 @@ class WP_GeoMeta {
 	}
 
 	/**
-	 * Repopulate
+	 * Repopulate the geometa tables based on the non-geo meta rows that hold GeoJSON.
 	 */
 	public function populate_geo_tables() {
 		global $wpdb;
@@ -396,7 +415,7 @@ class WP_GeoMeta {
 				$q = "SELECT $metatable.* 
 					FROM $metatable 
 					LEFT JOIN {$metatable}_geo ON ({$metatable}_geo.fk_meta_id = $metatable.$meta_pkey )
-					WHERE $metatable.meta_value LIKE '%{%Feature%geometry%}%' 
+					WHERE $metatable.meta_value LIKE '{%{%Feature%geometry%}%' -- By using a leading { we can get some small advantage from MySQL indexes
 					AND {$metatable}_geo.fk_meta_id IS NULL
 					AND $metatable.$meta_pkey > $maxid 
 					ORDER BY $metatable.$meta_pkey
@@ -415,6 +434,155 @@ class WP_GeoMeta {
 			} while ($found_rows);
 		}
 
-		do_action( 'wpgm_populate_separate_geo_keys' );
+		do_action( 'wpgm_populate_geo_tables' );
+	}
+
+	/**
+	 * Add the names of latitude and longitude fields which will be coerced into a Point GeoJSON representation automatically
+	 *
+	 * @param string $latitude_name The name of the latitude meta field.
+	 * @param string $longitude_name The name of the longitude meta field.
+	 * @param string $geojson_name The name of the geojson meta field to put in the meta table.
+	 */
+	public function add_latlng_field( $latitude_name, $longitude_name, $geojson_name ) {
+		$idx = count( WP_GeoMeta::$latlngs );
+		WP_GeoMeta::$latlngs[] = array(
+			'lat' => $latitude_name,
+			'lng' => $longitude_name,
+			'geo' => $geojson_name,
+		);
+
+		WP_GeoMeta::$latlngs_index[ $latitude_name ] = WP_GeoMeta::$latlngs[ $idx ];
+		WP_GeoMeta::$latlngs_index[ $longitude_name ] = WP_GeoMeta::$latlngs[ $idx ];
+	}
+
+
+	/**
+	 * Handle lat/lng values from the WP Geodata standard: https://codex.wordpress.org/Geodata
+	 *
+	 * Any time geo_latitude or geo_longitude are saved to (eg.) wp_postmeta, this will run.
+	 * We check if the other piece of the coordinate is present so we can make a coordinate pair
+	 * then always modify the args so that we save a single value to the geometa table.
+	 *
+	 * The key we use in the geometa tables is 'geo_'.
+	 *
+	 * Since the value has already been saved to the regular postmeta table this won't mess with those values.
+	 *
+	 * @param array  $meta_args Array with the meta_id that was just saved, the object_id it was for, the meta_key and meta_values used.
+	 * @param string $object_type Which WP type is it? (comment/user/post/term).
+	 */
+	public static function handle_latlng_meta( $meta_args, $object_type ) {
+		$type = $meta_args[1];
+		$metakey = $meta_args[2];
+
+		// Quick return if the meta key isn't something we recognize as a lat or lng meta key.
+		if ( ! array_key_exists( $metakey, WP_GeoMeta::$latlngs_index ) ) {
+			return $meta_args;
+		}
+
+		$thepair = WP_GeoMeta::$latlngs_index[ $metakey ];
+
+		$the_other_field = ( $thepair['lat'] === $metakey  ? $thepair['lng'] : $thepair['lat'] );
+
+		$func = 'get_' . $type . '_meta';
+		$the_other_value = $func( $object_id, $the_other_field, true );
+
+		if ( empty( $the_other_value ) ) {
+			return $meta_args;
+		}
+
+		if ( $thepair['lat'] === $metakey ) {
+			$coordinates = array( $the_other_value, $metaval );
+		} else {
+			$coordinates = array( $metaval, $the_other_value );
+		}
+
+		$geojson = array(
+			'type' => 'Feature',
+			'geometry' => array(
+				'type' => 'Point',
+				'coordinates' => $coordinates,
+			),
+			'properties' => array(),
+			);
+
+		$meta_args[2] = $thepair['geo'];
+		$meta_args[3] = wp_json_encode( $geojson );
+		return $meta_args;
+	}
+
+	/**
+	 * When WP_GeoMeta::populate_geo_tables() is called, an action will trigger this call.
+	 *
+	 * It gives us an opportunity to re-populate the meta table if needed.
+	 */
+	public static function populate_latlng_geo() {
+		global $wpdb;
+
+		$latitude_fields = array();
+		$longitude_fields = array();
+
+		foreach ( WP_GeoMeta::latlngs as $latlng ) {
+			$latitude_fields[] = $latlng['lat'];
+			$longitude_fields[] = $latlng['lng'];
+		}
+
+		if ( 0 === count( $latitude_fields ) ) {
+			return;
+		}
+
+		$pmtables_range = range( 1, count( $latitude_fields ) - 1 );
+		$pmtables = '`pm' . implode( '`.`meta_value`, pm', $pmtables_range ) . '.meta_value';
+
+		/*
+		  SELECT
+		  pm.post_id,
+		  pm.meta_key AS `lat`,
+		  pm.meta_value AS `latval`,
+		  COALESCE(pm1.meta_key, pm2.meta_key) AS `lng`,
+		  COALESCE(pm1.meta_value, pm2.meta_value) AS `lngval`
+          FROM
+		  wp_postmeta pm
+		  LEFT JOIN wp_postmeta pm1 ON ( pm.meta_key='latitude' AND pm1.meta_key='longitude' AND pm.post_id=pm1.post_id)
+		  LEFT JOIN wp_postmeta pm2 ON ( pm.meta_key='thelat' AND pm2.meta_key='thelng' AND pm.post_id=pm2.post_id)
+
+		  WHERE
+		  pm.meta_key IN ('latitude', 'thelat')
+		 */
+
+		foreach ( $this->meta_type as $type ) {
+
+			$meta_table = _get_meta_table( $type );
+
+			$query = 'SELECT
+				`pm`.`' . $type . '_id` AS `obj_id`,
+				`pm`.`meta_value` AS `lat`,	
+				COALESCE(' . $pmtables . ') AS `lng`
+				FROM
+				`' . $meta_table  . '` `pm` ';
+
+			foreach ( $longitude_fields as $idx => $lng ) {
+				$query .= "LEFT JOIN `$meta_table` `pm$idx` ON ( `pm`.`meta_key`='{$latitude_fields[ $idx ]}' AND `pm$idx`.`meta_key`='{$longitude_fields[ $idx ] }' AND `pm`.`{$type}_id`=`pm$idx`.`{$type}_id` )\n";
+			}
+
+			$query .= 'WHERE pm.meta_key IN (\'' . implode( "','", $latitude_fields ) . '\')';
+
+			$res = $wpdb->get_results( $query, 'ARRAY_A' ); // @codingStandardsIgnoreLine
+
+			$func = "updated_{$type}_meta";
+
+			foreach ( $res as $row ) {
+				$geojson = array(
+					'type' => 'Feature',
+					'geometry' => array(
+						'type' => 'Point',
+						'coordinates' => array( $row['lng'], $row['lat'] ),
+					),
+					'properties' => array(),
+				);
+
+				$this->$func( $func, 'updated', $type, $meta_key, $geojson );
+			}
+		}
 	}
 }
