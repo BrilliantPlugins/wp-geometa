@@ -105,8 +105,18 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 = 0.0.1 =
  * Initial Release
 
+== Developers ==
+
+WP-GeoMeta is tested and developed in the open over at
+[GitHub](https://github.com/cimburadotcom/wp-geometa). Stable versions are
+pushed to  the WordPress plugin repository. 
+
+There is more developer documentation in the GitHub repository and I'd love 
+to get pull requests and bug reports over there (but I'll take them via SVN 
+too if that's what you like better!).
+
 == Upgrade Notice ==
 
-= 0.2.0 =
-* You probably don't have a version installed yet, so you should definately
-check out 0.2.0.
+= 0.2.2 =
+* WP-GeoMeta now supports the WordPress Geodata standard and separate
+latitude/longitude fields.  

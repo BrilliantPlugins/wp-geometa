@@ -20,6 +20,14 @@ WP GeoMeta isn't just a plugin, it's also a library which other plugins can
 take advantage of. It's meant to be a spatial platform that other GIS and
 mapping plugins can build on. 
 
+Developers and Hackers
+----------------------
+
+Interested in using WP-GeoMeta in your plugin or just want the nitty-gritty 
+on working with WP-GeoMeta? Check out [DEVELOPERS.md](DEVELOPERS.md).
+
+Want to hack on WP-GeoMeta itself? You should also check out [HACKING.md](HACKING.md).
+
 Usage
 -----
 
