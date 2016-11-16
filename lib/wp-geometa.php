@@ -190,23 +190,23 @@ class WP_GeoMeta {
 
 		Once WP 4.6 is out we can revisit this.
 		 */
-dbDelta( $geotables );
+		dbDelta( $geotables );
 
-$suppress = $wpdb->suppress_errors( true );
-$errors = $wpdb->show_errors( false );
+		$suppress = $wpdb->suppress_errors( true );
+		$errors = $wpdb->show_errors( false );
 
-foreach ( $drop_indexes as $index ) {
-	$wpdb->query( $index ); // @codingStandardsIgnoreLine
+		foreach ( $drop_indexes as $index ) {
+			$wpdb->query( $index ); // @codingStandardsIgnoreLine
 }
 
-$wpdb->suppress_errors( $suppress );
-$wpdb->show_errors( $errors );
+		$wpdb->suppress_errors( $suppress );
+		$wpdb->show_errors( $errors );
 
-foreach ( $add_indexes as $index ) {
-	// @codingStandardsIgnoreStart
-	$wpdb->query( $index );
-	// @codingStandardsIgnoreEnd
-}
+		foreach ( $add_indexes as $index ) {
+			// @codingStandardsIgnoreStart
+			$wpdb->query( $index );
+			// @codingStandardsIgnoreEnd
+		}
 	}
 
 	/**
@@ -339,15 +339,15 @@ array(
 		);
 // @codingStandardsIgnoreEnd
 
-if ( ! $result ) {
-	return false;
-}
+		if ( ! $result ) {
+			return false;
+		}
 
-$mid = (int) $wpdb->insert_id;
+		$mid = (int) $wpdb->insert_id;
 
-wp_cache_delete( $object_id, $meta_type . '_metageo' );
+		wp_cache_delete( $object_id, $meta_type . '_metageo' );
 
-return $mid;
+		return $mid;
 	}
 
 	/**
@@ -427,16 +427,16 @@ return $mid;
 				ORDER BY $metatable.$meta_pkey
 				LIMIT 100";
 
-$res = $wpdb->get_results( $q,ARRAY_A ); // @codingStandardsIgnoreLine
-$found_rows = count( $res );
+				$res = $wpdb->get_results( $q,ARRAY_A ); // @codingStandardsIgnoreLine
+				$found_rows = count( $res );
 
-foreach ( $res as $row ) {
-	$geometry = WP_GeoUtil::metaval_to_geom( $row['meta_value'] );
-	if ( $geometry ) {
-		$this->upsert_meta( $meta_type,$row[ $meta_pkey ],$row[ $meta_type . '_id' ],$row['meta_key'],$geometry );
-	}
-	$maxid = $row[ $meta_pkey ];
-}
+				foreach ( $res as $row ) {
+					$geometry = WP_GeoUtil::metaval_to_geom( $row['meta_value'] );
+					if ( $geometry ) {
+						$this->upsert_meta( $meta_type,$row[ $meta_pkey ],$row[ $meta_type . '_id' ],$row['meta_key'],$geometry );
+					}
+					$maxid = $row[ $meta_pkey ];
+				}
 			} while ($found_rows);
 		}
 
@@ -543,32 +543,19 @@ foreach ( $res as $row ) {
 			return;
 		}
 
-		$pmtables_range = range( 1, count( $latitude_fields ) - 1 );
-		$pmtables = '`pm' . implode( '`.`meta_value`, pm', $pmtables_range ) . '.meta_value';
-
-		/*
-		  SELECT
-		  pm.post_id,
-		  pm.meta_key AS `lat`,
-		  pm.meta_value AS `latval`,
-		  COALESCE(pm1.meta_key, pm2.meta_key) AS `lng`,
-		  COALESCE(pm1.meta_value, pm2.meta_value) AS `lngval`
-		  FROM
-		  wp_postmeta pm
-		  LEFT JOIN wp_postmeta pm1 ON ( pm.meta_key='latitude' AND pm1.meta_key='longitude' AND pm.post_id=pm1.post_id)
-		  LEFT JOIN wp_postmeta pm2 ON ( pm.meta_key='thelat' AND pm2.meta_key='thelng' AND pm.post_id=pm2.post_id)
-
-		  WHERE
-		  pm.meta_key IN ('latitude', 'thelat')
-		 */
+		$pmtables_range = range( 0, count( $latitude_fields ) - 1 );
+		$pmtables = '`pm' . implode( '`.`meta_value`, `pm', $pmtables_range ) . '`.`meta_value`';
 
 		foreach ( $this->meta_types as $type ) {
-
 			$meta_table = _get_meta_table( $type );
 
 			$query = 'SELECT
-				`pm`.`' . $type . '_id` AS `obj_id`,
-				`pm`.`meta_value` AS `lat`,	
+				`pm`.`meta_key`,
+				`pm`.`' . $type . '_id` AS `obj_id`,';
+
+			$query .= ( 'user' === $type ? '`pm`.`umeta_id`' : '`pm`.`meta_id`,' );
+
+			$query .= '`pm`.`meta_value` AS `lat`,	
 				COALESCE(' . $pmtables . ') AS `lng`
 				FROM
 				`' . $meta_table  . '` `pm` ';
@@ -578,8 +565,9 @@ foreach ( $res as $row ) {
 			}
 
 			$query .= 'WHERE pm.meta_key IN (\'' . implode( "','", $latitude_fields ) . '\')';
+			$query .= ' AND COALESCE(' . $pmtables . ') IS NOT NULL';
 
-			$res = $wpdb->get_results( $query, 'ARRAY_A' ); // @codingStandardsIgnoreLine
+			$res = $wpdb->get_results( $query, ARRAY_A ); // @codingStandardsIgnoreLine
 
 			$func = "updated_{$type}_meta";
 
@@ -593,7 +581,9 @@ foreach ( $res as $row ) {
 					'properties' => array(),
 				);
 
-				$this->$func( $func, 'updated', $type, $meta_key, $geojson );
+				$meta_key = WP_GeoMeta::$latlngs_index[ $row['meta_key'] ]['geo'];
+
+				$this->$func( $row['meta_id'], $row['obj_id'], $meta_key, $geojson );
 			}
 		}
 	}

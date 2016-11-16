@@ -11,6 +11,10 @@ global $wpdb;
 
 print str_pad( "Populating tables with existing data", WP_GEOMETA_TEST_WIDTH, '.' );
 
+WP_GeoMeta::add_latlng_field( 'myplugin_lat', 'myplugin_lng', 'myplugin_geo' );
+
 $wpgm = WP_GeoMeta::get_instance();
 
 $wpgm->populate_geo_tables();
+
+pass();

@@ -27,8 +27,8 @@ foreach( $test_posts as $idx => $test_post ) {
 	} else if ( $idx < 4 ) {
 		update_post_meta( $test_post->ID, 'geo_latitude', 40.9778 );
 	} else {
-		update_post_meta( $test_post->ID, 'myplugin_lat', 44.9778 );
-		update_post_meta( $test_post->ID, 'myplugin_lng', -93.2650 );
+		update_post_meta( $test_post->ID, 'myplugin_lat', 44.00 );
+		update_post_meta( $test_post->ID, 'myplugin_lng', -93.00);
 	}
 }
 
