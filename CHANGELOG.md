@@ -4,6 +4,8 @@ Changes
 ### 0.2.2
  * Added built-in support for the [WordPress Geodata standard](https://codex.wordpress.org/Geodata)
  * Added filter and action to handle arbitrary lat/lng pair metavalues
+ * Added documentation for hooks and filters
+ * Leaflet is now loaded locally instead of from the CDN
 
 ### 0.2.1
  * Handle multi-feature GeoJSON correctly in MySQL 5.7 (convert to GEOMETRYCOLLECTION)
