@@ -142,6 +142,37 @@ Hooks: Filters and Actions
 	}
  ```
 
+ * *Filter*: wpgmd_sample_data_to_json
+
+ This filter is called when loading a random sample of data for the map of spatial data
+ in the dashboard. It is used internally to create a GeoJSON representation of lat/lng 
+ fields for display on the map.
+
+ Usage:
+ ```
+	add_filter( 'wpgmd_sample_data_to_json', 'custom_sample_data' );
+
+	/**
+	 *
+	 * @param array $record A single database query result array.
+	 * $record['the_id'] -- The object ID the metadata belongs to
+	 * $record['meta_key'] -- The meta_key for the metadata (from the postmeta (etc.) table, not the possibly modified version in the postmeta_geo (etc.) table )
+	 * $record['meta_value'] -- The meta_value for the metadata (from the postmeta (etc.) table, not the spatial version from the postmeta_geo (etc.) table)
+	 * $record['geo_meta_value'] -- The meta_value from the postmeta_geo (etc.) table
+	 * $record['geo_meta_key'] -- The meta_key from the postmeta_geo (etc.) table
+	 *
+	 * @param string $metatype The type of object this meta is for (post, user, etc.)
+	 */
+	function custom_sample_data( $record, $metatype ) {
+		if ( 'my_special_geo_meta_key' === $record[ 'geo_meta_key'] ) {
+			// Do something.
+			$record[ 'meta_value' ] = my_custom_geojson( $record[ 'geo_meta_value' ] );
+		}
+
+		return $record;
+	}
+ ```
+
  * *Action*: wpgm_populate_geo_tables
 
  This action is called at the end of WP_GeoMeta->populate_geo_tables() to give you

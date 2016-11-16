@@ -279,6 +279,9 @@ class WP_GeoUtil {
 		);
 
 		foreach ( $fragments as $fragment ) {
+
+			$fragment = maybe_unserialize( $fragment );
+
 			if ( is_object( $fragment ) ) {
 				$fragment = (array) $fragment;
 			} else if ( is_string( $fragment ) ) {

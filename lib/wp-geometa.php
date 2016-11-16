@@ -59,14 +59,14 @@ class WP_GeoMeta {
 	 *
 	 * @var $latlngs
 	 */
-	private static $latlngs = array();
+	public static $latlngs = array();
 
 	/**
 	 * Track just the lat/lng names so we can quickly check if we're processing a
 	 *
 	 * @var $latlngs_index
 	 */
-	private static $latlngs_index = array();
+	public static $latlngs_index = array();
 
 
 	/**

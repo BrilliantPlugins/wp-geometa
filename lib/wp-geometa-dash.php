@@ -275,6 +275,7 @@ class WP_GeoMeta_Dash {
 		add_action( 'wp_ajax_wpgm_get_sample_data', array( $this, 'ajax_wpgm_get_sample_data' ) );
 		add_action( 'wp_ajax_wpgm_dangerzone', array( $this, 'ajax_wpgm_dangerzone' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+		add_filter( 'wpgmd_sample_data_to_json', array( $this, 'sample_latlng_to_json' ) );
 	}
 
 	/**
@@ -697,13 +698,16 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 
 		$q = 'SELECT 
 			t.' . $table_id . ' AS the_id,
-			m.meta_value 
+			m.meta_key,
+			m.meta_value,
+			AsText(geo.meta_value) AS geo_meta_value,
+			geo.meta_key AS geo_meta_key
 			FROM 	
 			' . $wpdb->$metatype . ' m,
 			' . $wpdb->$metatype . '_geo geo,
 			' . $wpdb->$types . ' t
 			WHERE
-			m.meta_key=%s
+			geo.meta_key=%s
 			AND geo.fk_meta_id=m.' . $id_column . '
 			AND t.' . $table_id . '=geo.' . $type . '_id ';
 		if ( ! empty( $subtype ) ) {
@@ -730,6 +734,9 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 		}
 
 		foreach ( $res as $record ) {
+
+			$record = apply_filters( 'wpgmd_sample_data_to_json', $record );
+
 			$feature_collection = WP_GeoUtil::merge_geojson( $record['meta_value'] );
 			$feature_collection = json_decode( $feature_collection, true );
 			foreach ( $feature_collection['features'] as &$feature ) {
@@ -1064,5 +1071,26 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 		print '<td>' . esc_html__( 'Detect any spatial data (GeoJSON) in the non-spatial meta tables which is not stored in WP GeoMeta and load it. This may take a while!', 'wp-geometa' ) . '</td></tr>';
 
 		print '</table><div id="wpgm-danger-results"></div></div>';
+	}
+
+	/**
+	 * Turn latlng data into GeoJSON for the dashbaord sample map.
+	 *
+	 * @param array  $record A single database query result array.
+	 *
+	 *  $record['the_id'] -- The object ID the metadata belongs to.
+	 *  $record['meta_key'] -- The meta_key for the metadata (from the postmeta (etc.) table, not the possibly modified version in the postmeta_geo (etc.) table ).
+	 *  $record['meta_value'] -- The meta_value for the metadata (from the postmeta (etc.) table, not the spatial version from the postmeta_geo (etc.) table).
+	 *  $record['geo_meta_value'] -- The meta_value from the postmeta_geo (etc.) table.
+	 *  $record['geo_meta_key'] -- The meta_key from the postmeta_geo (etc.) table.
+	 *
+	 * @param string $metatype The type of object this meta is for (post, user, etc.).
+	 */
+	public function sample_latlng_to_json( $record, $metatype ) {
+		if ( array_key_exists( $record['meta_key'], WP_GeoMeta::$latlngs_index ) ) {
+			$record['meta_value'] = '{"type":"Feature","geometry":' . WP_GeoUtil::geom_to_geojson( $record['geo_meta_value'] ) . ',"properties":[]}'; // @codingStandardsIgnoreLine
+		}
+
+		return $record;
 	}
 }
