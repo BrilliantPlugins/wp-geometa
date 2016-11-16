@@ -106,7 +106,7 @@ if ( ! $wpq->have_posts() ) {
 	while ( $wpq->have_posts() ) {
 		$wpq->the_post();
 		$post_id = get_the_ID();
-		$res = $wpdb->get_var( $wpdb->prepare( 'SELECT Dimension(meta_value) FROM ' . $wpdb->postmeta . '_geo WHERE post_id=%s', array( $post_id ) ) );
+		$res = $wpdb->get_var( $wpdb->prepare( 'SELECT Dimension(meta_value) FROM ' . $wpdb->postmeta . '_geo WHERE meta_key=\'wpgeometa_test\' AND post_id=%s', array( $post_id ) ) );
 
 		if ( $res > $minVal) {
 			fail( $wpq );
@@ -147,7 +147,7 @@ if ( ! $wpq->have_posts() ) {
 	while ( $wpq->have_posts() ) {
 		$wpq->the_post();
 		$post_id = get_the_ID();
-		$res = $wpdb->get_var( $wpdb->prepare( 'SELECT Dimension(meta_value) FROM ' . $wpdb->postmeta . '_geo WHERE post_id=%s', array( $post_id ) ) );
+		$res = $wpdb->get_var( $wpdb->prepare( 'SELECT Dimension(meta_value) FROM ' . $wpdb->postmeta . '_geo WHERE meta_key=\'wpgeometa_test\' AND post_id=%s', array( $post_id ) ) );
 
 		if ( $res < $maxVal) {
 			fail( $wpq );

@@ -598,16 +598,27 @@ foreach ( $res as $row ) {
 		}
 	}
 
-	/** 
+	/**
 	 * For a given set of Meta IDs, determine which meta IDs should actually be deleted.
 	 *
-	 * In the case of lat/lng data, we don't know which one ended up in the geometa table
+	 * In the case of lat/lng data, we don't know which meta_id ended up in the geometa table (as fk_meta_id)
+	 * so we need to add both to the list of meta_ids.
+	 *
+	 * Note that this WILL break having multiple meta keys with different values, but if you're doing that
+	 * I don't know how you could possibly be separating out the lat/lng pairs anyways
+	 *
+	 * @param array  $meta_ids The Meta IDs that will be deleted.
+	 * @param string $type The type of object whose meta is being deleted.
+	 * @param int    $object_id The ID of the object whose meta is being deleted.
+	 * @param string $meta_key The name of the meta key which is being deleted.
+	 * @param string $meta_value The value which is being deleted.
+	 *
+	 * @return The array of meta IDs to delete.
 	 */
 	public function delete_latlng_geo( $meta_ids, $type, $object_id, $meta_key, $meta_value ) {
-
 		global $wpdb;
 
-		if ( !array_key_exists( $meta_key, WP_GeoMeta::$latlngs_index ) ) {
+		if ( ! array_key_exists( $meta_key, WP_GeoMeta::$latlngs_index ) ) {
 			return $meta_ids;
 		}
 
@@ -627,9 +638,9 @@ foreach ( $res as $row ) {
 
 		$the_other_field = ( $thepair['lat'] === $meta_key ? $thepair['lng'] : $thepair['lat'] );
 
-		$meta = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table WHERE {$type}_id = %d AND meta_key = %s", array( $object_id, $the_other_field ) ), ARRAY_A );
+		$meta = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table WHERE {$type}_id = %d AND meta_key = %s", array( $object_id, $the_other_field ) ), ARRAY_A ); // @codingStandardsIgnoreLine
 
-		$id_column = ( 'user' == $type ) ? 'umeta_id' : 'meta_id';
+		$id_column = ( 'user' === $type ) ? 'umeta_id' : 'meta_id';
 
 		$meta_ids[] = $meta[ $id_column ];
 
