@@ -2,7 +2,7 @@ Changes
 -------
 
 ### 0.2.2
- * Added built-in support for the WordPress Geodata standard
+ * Added built-in support for the [WordPress Geodata standard](https://codex.wordpress.org/Geodata)
  * Added filter and action to handle arbitrary lat/lng pair metavalues
 
 ### 0.2.1

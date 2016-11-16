@@ -248,7 +248,7 @@ class WP_GeoUtil {
 	 * Load in the SRID after plugins are loaded.
 	 */
 	public static function plugins_loaded() {
-		self::$srid = apply_filters( 'wp_geoquery_srid', 4326 );
+		WP_GeoUtil::$srid = apply_filters( 'wp_geoquery_srid', 4326 );
 	}
 
 	/**
