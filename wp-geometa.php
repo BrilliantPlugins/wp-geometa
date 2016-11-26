@@ -41,7 +41,9 @@ $wp_geometa_version_status = version_compare( $wp_geometa_version, $wp_geometa_m
 if ( 1 === $wp_geometa_version_status ) {
 	// This will cause our version to get loaded next time.
 	update_option( 'wp_geometa_version', $wp_geometa_version );
-} else if ( 0 === $wp_geometa_version_status ) {
+} 
+
+if ( 0 === $wp_geometa_version_status || '0.0.0' === $wp_geometa_max_version ) {
 
 	// Other instances of WP_GeoMeta shouldn't have loaded these classes
 	// unless they're the same version as this instance.
