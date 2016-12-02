@@ -24,9 +24,7 @@ Developers and Hackers
 ----------------------
 
 Interested in using WP-GeoMeta in your plugin or just want the nitty-gritty 
-on working with WP-GeoMeta? Check out [DEVELOPERS.md](DEVELOPERS.md).
-
-Want to hack on WP-GeoMeta itself? You should also check out [HACKING.md](HACKING.md).
+on working with WP-GeoMeta? Check out [wp-geometa-lib](https://github.com/cimburadotcom/wp-geometa-lib).
 
 Usage
 -----
