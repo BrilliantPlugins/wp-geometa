@@ -9,19 +9,21 @@ you do any other metadata, but using MySQL spatial indexes.
 WP-GeoMeta lets you take advantage MySQL's spatial data types and spatial 
 indexes when storing and searching spatial metadata. 
 
+
+### Use WP-GeoMeta in *YOUR* Plugin!
+> WP-GeoMeta isn't just a plugin, it's also a library which other plugins can
+> take advantage of. It's a spatial platform that other GIS and mapping plugins can build on. 
+> If you want to use WP-GeoMeta in your plugin, check out [wp-geometa-lib](https://github.com/cimburadotcom/wp-geometa-lib) for code and 
+> instructions.
+
+
+
 It detects when [GeoJSON](http://geojson.org/) metadata is being stored, and transparently 
 stores a copy in a spatial meta table. 
 
 WP-GeoMeta also adds support for spatial search operators. When a spatial
 search operator is used, WP-GeoMeta will make sure that the spatial table
 is used, taking advantage of indexes and spatial relations.
-
-WP-GeoMeta isn't just a plugin, it's also a library which other plugins can
-take advantage of. It's meant to be a spatial platform that other GIS and
-mapping plugins can build on. If you want to use WP-GeoMeta in your plugin, 
-check out [wp-geometa-lib](https://github.com/cimburadotcom/wp-geometa-lib) for code and 
-instructions.
-
 This plugin provides a dashboard where you can see your existing spatial data and spatial system status. It also includes a list of the MySQL functions your database supports and admin tools for repairing the spatial meta tables if something goes wrong. 
 
 ![The dashboard front page](assets/dash_front_page.png)
