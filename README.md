@@ -1,4 +1,4 @@
-WP GeoMeta
+WP-GeoMeta
 ===========
 
 ![WP-GeoMeta adds spatial capabilities to WordPress](assets/github_banner.png)
