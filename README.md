@@ -1,30 +1,29 @@
 WP GeoMeta
 ===========
 
-![WP GeoMeta adds spatial capabilities to WordPress](assets/github_banner.png)
+![WP-GeoMeta adds spatial capabilities to WordPress](assets/github_banner.png)
 
-A spatial foundation for WordPress. Store and search spatial metadata like
+WP-GeoMeta is a spatial foundation for WordPress. Store and search spatial metadata like
 you do any other metadata, but using MySQL spatial indexes.
 
-WP GeoMeta lets you take advantage MySQL's spatial data types and spatial 
+WP-GeoMeta lets you take advantage MySQL's spatial data types and spatial 
 indexes when storing and searching spatial metadata. 
 
 It detects when [GeoJSON](http://geojson.org/) metadata is being stored, and transparently 
 stores a copy in a spatial meta table. 
 
-WP GeoMeta also adds support for spatial search operators. When a spatial
-search operator is used, WP GeoMeta will make sure that the spatial table
+WP-GeoMeta also adds support for spatial search operators. When a spatial
+search operator is used, WP-GeoMeta will make sure that the spatial table
 is used, taking advantage of indexes and spatial relations.
 
-WP GeoMeta isn't just a plugin, it's also a library which other plugins can
+WP-GeoMeta isn't just a plugin, it's also a library which other plugins can
 take advantage of. It's meant to be a spatial platform that other GIS and
-mapping plugins can build on. 
+mapping plugins can build on. If you want to use WP-GeoMeta in your plugin, 
+check out [wp-geometa-lib](https://github.com/cimburadotcom/wp-geometa-lib) for code and 
+instructions.
 
-Developers and Hackers
-----------------------
+This plugin provides a dashboard where you can see your existing spatial data and spatial system status. It also includes a list of the MySQL functions your database supports and admin tools for repairing the spatial meta tables if something goes wrong. 
 
-Interested in using WP-GeoMeta in your plugin or just want the nitty-gritty 
-on working with WP-GeoMeta? Check out [wp-geometa-lib](https://github.com/cimburadotcom/wp-geometa-lib).
 
 Usage
 -----
