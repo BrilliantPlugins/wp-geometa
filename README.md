@@ -197,57 +197,87 @@ supported, if your version of MySQL supports it.
 
 The following function should work, if your install of MySQL supports them: 
 
- * Area
- * Contains
- * Crosses
- * Dimension
- * Disjoint
- * Equals
- * GLength
- * GeometryType
- * Intersects
- * IsClosed
- * IsEmpty
- * IsRing
- * IsSimple
- * MBRContains
- * MBRCoveredBy
- * MBRDisjoint
- * MBREqual
- * MBREquals
- * MBRIntersects
- * MBROverlaps
- * MBRTouches
- * MBRWithin
- * NumGeometries
- * NumInteriorRings
- * NumPoints
- * Overlaps
- * SRID
- * ST_Area
- * ST_Contains
- * ST_Crosses
- * ST_Difference
- * ST_Dimension
- * ST_Disjoint
- * ST_Distance
- * ST_Distance_Sphere
- * ST_Equals
- * ST_GeometryType
- * ST_Intersects
- * ST_IsClosed
- * ST_IsEmpty
- * ST_IsRing
- * ST_IsSimple
- * ST_IsValid
- * ST_Length
- * ST_NumPoints
- * ST_Overlaps
- * ST_SRID
- * ST_Touches
- * ST_Within
- * Touches
- * Within
+<table>
+<tr>
+<td>Area</td>
+<td>Contains</td>
+<td>Crosses</td>
+<td>Dimension</td>
+</tr>
+<tr>
+<td>Disjoint</td>
+<td>Equals</td>
+<td>GLength</td>
+<td>GeometryType</td>
+</tr>
+<tr>
+<td>Intersects</td>
+<td>IsClosed</td>
+<td>IsEmpty</td>
+<td>IsRing</td>
+</tr>
+<tr>
+<td>IsSimple</td>
+<td>MBRContains</td>
+<td>MBRCoveredBy</td>
+<td>MBRDisjoint</td>
+</tr>
+<tr>
+<td>MBREqual</td>
+<td>MBREquals</td>
+<td>MBRIntersects</td>
+<td>MBROverlaps</td>
+</tr>
+<tr>
+<td>MBRTouches</td>
+<td>MBRWithin</td>
+<td>NumGeometries</td>
+<td>NumInteriorRings</td>
+</tr>
+<tr>
+<td>NumPoints</td>
+<td>Overlaps</td>
+<td>SRID</td>
+<td>ST_Area</td>
+</tr>
+<tr>
+<td>ST_Contains</td>
+<td>ST_Crosses</td>
+<td>ST_Difference</td>
+<td>ST_Dimension</td>
+</tr>
+<tr>
+<td>ST_Disjoint</td>
+<td>ST_Distance</td>
+<td>ST_Distance_Sphere</td>
+<td>ST_Equals</td>
+</tr>
+<tr>
+<td>ST_GeometryType</td>
+<td>ST_Intersects</td>
+<td>ST_IsClosed</td>
+<td>ST_IsEmpty</td>
+</tr>
+<tr>
+<td>ST_IsRing</td>
+<td>ST_IsSimple</td>
+<td>ST_IsValid</td>
+<td>ST_Length</td>
+</tr>
+<tr>
+<td>ST_NumPoints</td>
+<td>ST_Overlaps</td>
+<td>ST_SRID</td>
+<td>ST_Touches</td>
+</tr>
+<tr>
+<td>ST_Within</td>
+<td>Touches</td>
+<td>Within</td>
+<td></td>
+</tr>
+</table>
+
 
 To see what your install of MySQL supports, install 
 [WP Spatial Capabilities Check](https://wordpress.org/plugins/wp-spatial-capabilities-check/). 
