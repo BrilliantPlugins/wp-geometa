@@ -992,7 +992,13 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 
 		$installs = $this->get_list_of_installs();
 		foreach ( $installs as $install ) {
-			print '<tr><td>' . esc_html( $install['plugin_name'] ) . '</td><td>' . esc_html( $install['wpgm_version'] ) . '</td><tr>';
+
+			$active = false;
+			if ( WP_GEOMETA_HOME === dirname( $install['file'] ) ) {
+				$active = true;
+			}
+
+			print '<tr><td>' . esc_html( $install['plugin_name'] ) . ' ' .  ( $active ? '(In Use) ' : '' ) . '</td><td>' . esc_html( $install['wpgm_version'] ) . '</td><tr>';
 		}
 		print '</table></div>';
 	}

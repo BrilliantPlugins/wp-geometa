@@ -344,3 +344,8 @@ ul.wpgmtabctrl {
 	margin-bottom: 0;
 }
 
+
+.wp-geometa-dash tr.active-wp-geometa th::before {
+	content: '*';
+	position: absolute;
+}
