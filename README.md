@@ -24,6 +24,10 @@ instructions.
 
 This plugin provides a dashboard where you can see your existing spatial data and spatial system status. It also includes a list of the MySQL functions your database supports and admin tools for repairing the spatial meta tables if something goes wrong. 
 
+![The dashboard front page](assets/dash_front_page.png)
+
+![The dashoard status page](assets/dash_status_page.png)
+
 
 Usage
 -----
