@@ -1,0 +1,3 @@
+[submodule "lib/wp-geometa-lib"]
+	path = lib/wp-geometa-lib
+	url = git@github.com:cimburadotcom/wp-geometa-lib.git
