@@ -3,7 +3,7 @@ Contributors: stuporglue, cimburacom
 Donate link: https://cimbura.com/contact-us/make-a-payment/
 Tags: GIS, spatial, mysql, mariadb, geography, mapping, meta, metadata
 Requires at least: 4.4.0
-Tested up to: 4.6.0
+Tested up to: 4.6.1
 Stable tag: trunk
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -62,6 +62,11 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 
 == Changelog ==
 
+= 0.3.0 =
+ * Moved core functionality to a [library (wp-geometa-lib)](https://github.com/cimburadotcom/wp-geometa-lib) so it can be used in other plugins.
+ * Most of the previous changelog is no longer applicable to this plugin, but to wp-geometa-lib
+ * Fixed issue that made plugins using WP-GeoMeta as a library to be activated twice.
+
 = 0.2.2 =
  * Added built-in support for the WordPress Geodata standard
  * Added filter and action to handle arbitrary lat/lng pair metavalues
@@ -116,6 +121,10 @@ to get pull requests and bug reports over there (but I'll take them via SVN
 too if that's what you like better!).
 
 == Upgrade Notice ==
+
+= 0.3.0 =
+* Previous upgrades caused "Index Exists" type MySQL errors in certain
+circumstances. This shouldn't occur. If it does, please let us know.
 
 = 0.2.2 =
 * WP-GeoMeta now supports the WordPress Geodata standard and separate
