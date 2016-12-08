@@ -239,9 +239,16 @@ class WP_GeoMeta_Dash {
 					'ST_Relate',
 				),
 			),
+			'custom' => array(
+				'label' => __( 'Custom Functions', 'wp-geometa' ),
+				'desc' => __( 'These are custom functions, usually written in SQL using `CREATE FUNCTION` statements. They will probably be slower than native functions.' ),
+				'funcs' => array()
+			),
 		);
 
-		$our_caps = WP_GeoUtil::get_capabilities();
+		$our_caps_vals = WP_GeoUtil::get_capabilities(false, false);
+		$our_caps_keys = array_map( 'strtolower', $our_caps_vals );
+		$our_caps = array_combine( $our_caps_keys, $our_caps_vals );
 
 		$our_cap_cats = array();
 
@@ -249,8 +256,9 @@ class WP_GeoMeta_Dash {
 
 			sort( $funcinfo['funcs'] );
 			foreach ( $funcinfo['funcs'] as $func ) {
-				if ( in_array( strtolower( $func ), $our_caps, true ) ) {
+				if ( !empty( $our_caps[ strtolower( $func ) ] ) ) {
 					$our_cap_cats[ $category ]['funcs'][] = $func;
+					unset( $our_caps[ strtolower( $func )] );
 				}
 			}
 
@@ -258,6 +266,11 @@ class WP_GeoMeta_Dash {
 				$our_cap_cats[ $category ]['label'] = $funcinfo['label'];
 				$our_cap_cats[ $category ]['desc'] = $funcinfo['desc'];
 			}
+		}
+
+		if ( !empty( $our_caps ) ) {
+			$our_cap_cats[ 'custom' ] = $cap_cats['custom'];
+			$our_cap_cats[ 'custom' ]['funcs'] = $our_caps;
 		}
 
 		return $our_cap_cats;
