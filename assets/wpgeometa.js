@@ -7,7 +7,7 @@ jQuery(document).ready(function(){
 	wpgmmap.on('focus', function(e) { e.target.scrollWheelZoom.enable(); });
 	wpgmmap.on('blur', function(e) { e.target.scrollWheelZoom.disable(); });
 
-	L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	L.tileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		maxZoom: 19,
 		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 	}).addTo(wpgmmap);

@@ -18,6 +18,16 @@ defined( 'ABSPATH' ) or die( 'No direct access' );
 class WP_GeoMeta_Dash {
 
 	/**
+	 * Set up table_types_found.
+	 */
+	private $table_types_found = array();
+
+	/**
+	 * Set up tables_found.
+	 */
+	private $tables_found = array();
+
+	/**
 	 * Singleton variable
 	 *
 	 * @var $_instance
@@ -281,10 +291,6 @@ class WP_GeoMeta_Dash {
 	 */
 	protected function __construct() {
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
-		add_action( 'wp_ajax_delete_tables', array( $this, 'ajax_delete_tables' ) );
-		add_action( 'wp_ajax_create_tables', array( $this, 'ajax_create_tables' ) );
-		add_action( 'wp_ajax_truncate_tables', array( $this, 'ajax_truncate_tables' ) );
-		add_action( 'wp_ajax_populate_tables', array( $this, 'ajax_populate_tables' ) );
 		add_action( 'wp_ajax_wpgm_get_sample_data', array( $this, 'ajax_wpgm_get_sample_data' ) );
 		add_action( 'wp_ajax_wpgm_dangerzone', array( $this, 'ajax_wpgm_dangerzone' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
@@ -380,7 +386,7 @@ class WP_GeoMeta_Dash {
 	public function set_list_of_geotables() {
 		global $wpdb;
 
-		if ( isset( $this->tables_found ) ) {
+		if ( !empty( $this->tables_found ) ) {
 			return $this->tables_found;
 		}
 
@@ -577,7 +583,7 @@ class WP_GeoMeta_Dash {
 				geo.meta_key
 				ORDER BY p.post_type, geo.meta_key';
 
-foreach ( $wpdb->get_results( $q, ARRAY_A ) as $geometa ) {  // @codingStandardsIgnoreLine
+		foreach ( $wpdb->get_results( $q, ARRAY_A ) as $geometa ) {  // @codingStandardsIgnoreLine
 
 				$post_type_object = get_post_type_object( $geometa['post_type'] );
 
@@ -839,6 +845,10 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 				$wpgm->populate_geo_tables();
 				print esc_html__( 'The WP GeoMeta tables should be populated now.' , 'wp-geometa' );
 				break;
+			case 'rebuild-function-cache':
+				WP_GeoUtil::get_capabilities( true, false );
+				print esc_html__( 'The cache of spatial functions should be rebuilt now.' , 'wp-geometa' );
+				break;
 			default:
 				print esc_html__( "I don't understand what I'm supposed to do." , 'wp-geometa' );
 		}
@@ -1088,6 +1098,10 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 		// Populate WP GeoMeta Tables.
 		print '<tr><td><button data-action="populate-tables" class="wpgm-danger-action">' . esc_html__( 'Populate WP GeoMeta Tables' , 'wp-geometa' ) . '</button></td>';
 		print '<td>' . esc_html__( 'Detect any spatial data (GeoJSON) in the non-spatial meta tables which is not stored in WP GeoMeta and load it. This may take a while!', 'wp-geometa' ) . '</td></tr>';
+
+		// Populate WP GeoMeta Tables.
+		print '<tr><td><button data-action="rebuild-function-cache" class="wpgm-danger-action">' . esc_html__( 'Rebuild spatial function cache' , 'wp-geometa' ) . '</button></td>';
+		print '<td>' . esc_html__( 'Re-check and cache which MySQL spatial functions are supported.', 'wp-geometa' ) . '</td></tr>';
 
 		print '</table><div id="wpgm-danger-results"></div></div>';
 	}

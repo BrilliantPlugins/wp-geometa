@@ -5,6 +5,9 @@ Changes
  * Support for custom MySQL functions (User Defined Functions and stored functions).
  * Built-in support for some functions which may be useful for working with Lat/Lng distances and bearings.
  * Fixed issue where duplicate function names would appear in get_capabilities result set.
+ * Fixed OSM tiles to not be hardcoded to http://
+ * Added button to rebuild known spatial function list cache
+
 
 ### 0.3.0
  * Moved core functionality to a [library (wp-geometa-lib)](https://github.com/cimburadotcom/wp-geometa-lib) so it can be used in other plugins.
