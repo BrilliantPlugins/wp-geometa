@@ -3,7 +3,7 @@ Contributors: stuporglue, cimburacom
 Donate link: https://cimbura.com/contact-us/make-a-payment/
 Tags: GIS, spatial, mysql, mariadb, geography, mapping, meta, metadata
 Requires at least: 4.4.0
-Tested up to: 4.6.1
+Tested up to: 4.7.0
 Stable tag: trunk
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -61,6 +61,13 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 4. Built-in regression tests
 
 == Changelog ==
+
+= 0.3.1 =
+ * Support for custom MySQL functions (User Defined Functions and stored functions).
+ * Built-in support for some functions which may be useful for working with Lat/Lng distances and bearings.
+ * Fixed issue where duplicate function names would appear in get_capabilities result set.
+ * Fixed OSM tiles to not be hardcoded to http://
+ * Added button to rebuild known spatial function list cache
 
 = 0.3.0 =
  * Moved core functionality to a [library (wp-geometa-lib)](https://github.com/cimburadotcom/wp-geometa-lib) so it can be used in other plugins.
@@ -121,6 +128,10 @@ to get pull requests and bug reports over there (but I'll take them via SVN
 too if that's what you like better!).
 
 == Upgrade Notice ==
+
+= 0.3.1 = 
+* This release brings support for stored spatial functions, a new button to
+rebuild the list of known spatial functions and support for https map tiles. 
 
 = 0.3.0 =
 * Previous upgrades caused "Index Exists" type MySQL errors in certain
