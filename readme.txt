@@ -1,7 +1,7 @@
 === WP-GeoMeta ===
 Contributors: stuporglue, cimburacom
 Donate link: https://cimbura.com/contact-us/make-a-payment/
-Tags: GIS, spatial, mysql, mariadb, geography, mapping, meta, metadata
+Tags: GIS, geo, spatial, mysql, mariadb, geography, mapping, meta, metadata
 Requires at least: 4.4.0
 Tested up to: 4.7.0
 Stable tag: trunk
