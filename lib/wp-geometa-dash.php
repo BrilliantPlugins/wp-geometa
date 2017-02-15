@@ -291,10 +291,10 @@ class WP_GeoMeta_Dash {
 	 */
 	protected function __construct() {
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
-		add_action( 'wp_ajax_wpgm_get_sample_data', array( $this, 'ajax_wpgm_get_sample_data' ) );
-		add_action( 'wp_ajax_wpgm_dangerzone', array( $this, 'ajax_wpgm_dangerzone' ) );
+		add_action( 'wp_ajax_wpgm_get_sample_data', array( $this, 'wp_ajax_wpgm_get_sample_data' ) );
+		add_action( 'wp_ajax_wpgm_dangerzone', array( $this, 'wp_ajax_wpgm_dangerzone' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-		add_filter( 'wpgmd_sample_data_to_json', array( $this, 'sample_latlng_to_json' ) );
+		add_filter( 'wpgmd_sample_data_to_json', array( $this, 'wpgmd_sample_data_to_json' ), 10, 2 );
 	}
 
 	/**
@@ -316,7 +316,7 @@ class WP_GeoMeta_Dash {
 		wp_register_script( 'wpgeometadashjs', $plugin_dir . 'wpgeometa.js', array( 'leafletjs' ) );
 		$translation_array = array(
 			'action_confirm_dialog' => __( 'Are you sure you want to %1$s?' , 'wp-geometa' ),
-			);
+		);
 		wp_localize_script( 'wpgeometadashjs', 'wpgmjs_strings', $translation_array );
 		wp_enqueue_script( 'wpgeometadashjs' );
 
@@ -583,18 +583,18 @@ class WP_GeoMeta_Dash {
 				geo.meta_key
 				ORDER BY p.post_type, geo.meta_key';
 
-		foreach ( $wpdb->get_results( $q, ARRAY_A ) as $geometa ) {  // @codingStandardsIgnoreLine
+foreach ( $wpdb->get_results( $q, ARRAY_A ) as $geometa ) {  // @codingStandardsIgnoreLine
 
-				$post_type_object = get_post_type_object( $geometa['post_type'] );
+	$post_type_object = get_post_type_object( $geometa['post_type'] );
 
-				$found_data[] = array(
-					'name' => $post_type_object->labels->name . ' (post)',
-					'type' => 'post',
-					'the_meta_key' => $geometa['meta_key'],
-					'quantity' => $geometa['quantity'],
-					'sub_type' => $geometa['post_type'],
-							);
-			}
+	$found_data[] = array(
+		'name' => $post_type_object->labels->name . ' (post)',
+		'type' => 'post',
+		'the_meta_key' => $geometa['meta_key'],
+		'quantity' => $geometa['quantity'],
+		'sub_type' => $geometa['post_type'],
+	);
+}
 		}
 
 		if ( in_array( 'user', $found_tables, true ) ) {
@@ -606,23 +606,16 @@ class WP_GeoMeta_Dash {
 			 * message.
 			 */
 			// @codingStandardsIgnoreStart
-			$q = 'SELECT 
-				meta_key, 
-				COUNT(umeta_id) AS quantity
-				FROM 
-				' . $wpdb->usermeta . '_geo geo
-				GROUP BY 
-				meta_key';
+			$q = 'SELECT meta_key, COUNT(umeta_id) AS quantity FROM ' . $wpdb->usermeta . '_geo geo GROUP BY meta_key';
+			// @codingStandardsIgnoreEnd
 
-// @codingStandardsIgnoreEnd
-
-foreach ( $wpdb->get_results( $q, ARRAY_A ) as $usermeta ) {  // @codingStandardsIgnoreLine
+			foreach ( $wpdb->get_results( $q, ARRAY_A ) as $usermeta ) {  // @codingStandardsIgnoreLine
 				$found_data[] = array(
 					'name' => 'Users',
 					'type' => 'user',
 					'the_meta_key' => $usermeta['meta_key'],
 					'quantity' => $usermeta['quantity'],
-							);
+				);
 			}
 		}
 
@@ -645,13 +638,13 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $usermeta ) {  // @codingStandard
 
 foreach ( $wpdb->get_results( $q, ARRAY_A ) as $termmeta ) { // @codingStandardsIgnoreLine
 
-				$found_data[] = array(
-					'name' => $termmeta['name'] . ' (term)',
-					'type' => 'user',
-					'the_meta_key' => $termmeta['meta_key'],
-					'quantity' => $termmeta['quantity'],
-							);
-			}
+	$found_data[] = array(
+		'name' => $termmeta['name'] . ' (term)',
+		'type' => 'user',
+		'the_meta_key' => $termmeta['meta_key'],
+		'quantity' => $termmeta['quantity'],
+	);
+}
 		}
 
 		if ( in_array( 'comment', $found_tables, true ) ) {
@@ -665,13 +658,13 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $termmeta ) { // @codingStandards
 				meta_key';
 
 foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStandardsIgnoreLine
-				$found_data[] = array(
-					'name' => 'Comments',
-					'type' => 'comment',
-					'the_meta_key' => $commentmeta['meta_key'],
-					'quantity' => $commentmeta['quantity'],
-							);
-			}
+	$found_data[] = array(
+		'name' => 'Comments',
+		'type' => 'comment',
+		'the_meta_key' => $commentmeta['meta_key'],
+		'quantity' => $commentmeta['quantity'],
+	);
+}
 		}
 
 		foreach ( $found_data as &$data ) {
@@ -684,7 +677,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	/**
 	 * Get 500 random spatial records from a post type.
 	 */
-	public function ajax_wpgm_get_sample_data() {
+	public function wp_ajax_wpgm_get_sample_data() {
 		global $wpdb;
 
 		$wpgm = WP_GeoMeta::get_instance();
@@ -747,19 +740,19 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 
 		if ( ! empty( $_GET['subtype'] ) ) { // @codingStandardsIgnoreLine
 			$post_type_object = get_post_type_object( $_GET['subtype'] );  // @codingStandardsIgnoreLine
-			$type = $post_type_object->labels->name . ' (post)';
+			$type_label = $post_type_object->labels->name . ' (post)';
 		} else {
-			$type = ucfirst( $type );
+			$type_label = ucfirst( $type );
 		}
 
 		foreach ( $res as $record ) {
 
-			$record = apply_filters( 'wpgmd_sample_data_to_json', $record );
+			$record = apply_filters( 'wpgmd_sample_data_to_json', $record, $type );
 
 			$feature_collection = WP_GeoUtil::merge_geojson( $record['meta_value'] );
 			$feature_collection = json_decode( $feature_collection, true );
 			foreach ( $feature_collection['features'] as &$feature ) {
-				$feature['title'] = $type . ' id ' . $record['the_id'];
+				$feature['title'] = $type_label . ' id ' . $record['the_id'];
 			}
 			$geojson[] = $feature_collection;
 		}
@@ -811,7 +804,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	/**
 	 * Handle the danger zone actions
 	 */
-	public function ajax_wpgm_dangerzone() {
+	public function wp_ajax_wpgm_dangerzone() {
 		$real_action = $_GET['action_type']; // @codingStandardsIgnoreLine
 
 		switch ( $real_action ) {
@@ -832,7 +825,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 			case 'create-tables':
 				$wpgm = WP_GeoMeta::get_instance();
 				$wpgm->create_geo_tables();
-				print esc_html__( 'The WP GeoMeta tables should exist now.' , 'wp-geometa' );
+				print esc_html__( 'The WP GeoMeta tables and functions should exist now.' , 'wp-geometa' );
 				break;
 			case 'truncate-tables':
 				$wpgm = WP_GeoMeta::get_instance();
@@ -1088,7 +1081,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 		print '<td>' . esc_html__( 'All WP GeoMeta data is stored in its own tables. Your original data is untouched. Removing WP GeoMeta tables will break any spatial queries you may be using.' , 'wp-geometa' ) . '</td></tr>';
 
 		// Create WP GeoMeta Tables.
-		print '<tr><td><button data-action="create-tables" class="wpgm-danger-action">' . esc_html__( 'Create WP GeoMeta Tables' , 'wp-geometa' ) . '</button></td>';
+		print '<tr><td><button data-action="create-tables" class="wpgm-danger-action">' . esc_html__( 'Create WP GeoMeta Tables and Functions' , 'wp-geometa' ) . '</button></td>';
 		print '<td>' . esc_html__( 'WP GeoMeta tables are created on plugin activation or upgrade, but you can manually create them here. WP GeoMeta uses dbDelta, so running this multiple times will have no bad effects.' , 'wp-geometa' ) . '</td></tr>';
 
 		// Truncate WP GeoMeta Tables.
@@ -1119,7 +1112,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	 *
 	 * @param string $metatype The type of object this meta is for (post, user, etc.).
 	 */
-	public function sample_latlng_to_json( $record, $metatype ) {
+	public function wpgmd_sample_data_to_json( $record, $metatype ) {
 		if ( array_key_exists( $record['meta_key'], WP_GeoMeta::$latlngs_index ) ) {
 			$record['meta_value'] = '{"type":"Feature","geometry":' . WP_GeoUtil::geom_to_geojson( $record['geo_meta_value'] ) . ',"properties":[]}'; // @codingStandardsIgnoreLine
 		}
