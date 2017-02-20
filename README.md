@@ -1,7 +1,7 @@
 WP-GeoMeta
 ===========
 
-![WP-GeoMeta adds spatial capabilities to WordPress](assets/github_banner.png)
+![WP-GeoMeta adds spatial capabilities to WordPress](assets/banner-772x250.png)
 
 WP-GeoMeta is a spatial foundation for WordPress. Store and search spatial metadata like
 you do any other metadata, but using MySQL spatial indexes.
