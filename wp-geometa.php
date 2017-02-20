@@ -10,7 +10,7 @@
  * Plugin Name: WP-GeoMeta
  * Description: Store and search spatial metadata while taking advantage of MySQL spatial types and indexes.
  * Author: Michael Moore
- * Author URI: http://cimbura.com
+ * Author URI: http://LuminFire.com
  * Version: 0.3.1
  * Text Domain: wp-geometa
  * Domain Path: /lang

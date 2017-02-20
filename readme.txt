@@ -1,6 +1,6 @@
 === WP-GeoMeta ===
-Contributors: stuporglue, cimburacom
-Donate link: https://cimbura.com/contact-us/make-a-payment/
+Contributors: stuporglue, luminfire 
+Donate link: https://LuminFire.com/contact-us/make-a-payment/
 Tags: GIS, geo, spatial, mysql, mariadb, geography, mapping, meta, metadata
 Requires at least: 4.4.0
 Tested up to: 4.7.0
@@ -49,7 +49,8 @@ No one has actually asked any questions yet!
 
 For community support try [WherePress.com](http://WherePress.com/), or [The Spatial Community](https://julien24.typeform.com/to/kGPqYr).
 
-For commercial support you can contact the plugin developer at [Cimbura.com](https://cimbura.com/contact-us/project-request-form/)
+For commercial support you can contact the plugin developer at
+[LuminFire.com](https://LuminFire.com/contact-us/project-request-form/)
 
 For fast and short questions you can [contact me](https://twitter.com/stuporglue) on twitter
 

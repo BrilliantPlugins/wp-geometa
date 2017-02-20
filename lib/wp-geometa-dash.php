@@ -5,8 +5,8 @@
  *
  * @package wp-geometa
  * @link https://github.com/cimburadotcom/WP-GeoMeta
- * @author Michael Moore / michael_m@cimbura.com / https://profiles.wordpress.org/stuporglue/
- * @copyright Cimbura.com, 2016
+ * @author Michael Moore / michael.moore@luminfire.com / https://profiles.wordpress.org/stuporglue/
+ * @copyright LuminFire.com, 2016, 2017
  * @license GNU GPL v2
  */
 
@@ -853,7 +853,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	 * Print the dashboard header section.
 	 */
 	public function section_header() {
-		$icon = plugin_dir_url( __FILE__ ) . '/../../assets/icon.png';
+		$icon = plugin_dir_url( __FILE__ ) . '/../../assets/icon-256x256.png';
 		print '<div class="wpgm-header header noborder"><h2><img src="' . esc_attr( $icon ). '" title="WP GeoMeta Logo"/>WP GeoMeta</h2></div>';
 	}
 
@@ -1025,8 +1025,8 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	public function section_resources() {
 		print '<div><h3>' . esc_html__( 'WP GeoMeta Meta and Resources' , 'wp-geometa' ) . '</h3>';
 
-		$logo = plugin_dir_url( __FILE__ ) . '/../../assets/cimbura_logo.png';
-		print '<p><img src="' . esc_attr( $logo ) . '" class="logo">' . sprintf( esc_html__( 'WP GeoMeta is a work of love from the GIS+WordPress development team at %1$s' , 'wp-geometa' ), '<a href="http://cimbura.com" target="_blank">Cimbura.com</a>' );
+		$logo = plugin_dir_url( __FILE__ ) . '/../../assets/luminfire_logo.png';
+		print '<p><img src="' . esc_attr( $logo ) . '" class="logo">' . sprintf( esc_html__( 'WP GeoMeta is a work of love from the GIS+WordPress development team at %1$s' , 'wp-geometa' ), '<a href="https://luminfire.com" target="_blank">LuminFire.com</a>' );
 		print ' ';
 		printf( esc_html__( 'We appreciate %1$sbug reports, feature requests%2$s and %3$spull requests (especially with test cases)%4$s.', 'wp-geometa' ), '<a href="https://github.com/cimburadotcom/WP-GeoMeta/issues" target="_blank">', '</a>','<a href="https://github.com/cimburadotcom/WP-GeoMeta/pulls" target="_blank">', '</a>' );
 		print ' ';
@@ -1035,7 +1035,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 
 		print '<h4>' . esc_html__( 'Our Sites' , 'wp-geometa' ) . '</h4>';
 		print '<ul>';
-		print '<li><a href="https://cimbura.com" target="_blank">Cimbura.com — ' . esc_html__( 'Our home on the web' , 'wp-geometa' ) . '</a></li>';
+		print '<li><a href="https://luminfire.com" target="_blank">LuminFire.com — ' . esc_html__( 'Our home on the web' , 'wp-geometa' ) . '</a></li>';
 		print '<li><a href="https://github.com/cimburadotcom/WP-GeoMeta" target="_blank">' . esc_html__( 'WP GeoMeta on GitHub' , 'wp-geometa' ) . '</a></li>';
 		print '<li><a href="http://wherepress.com/" target="_blank">' . esc_html__( 'WherePress.com — Our WordPress/GIS Blog Site' , 'wp-geometa' ) . '</a></li>';
 		print '</ul>';
