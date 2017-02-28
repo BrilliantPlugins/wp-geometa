@@ -876,7 +876,14 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	 * Print the section that shows stored spatial object types, their meta keys and how many records of that type there are.
 	 */
 	public function section_data() {
-		print '<div class="wpgm-data"><h3>' . esc_html__( 'Your Spatial Data' , 'wp-geometa' ) . '<span id="yourdata-spinner"></span></h3><div id="wpgmmap"></div><div class="posttypegeotable">';
+		print '<div class="wpgm-data"><h3>' . esc_html__( 'Your Spatial Data' , 'wp-geometa' ) . '<span id="yourdata-spinner"></span></h3>';
+		print '<div id="wpgmmap"></div>';
+
+		$map = new LeafletPHP(array(),'wpgmmap');
+
+		print $map;
+
+		print '<div class="posttypegeotable">';
 		print '<h4>' . esc_html__( 'Found Spatial Metadata Types' , 'wp-geometa' ) . '</h4>';
 
 		$meta_stats = $this->get_geometa_stats();

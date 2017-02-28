@@ -23,13 +23,29 @@
 /**
  * Always include wp-geometa-lib so that it's available for others to use
  */
-require_once( dirname( __FILE__ ) . '/lib/wp-geometa-lib/wp-geometa-lib-loader.php' );
+
+$wp_geometa_lib_loader = dirname( __FILE__ ) . '/lib/wp-geometa-lib/wp-geometa-lib-loader.php';
+
+if ( file_exists( $wp_geometa_lib_loader ) ) {
+	require_once( $wp_geometa_lib_loader );
+} else {
+	error_log( "Could not load wp-geometa-lib. You probably cloned wp-geometa from git and didn't check out submodules!" );
+}
 
 /**
  * Load dashboard stuff if we're on the dashboard page
  */
 if ( is_admin() ) {
 	require_once( dirname( __FILE__ ) . '/lib/wp-geometa-dash.php' );
+
+	$leaflet_php_loader = dirname( __FILE__ ) . '/lib/leaflet-php/leaflet-php-loader.php';
+
+	if ( file_exists( $leaflet_php_loader ) ) {
+		require_once( $leaflet_php_loader );
+	} else {
+		error_log( "Could not load leaflet-php-loader. You probably cloned wp-geometa from git and didn't check out submodules!" );
+	}
+
 	WP_GeoMeta_Dash::get_instance();
 
 	add_action( 'plugins_loaded', 'wpgeometa_load_textdomain' );
