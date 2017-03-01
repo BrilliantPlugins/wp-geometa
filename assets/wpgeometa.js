@@ -1,16 +1,8 @@
-jQuery(document).ready(function(){
-	window.wpgmmap = L.map('wpgmmap', {
-		scrollWheelZoom: false
-	}).setView([0,0],1);
+jQuery(document).on('leafletphp/loaded',function(e,mapobj){
 	var wpgmlayer;
 
-	wpgmmap.on('focus', function(e) { e.target.scrollWheelZoom.enable(); });
-	wpgmmap.on('blur', function(e) { e.target.scrollWheelZoom.disable(); });
-
-	L.tileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		maxZoom: 19,
-		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-	}).addTo(wpgmmap);
+	wpgmleaflet.map.on('focus', function(e) { e.target.scrollWheelZoom.enable(); });
+	wpgmleaflet.map.on('blur', function(e) { e.target.scrollWheelZoom.disable(); });
 
 	jQuery('.wpgmsampledata').on('click',function(e){
 		var this_layer_info = jQuery(e.target).parent();
@@ -25,8 +17,8 @@ jQuery(document).ready(function(){
 		}).then(
 
 			function(success){
-				if ( wpgmmap.hasLayer( wpgmlayer ) ) {
-					wpgmmap.removeLayer( wpgmlayer );
+				if ( wpgmleaflet.map.hasLayer( wpgmlayer ) ) {
+					wpgmleaflet.map.removeLayer( wpgmlayer );
 				}
 				wpgmlayer = L.geoJSON(success,{
 					style: { 
@@ -45,12 +37,12 @@ jQuery(document).ready(function(){
 						}	
 					}
 				});
-				wpgmmap.addLayer( wpgmlayer );	
+				wpgmleaflet.map.addLayer( wpgmlayer );	
 
 				var bounds = wpgmlayer.getBounds();
 
 				if ( bounds.isValid() ){
-					wpgmmap.fitBounds( bounds );
+					wpgmleaflet.map.fitBounds( bounds );
 				}
 				jQuery('#yourdata-spinner').removeClass('spinny');
 			},
@@ -105,7 +97,7 @@ function wpgmeta_change_tab(e) {
 	jQuery('.wpgmtab[data-tab="' + target + '"]').addClass('shown');
 
 	if ( target === 'yourmeta' ) {
-		wpgmmap.invalidateSize();
+		wpgmleaflet.map.invalidateSize();
 	}
 	return false;
 }
