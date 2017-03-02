@@ -2,9 +2,10 @@ Changes
 -------
 
 ### 0.3.2
- * Update to wp-geometa-lib 0.3.2
- * Updated internal filter callback function names to match the filter they're for
- * Updated branding to reflect company name change
+ * Update to wp-geometa-lib 0.3.2.
+ * Updated internal filter callback function names to match the filter they're for.
+ * Updated branding to reflect company name change.
+ * Updated handling if submodules aren't checked out.
 
 ### 0.3.1
  * Support for custom MySQL functions (User Defined Functions and stored functions).

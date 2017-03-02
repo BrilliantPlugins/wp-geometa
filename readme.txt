@@ -3,7 +3,7 @@ Contributors: stuporglue, luminfire
 Donate link: https://LuminFire.com/contact-us/make-a-payment/
 Tags: GIS, geo, spatial, mysql, mariadb, geography, mapping, meta, metadata
 Requires at least: 4.4.0
-Tested up to: 4.7.0
+Tested up to: 4.7.2
 Stable tag: trunk
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html

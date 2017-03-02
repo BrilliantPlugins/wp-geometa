@@ -29,7 +29,11 @@ $wp_geometa_lib_loader = dirname( __FILE__ ) . '/lib/wp-geometa-lib/wp-geometa-l
 if ( file_exists( $wp_geometa_lib_loader ) ) {
 	require_once( $wp_geometa_lib_loader );
 } else {
-	error_log( "Could not load wp-geometa-lib. You probably cloned wp-geometa from git and didn't check out submodules!" );
+	error_log( __( "Could not load wp-geometa-lib. You probably cloned wp-geometa from git and didn't check out submodules!", 'wp-geometa' ) );
+
+	if ( is_admin() ) {
+		print __( "Could not load wp-geometa-lib. You probably cloned wp-geometa from git and didn't check out submodules!", 'wp-geometa' );
+	}
 }
 
 /**
@@ -43,7 +47,8 @@ if ( is_admin() ) {
 	if ( file_exists( $leaflet_php_loader ) ) {
 		require_once( $leaflet_php_loader );
 	} else {
-		error_log( "Could not load leaflet-php-loader. You probably cloned wp-geometa from git and didn't check out submodules!" );
+		error_log( __( "Could not load leaflet-php-loader. You probably cloned wp-geometa from git and didn't check out submodules!", 'wp-geometa' ) );
+		print esc_html__( "Could not load leaflet-php-loader. You probably cloned wp-geometa from git and didn't check out submodules!", 'wp-geometa' );
 	}
 
 	WP_GeoMeta_Dash::get_instance();
