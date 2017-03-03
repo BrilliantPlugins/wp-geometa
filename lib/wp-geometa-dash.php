@@ -306,7 +306,7 @@ class WP_GeoMeta_Dash {
 			return;
 		}
 
-		$plugin_dir = plugin_dir_url( __FILE__ ) . '/../../assets/';
+		$plugin_dir = plugin_dir_url( __FILE__ ) . '/../../media/';
 
 		wp_enqueue_script( 'leafletjs', $plugin_dir . 'leaflet/leaflet.js', array(), null );
 		wp_enqueue_style( 'leafletcss', $plugin_dir . 'leaflet/leaflet.css', array(), null );
@@ -877,7 +877,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	 * Print the dashboard header section.
 	 */
 	public function section_header() {
-		$icon = plugin_dir_url( __FILE__ ) . '/../../assets/icon-256x256.png';
+		$icon = plugin_dir_url( __FILE__ ) . '/../../media/icon-256x256.png';
 		print '<div class="wpgm-header header noborder"><h2><img src="' . esc_attr( $icon ). '" title="WP-GeoMeta Logo"/>WP-GeoMeta</h2></div>';
 	}
 
@@ -1057,7 +1057,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	public function section_resources() {
 		print '<div><h3>' . esc_html__( 'WP-GeoMeta Meta and Resources' , 'wp-geometa' ) . '</h3>';
 
-		$logo = plugin_dir_url( __FILE__ ) . '/../../assets/luminfire_logo.png';
+		$logo = plugin_dir_url( __FILE__ ) . '/../../media/luminfire_logo.png';
 		print '<p><img src="' . esc_attr( $logo ) . '" class="logo">' . sprintf( esc_html__( 'WP-GeoMeta is a work of love from the GIS+WordPress development team at %1$s' , 'wp-geometa' ), '<a href="https://luminfire.com" target="_blank">LuminFire.com</a>' );
 		print ' ';
 		printf( esc_html__( 'We appreciate %1$sbug reports, feature requests%2$s and %3$spull requests (especially with test cases)%4$s.', 'wp-geometa' ), '<a href="https://github.com/cimburadotcom/WP-GeoMeta/issues" target="_blank">', '</a>','<a href="https://github.com/cimburadotcom/WP-GeoMeta/pulls" target="_blank">', '</a>' );

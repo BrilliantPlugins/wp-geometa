@@ -26,9 +26,11 @@ search operator is used, WP-GeoMeta will make sure that the spatial table
 is used, taking advantage of indexes and spatial relations.
 This plugin provides a dashboard where you can see your existing spatial data and spatial system status. It also includes a list of the MySQL functions your database supports and admin tools for repairing the spatial meta tables if something goes wrong. 
 
-![The dashboard front page](assets/dash_front_page.png)
+![WP-GeoMeta gives you a single place to see what spatial data you have.](assets/screenshot-1.png)
 
-![The dashoard status page](assets/dash_status_page.png)
+![WP-GeoMeta shows which spatial functions you can use](assets/screenshot-2.png)
+
+![The System Status tab in WP-GeoMeta shows if your spatial support is up to date.](assets/screenshot-3.png)
 
 
 Usage
