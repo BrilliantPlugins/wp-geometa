@@ -877,7 +877,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	 * Print the dashboard header section.
 	 */
 	public function section_header() {
-		$icon = plugin_dir_url( __FILE__ ) . '/../../media/icon-256x256.png';
+		$icon = plugin_dir_url( __FILE__ ) . '/../../assets/icon-256x256.png';
 		print '<div class="wpgm-header header noborder"><h2><img src="' . esc_attr( $icon ). '" title="WP-GeoMeta Logo"/>WP-GeoMeta</h2></div>';
 	}
 

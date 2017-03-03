@@ -32,7 +32,7 @@ if ( file_exists( $wp_geometa_lib_loader ) ) {
 	error_log( __( "Could not load wp-geometa-lib. You probably cloned wp-geometa from git and didn't check out submodules!", 'wp-geometa' ) );
 
 	if ( is_admin() ) {
-		print __( "Could not load wp-geometa-lib. You probably cloned wp-geometa from git and didn't check out submodules!", 'wp-geometa' );
+		print esc_html__( "Could not load wp-geometa-lib. You probably cloned wp-geometa from git and didn't check out submodules!", 'wp-geometa' );
 	}
 }
 
