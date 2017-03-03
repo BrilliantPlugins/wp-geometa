@@ -28,6 +28,7 @@ $wp_geometa_lib_loader = dirname( __FILE__ ) . '/lib/wp-geometa-lib/wp-geometa-l
 
 if ( file_exists( $wp_geometa_lib_loader ) ) {
 	require_once( $wp_geometa_lib_loader );
+	register_activation_hook( __FILE__ , array('WP_GeoMeta','install'));
 } else {
 	error_log( __( "Could not load wp-geometa-lib. You probably cloned wp-geometa from git and didn't check out submodules!", 'wp-geometa' ) );
 
