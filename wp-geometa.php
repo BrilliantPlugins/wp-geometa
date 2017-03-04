@@ -18,12 +18,9 @@
  * @package wp-geometa
  */
 
-
-
 /**
  * Always include wp-geometa-lib so that it's available for others to use
  */
-
 $wp_geometa_lib_loader = dirname( __FILE__ ) . '/lib/wp-geometa-lib/wp-geometa-lib-loader.php';
 
 if ( file_exists( $wp_geometa_lib_loader ) ) {

@@ -130,6 +130,12 @@ too if that's what you like better!).
 
 == Upgrade Notice ==
 
+= 0.3.2 = 
+ * Update to wp-geometa-lib 0.3.2.
+ * Updated internal filter callback function names to match the filter they're for.
+ * Updated branding to reflect company name change.
+ * Updated handling if submodules aren't checked out.
+
 = 0.3.1 = 
 * This release brings support for stored spatial functions, a new button to
 rebuild the list of known spatial functions and support for https map tiles. 
