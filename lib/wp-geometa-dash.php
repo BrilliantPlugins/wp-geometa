@@ -327,7 +327,7 @@ class WP_GeoMeta_Dash {
 	 * Add the dashboard menu listing.
 	 */
 	public function admin_menu() {
-		add_management_page( 'WP-GeoMeta', 'WP-GeoMeta', 'install_plugins', 'wp-geometa', array( $this, 'show_dashboard' ) );
+		add_management_page( 'WP-GeoMeta', 'WP-GeoMeta', 'read_private_posts', 'wp-geometa', array( $this, 'show_dashboard' ) );
 	}
 
 	/**
@@ -848,7 +848,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 				break;
 			case 'create-tables':
 				$wpgm = WP_GeoMeta::get_instance();
-				$wpgm->create_geo_tables();
+				$wpgm->upgrade();
 				print esc_html__( 'The WP-GeoMeta tables and functions should exist now.' , 'wp-geometa' );
 				break;
 			case 'truncate-tables':
