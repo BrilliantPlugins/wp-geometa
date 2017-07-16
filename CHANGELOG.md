@@ -16,7 +16,7 @@ Changes
 
 
 ### 0.3.0
- * Moved core functionality to a [library (wp-geometa-lib)](https://github.com/cimburadotcom/wp-geometa-lib) so it can be used in other plugins.
+ * Moved core functionality to a [library (wp-geometa-lib)](https://github.com/BrilliantPlugins/wp-geometa-lib) so it can be used in other plugins.
  * Most of the previous changelog is no longer applicable to this plugin, but to wp-geometa-lib
  * Fixed issue that made plugins using WP-GeoMeta as a library to be activated twice.
 

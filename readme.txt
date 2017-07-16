@@ -3,8 +3,8 @@ Contributors: stuporglue, luminfire
 Donate link: https://LuminFire.com/contact-us/make-a-payment/
 Tags: GIS, geo, spatial, mysql, mariadb, geography, mapping, meta, metadata
 Requires at least: 4.4.0
-Tested up to: 4.7.2
-Stable tag: 0.3.2 
+Tested up to: 4.8
+Stable tag: 0.3.3 
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,32 +12,21 @@ Store and search spatial metadata like any other metadata, but while taking adva
 
 == Description == 
 
-A spatial foundation for WordPress. Store and search spatial metadata like
-you do any other metadata, but using MySQL spatial indexes.
+A spatial foundation for WordPress. Store and search spatial metadata like you do any other metadata, but using MySQL spatial indexes.
 
-WP GeoMeta lets you take advantage MySQL's spatial data types and spatial 
-indexes when storing and searching spatial metadata. 
+WP GeoMeta lets you take advantage MySQL's spatial data types and spatial indexes when storing and searching spatial metadata. 
 
-It detects when [GeoJSON](http://geojson.org/) metadata is being stored, and transparently 
-stores a copy in a spatial meta table. 
+It detects when [GeoJSON](http://geojson.org/) metadata is being stored, and transparently stores a copy in a spatial meta table. 
 
-WP GeoMeta also adds support for spatial search operators. When a spatial
-search operator is used, WP GeoMeta will make sure that the spatial table
-is used, taking advantage of indexes and spatial relations.
+WP GeoMeta also adds support for spatial search operators. When a spatial search operator is used, WP GeoMeta will make sure that the spatial table is used, taking advantage of indexes and spatial relations.
 
-WP GeoMeta isn't just a plugin, it's also a library which other plugins can
-take advantage of. It's meant to be a spatial platform that other GIS and
-mapping plugins can build on to allow spatial interoperability between
-plugins.
+WP GeoMeta isn't just a plugin, it's also a library which other plugins can take advantage of. It's meant to be a spatial platform that other GIS and mapping plugins can build on to allow spatial interoperability between plugins.
 
 == Installation ==
 
-Install this plugin in the usual WordPress way, then go to your WordPress
-dashboard to Tools::WP GeoMeta to see the status of your spatial data and
-to use the included tools.
+Install this plugin in the usual WordPress way, then go to your WordPress dashboard to Tools::WP GeoMeta to see the status of your spatial data and to use the included tools.
 
-1. Upload the plugin files to the `/wp-content/plugins/wp-geometa` directory,
-	or install the plugin through the WordPress plugin screen directly.
+1. Upload the plugin files to the `/wp-content/plugins/wp-geometa` directory, or install the plugin through the WordPress plugin screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Go to Tools::WP Geometa
 
@@ -49,8 +38,7 @@ No one has actually asked any questions yet!
 
 For community support try [WherePress.com](http://WherePress.com/), or [The Spatial Community](https://julien24.typeform.com/to/kGPqYr).
 
-For commercial support you can contact the plugin developer at
-[LuminFire.com](https://LuminFire.com/contact-us/project-request-form/)
+For commercial support you can contact the plugin developer at [LuminFire.com](https://LuminFire.com/contact-us/project-request-form/)
 
 For fast and short questions you can [contact me](https://twitter.com/stuporglue) on twitter
 
@@ -63,6 +51,15 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 
 == Changelog ==
 
+= 0.3.3 = 
+ * Updated wp-geometa-lib
+ * Updated Readme
+ * Tested with WP 4.8
+
+= 0.3.2 = 
+ * Not released on WP.org
+ * ???
+
 = 0.3.1 =
  * Support for custom MySQL functions (User Defined Functions and stored functions).
  * Built-in support for some functions which may be useful for working with Lat/Lng distances and bearings.
@@ -71,7 +68,7 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
  * Added button to rebuild known spatial function list cache
 
 = 0.3.0 =
- * Moved core functionality to a [library (wp-geometa-lib)](https://github.com/cimburadotcom/wp-geometa-lib) so it can be used in other plugins.
+ * Moved core functionality to a [library (wp-geometa-lib)](https://github.com/BrilliantPlugins/wp-geometa-lib) so it can be used in other plugins.
  * Most of the previous changelog is no longer applicable to this plugin, but to wp-geometa-lib
  * Fixed issue that made plugins using WP-GeoMeta as a library to be activated twice.
 
@@ -121,7 +118,7 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 == Developers ==
 
 WP-GeoMeta is tested and developed in the open over at
-[GitHub](https://github.com/cimburadotcom/wp-geometa). Stable versions are
+[GitHub](https://github.com/BrilliantPlugins/wp-geometa). Stable versions are
 pushed to  the WordPress plugin repository. 
 
 There is more developer documentation in the GitHub repository and I'd love 

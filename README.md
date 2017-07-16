@@ -13,7 +13,7 @@ indexes when storing and searching spatial metadata.
 ### Use WP-GeoMeta in *YOUR*  Plugin!
 > WP-GeoMeta isn't just a plugin, it's also a library which other plugins can
 > take advantage of. It's a spatial platform that other GIS and mapping plugins can build on. 
-> If you want to use WP-GeoMeta in your plugin, check out [wp-geometa-lib](https://github.com/cimburadotcom/wp-geometa-lib) for code and 
+> If you want to use WP-GeoMeta in your plugin, check out [wp-geometa-lib](https://github.com/BrilliantPlugins/wp-geometa-lib) for code and 
 > instructions.
 
 
