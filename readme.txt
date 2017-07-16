@@ -68,7 +68,7 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
  * Added button to rebuild known spatial function list cache
 
 = 0.3.0 =
- * Moved core functionality to a [library (wp-geometa-lib)](https://github.com/cimburadotcom/wp-geometa-lib) so it can be used in other plugins.
+ * Moved core functionality to a [library (wp-geometa-lib)](https://github.com/BrilliantPlugins/wp-geometa-lib) so it can be used in other plugins.
  * Most of the previous changelog is no longer applicable to this plugin, but to wp-geometa-lib
  * Fixed issue that made plugins using WP-GeoMeta as a library to be activated twice.
 
@@ -118,7 +118,7 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 == Developers ==
 
 WP-GeoMeta is tested and developed in the open over at
-[GitHub](https://github.com/cimburadotcom/wp-geometa). Stable versions are
+[GitHub](https://github.com/BrilliantPlugins/wp-geometa). Stable versions are
 pushed to  the WordPress plugin repository. 
 
 There is more developer documentation in the GitHub repository and I'd love 

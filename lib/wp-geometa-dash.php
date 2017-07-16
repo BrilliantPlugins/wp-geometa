@@ -3,7 +3,7 @@
  * This class and file are respnsible for the WP-GeoMeta WordPress dashboard page. 
  *
  * @package wp-geometa
- * @link https://github.com/cimburadotcom/WP-GeoMeta
+ * @link https://github.com/BrilliantPlugins/wp-geometa
  * @author Michael Moore / michael.moore@luminfire.com / https://profiles.wordpress.org/stuporglue/
  * @copyright LuminFire.com, 2016, 2017
  * @license GNU GPL v2
@@ -1060,15 +1060,15 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 		$logo = plugin_dir_url( __FILE__ ) . '/../../media/luminfire_logo.png';
 		print '<p><img src="' . esc_attr( $logo ) . '" class="logo">' . sprintf( esc_html__( 'WP-GeoMeta is a work of love from the GIS+WordPress development team at %1$s' , 'wp-geometa' ), '<a href="https://luminfire.com" target="_blank">LuminFire.com</a>' );
 		print ' ';
-		printf( esc_html__( 'We appreciate %1$sbug reports, feature requests%2$s and %3$spull requests (especially with test cases)%4$s.', 'wp-geometa' ), '<a href="https://github.com/cimburadotcom/WP-GeoMeta/issues" target="_blank">', '</a>','<a href="https://github.com/cimburadotcom/WP-GeoMeta/pulls" target="_blank">', '</a>' );
+		printf( esc_html__( 'We appreciate %1$sbug reports, feature requests%2$s and %3$spull requests (especially with test cases)%4$s.', 'wp-geometa' ), '<a href="https://github.com/BrilliantPlugins/wp-geometa/issues" target="_blank">', '</a>','<a href="https://github.com/BrilliantPlugins/wp-geometa/pulls" target="_blank">', '</a>' );
 		print ' ';
-		printf( esc_html__( 'If you need assistance implementing your GIS solution, please %1$scontact us%2$s with details about what you\'d like to do.' , 'wp-geometa' ),  '<a href="https://cimbura.com/contact-us/" target="_blank">', '</a>' );
+		printf( esc_html__( 'If you need assistance implementing your GIS solution, please %1$scontact us%2$s with details about what you\'d like to do.' , 'wp-geometa' ),  '<a href="https://luminfire.com/contact-us/" target="_blank">', '</a>' );
 		print '</p><p>';
 
 		print '<h4>' . esc_html__( 'Our Sites' , 'wp-geometa' ) . '</h4>';
 		print '<ul>';
 		print '<li><a href="https://luminfire.com" target="_blank">LuminFire.com — ' . esc_html__( 'Our home on the web' , 'wp-geometa' ) . '</a></li>';
-		print '<li><a href="https://github.com/cimburadotcom/WP-GeoMeta" target="_blank">' . esc_html__( 'WP-GeoMeta on GitHub' , 'wp-geometa' ) . '</a></li>';
+		print '<li><a href="https://github.com/BrilliantPlugins/wp-geometa" target="_blank">' . esc_html__( 'WP-GeoMeta on GitHub' , 'wp-geometa' ) . '</a></li>';
 		// print '<li><a href="http://wherepress.com/" target="_blank">' . esc_html__( 'WherePress.com — Our WordPress/GIS Blog Site' , 'wp-geometa' ) . '</a></li>';
 		print '</ul>';
 
