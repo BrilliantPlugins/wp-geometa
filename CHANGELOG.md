@@ -1,6 +1,12 @@
 Changes
 -------
 
+### 0.3.3
+ * Updated wp-geometa-lib to 0.3.3.
+ * Updated Readme.
+ * Updated documentation and copyrights to reflect company name change from Cimbura.com to LuminFire.
+ * Tested with WP 4.8.
+
 ### 0.3.2
  * Update to wp-geometa-lib 0.3.2.
  * Updated internal filter callback function names to match the filter they're for.
@@ -13,7 +19,6 @@ Changes
  * Fixed issue where duplicate function names would appear in get_capabilities result set.
  * Fixed OSM tiles to not be hardcoded to http://
  * Added button to rebuild known spatial function list cache
-
 
 ### 0.3.0
  * Moved core functionality to a [library (wp-geometa-lib)](https://github.com/BrilliantPlugins/wp-geometa-lib) so it can be used in other plugins.

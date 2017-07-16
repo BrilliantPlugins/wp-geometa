@@ -52,13 +52,16 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 == Changelog ==
 
 = 0.3.3 = 
- * Updated wp-geometa-lib
+ * Updated wp-geometa-lib to 0.3.3
  * Updated Readme
+ * Updated documentation and copyrights to reflect company name change from Cimbura.com to LuminFire
  * Tested with WP 4.8
 
 = 0.3.2 = 
- * Not released on WP.org
- * ???
+ * Update to wp-geometa-lib 0.3.2.
+ * Updated internal filter callback function names to match the filter they're for.
+ * Updated branding to reflect company name change.
+ * Updated handling if submodules aren't checked out.
 
 = 0.3.1 =
  * Support for custom MySQL functions (User Defined Functions and stored functions).
