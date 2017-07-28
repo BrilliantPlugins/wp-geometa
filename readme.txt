@@ -51,6 +51,10 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 
 == Changelog ==
 
+= 0.3.4 = 
+ * Fixed accessing property of null object on dashboard.
+ * Added GeoJSON import utility.
+
 = 0.3.3 = 
  * Updated wp-geometa-lib to 0.3.3
  * Updated Readme
@@ -58,10 +62,8 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
  * Tested with WP 4.8
 
 = 0.3.2 = 
- * Update to wp-geometa-lib 0.3.2.
- * Updated internal filter callback function names to match the filter they're for.
- * Updated branding to reflect company name change.
- * Updated handling if submodules aren't checked out.
+ * Not released on WP.org
+ * ???
 
 = 0.3.1 =
  * Support for custom MySQL functions (User Defined Functions and stored functions).

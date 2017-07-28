@@ -292,8 +292,14 @@ class WP_GeoMeta_Dash {
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		add_action( 'wp_ajax_wpgm_get_sample_data', array( $this, 'wp_ajax_wpgm_get_sample_data' ) );
 		add_action( 'wp_ajax_wpgm_dangerzone', array( $this, 'wp_ajax_wpgm_dangerzone' ) );
+		add_action( 'wp_ajax_wpgm_start_geojson_import', array( $this, 'wp_ajax_wpgm_start_geojson_import' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		add_filter( 'wpgmd_sample_data_to_json', array( $this, 'wpgmd_sample_data_to_json' ), 10, 2 );
+		add_filter( 'upload_mimes', array( $this, 'upload_mimes' ) );
+
+		if ( !defined( 'WPGM_IMPORT_LIMIT' ) ) {
+			define( 'WPGM_IMPORT_LIMIT', 100 );
+		}
 	}
 
 	/**
@@ -308,11 +314,11 @@ class WP_GeoMeta_Dash {
 
 		$plugin_dir = plugin_dir_url( __FILE__ ) . '/../../media/';
 
-		wp_enqueue_script( 'leafletjs', $plugin_dir . 'leaflet/leaflet.js', array(), null );
-		wp_enqueue_style( 'leafletcss', $plugin_dir . 'leaflet/leaflet.css', array(), null );
-		wp_enqueue_style( 'wpgeometadash', $plugin_dir . '/wpgeometa.css', array( 'leafletcss' ) );
+		// wp_enqueue_script( 'leafletjs', $plugin_dir . 'leaflet/leaflet.js', array(), null );
+		// wp_enqueue_style( 'leafletcss', $plugin_dir . 'leaflet/leaflet.css', array(), null );
+		wp_enqueue_style( 'wpgeometadash', $plugin_dir . '/wpgeometa.css' );
 
-		wp_register_script( 'wpgeometadashjs', $plugin_dir . 'wpgeometa.js', array( 'leafletjs' ) );
+		wp_register_script( 'wpgeometadashjs', $plugin_dir . '/wpgeometa.js' );
 		$translation_array = array(
 			'action_confirm_dialog' => __( 'Are you sure you want to %1$s?' , 'wp-geometa' ),
 		);
@@ -345,6 +351,7 @@ class WP_GeoMeta_Dash {
 		print '<li data-tab="functions">' . esc_html__( 'Your Functions', 'wp-geometa' ) . '</li>';
 		print '<li data-tab="resources">' . esc_html__( 'Resources', 'wp-geometa' ) . '</li>';
 		print '<li data-tab="status">' . esc_html__( 'System Status', 'wp-geometa' ) . '</li>';
+		print '<li data-tab="import">' . esc_html__( 'Import Data', 'wp-geometa' ) . '</li>';
 		print '</ul>';
 
 		// Your data and available functions.
@@ -370,10 +377,13 @@ class WP_GeoMeta_Dash {
 		// System Status.
 		print '<div class="wpgmtab" data-tab="status">';
 		$this->section_status_summary();
-
 		$this->section_installs();
-
 		$this->section_dragons();
+		print '</div>';
+
+		// Import Data.
+		print '<div class="wpgmtab" data-tab="import">';
+		$this->section_import();
 		print '</div>';
 
 		print '</div>';
@@ -607,18 +617,24 @@ class WP_GeoMeta_Dash {
 				geo.meta_key
 				ORDER BY p.post_type, geo.meta_key';
 
-foreach ( $wpdb->get_results( $q, ARRAY_A ) as $geometa ) {  // @codingStandardsIgnoreLine
+			foreach ( $wpdb->get_results( $q, ARRAY_A ) as $geometa ) {  // @codingStandardsIgnoreLine
 
-	$post_type_object = get_post_type_object( $geometa['post_type'] );
+				$post_type_object = get_post_type_object( $geometa['post_type'] );
 
-	$found_data[] = array(
-		'name' => $post_type_object->labels->name . ' (post)',
-		'type' => 'post',
-		'the_meta_key' => $geometa['meta_key'],
-		'quantity' => $geometa['quantity'],
-		'sub_type' => $geometa['post_type'],
-	);
-}
+				if ( empty( $post_type_object ) ) {
+					$label = $geometa['post_type'] . ' (other)';
+				} else {
+					$label = $post_type_object->labels->name . ' (post)';
+				}
+
+				$found_data[] = array(
+					'name' => $label,
+					'type' => 'post',
+					'the_meta_key' => $geometa['meta_key'],
+					'quantity' => $geometa['quantity'],
+					'sub_type' => $geometa['post_type'],
+				);
+			}
 		}
 
 		if ( in_array( 'user', $found_tables, true ) ) {
@@ -874,6 +890,55 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	}
 
 	/**
+	 * Start the GeoJSON import.
+	 */
+	public function wp_ajax_wpgm_start_geojson_import() {
+
+		// Either upload or determine the ID of the source file.
+		if ( !empty( $_FILES['spatialimport'] ) ) {
+			$media_id = media_handle_sideload( $_FILES['spatialimport'], 0, 'WP-GeoMeta spatial import ' . date('Y-m-d h:i:s') );
+		} else if ( !empty( $_POST['media_id'] ) ) {
+			$media_id = $_POST['media_id'];
+		}
+
+		// No file, no game.
+		if ( empty( $media_id ) ) {
+			wp_send_json_error( array( 'msg' => 'Invalid upload request.' ), 400 );
+		}
+
+		// Get the file path.
+		$file_path = get_attached_file( $media_id, true );
+
+		// And its contents.
+		$file = file_get_contents( $file_path );
+
+		// Verify and normalize GeoJSON.
+		$json_string = WP_GeoUtil::merge_geojson( $file );
+
+		if ( false === $json_string ) {
+			wp_send_json_error( array( 'mgs' => 'Couldn\'t parse GeoJSON' ), 400 );
+		}
+
+		$json = json_decode( $json_string, true );
+
+		$processed = ( empty( $_POST['processed'] ) ? 0 : $_POST['processed'] );
+		$total = count( $json['features'] );
+
+		for ( $i = 0; ( $i < WPGM_IMPORT_LIMIT && $processed < $total ); $i++ ) {
+			$json['features'][$i];
+			$processed++;
+		}
+
+		wp_send_json_success( array( 
+			'post_action' => admin_url('admin-ajax.php'),
+			'action' => $_POST['action'],
+			'media_id' => $media_id,
+			'total' => count( $json['features'] ),
+			'processed' => $processed
+		));
+	}
+
+	/**
 	 * Print the dashboard header section.
 	 */
 	public function section_header() {
@@ -1054,40 +1119,21 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	/**
 	 * Print the list of useful resources.
 	 */
-	public function section_resources() {
-		print '<div><h3>' . esc_html__( 'WP-GeoMeta Meta and Resources' , 'wp-geometa' ) . '</h3>';
-
-		$logo = plugin_dir_url( __FILE__ ) . '/../../media/luminfire_logo.png';
-		print '<p><img src="' . esc_attr( $logo ) . '" class="logo">' . sprintf( esc_html__( 'WP-GeoMeta is a work of love from the GIS+WordPress development team at %1$s' , 'wp-geometa' ), '<a href="https://luminfire.com" target="_blank">LuminFire.com</a>' );
-		print ' ';
-		printf( esc_html__( 'We appreciate %1$sbug reports, feature requests%2$s and %3$spull requests (especially with test cases)%4$s.', 'wp-geometa' ), '<a href="https://github.com/BrilliantPlugins/wp-geometa/issues" target="_blank">', '</a>','<a href="https://github.com/BrilliantPlugins/wp-geometa/pulls" target="_blank">', '</a>' );
-		print ' ';
-		printf( esc_html__( 'If you need assistance implementing your GIS solution, please %1$scontact us%2$s with details about what you\'d like to do.' , 'wp-geometa' ),  '<a href="https://luminfire.com/contact-us/" target="_blank">', '</a>' );
-		print '</p><p>';
-
-		print '<h4>' . esc_html__( 'Our Sites' , 'wp-geometa' ) . '</h4>';
-		print '<ul>';
-		print '<li><a href="https://luminfire.com" target="_blank">LuminFire.com — ' . esc_html__( 'Our home on the web' , 'wp-geometa' ) . '</a></li>';
-		print '<li><a href="https://github.com/BrilliantPlugins/wp-geometa" target="_blank">' . esc_html__( 'WP-GeoMeta on GitHub' , 'wp-geometa' ) . '</a></li>';
-		// print '<li><a href="http://wherepress.com/" target="_blank">' . esc_html__( 'WherePress.com — Our WordPress/GIS Blog Site' , 'wp-geometa' ) . '</a></li>';
-		print '</ul>';
-
-		print '<h4>' . esc_html__( 'Documentation' , 'wp-geometa' ) . '</h4>';
-		print '<ul>';
-		print '<li><a href="https://dev.mysql.com/doc/refman/5.7/en/spatial-analysis-functions.html" target="_blank">' . esc_html__( 'MySQL (5.7) Spatial Analysis Functions Documentation', 'wp-geometa' ) . '</a></li>';
-		print '<li><a href="https://mariadb.com/kb/en/mariadb/gis-functionality/" target="_blank">' . esc_html__( 'MariaDB Geographic Features Documentation' , 'wp-geometa' ) . '</a></li>';
-		print '<li><a href="https://mariadb.com/kb/en/mariadb/mysqlmariadb-spatial-support-matrix/" target="_blank">' . esc_html__( 'MySQL/MariaDB Spatial Support Matrix' , 'wp-geometa' ) . '</a></li>';
-		print '<li>' . sprintf( esc_html__( '%1$sAdd%2$s, %3$sUpdate%4$s and %5$sDelete%6$s post meta' , 'wp-geometa' ), '<a href="https://codex.wordpress.org/Function_Reference/add_post_meta" target="_blank">', '</a>', '<a href="https://codex.wordpress.org/Function_Reference/update_post_meta" target="_blank">', '</a>', '<a href="https://codex.wordpress.org/Function_Reference/delete_post_meta" target="_blank">', '</a>' ) . '</li>';
-		print '<li>' . sprintf( esc_html__( '%1$sWP_Query%2$s and %3$sWP_Meta_Query%4$s' , 'wp-geometa' ),'<a href="https://codex.wordpress.org/Class_Reference/WP_Query#Custom_Field_Parameters" target="_blank">','</a>', '<a href="https://codex.wordpress.org/Class_Reference/WP_Meta_Query" target="_blank">','</a>' ) . '</li>';
-		print '<li><a href="http://geojson.org/" target="_blank">' . esc_html__( 'GeoJSON Specification' , 'wp-geometa' ) . '</a></li>';
-		print '<li><a href="http://leafletjs.com/" target="_blank">' . esc_html__( 'Leaflet.js - Our recommended map software' , 'wp-geometa' ) . '</a></li>';
-		print '</ul>';
-
-		print '<h4>' . esc_html__( 'GIS Communities' , 'wp-geometa' ) . '</h4>';
-		print '<ul>';
-		print '<li><a href="http://gis.stackexchange.com/" target="_blank">' . esc_html__( 'GIS StackExchange' , 'wp-geometa' ) . '</a></li>';
-		print '<li><a href="http://www.thespatialcommunity.com/" target="_blank">The Spatial Community</a></li>';
-		print '</ul></p></div>';
+	public function section_import() {
+		print '<div><h3>' . esc_html__( 'Import Spatial Data' , 'wp-geometa' ) . '</h3>';
+		print '<div id="wpgm_import_progressbar">';
+		print '<div class="label">0%</div>';
+		print '<div class="colorbar"></div>';
+		print '</div>';
+		print '<form action="' . admin_url('admin-ajax.php') . '" id="wpgeometa_import" method="POST" enctype="multipart/form-data">';
+		print '<label for="spatialimport">Select a GeoJSON file here: </label>';
+		print '<input type="hidden" name="action" value="wpgm_start_geojson_import">';
+		print '<input type="file" name="spatialimport"><br>';
+		print "TODO: List add/update / select post type or users or taxonomies";
+		print "Also, list what to do with GeoJSON properties";
+		print '<input type="submit" value="Upload">';
+		print '</form>';
+		print '</div>';
 	}
 
 	/**
@@ -1132,6 +1178,45 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	}
 
 	/**
+	 * Print the list of useful resources.
+	 */
+	public function section_resources() {
+		print '<div><h3>' . esc_html__( 'WP-GeoMeta Meta and Resources' , 'wp-geometa' ) . '</h3>';
+
+		$logo = plugin_dir_url( __FILE__ ) . '/../../media/luminfire_logo.png';
+		print '<p><img src="' . esc_attr( $logo ) . '" class="logo">' . sprintf( esc_html__( 'WP-GeoMeta is a work of love from the GIS+WordPress development team at %1$s' , 'wp-geometa' ), '<a href="https://luminfire.com" target="_blank">LuminFire.com</a>' );
+		print ' ';
+		printf( esc_html__( 'We appreciate %1$sbug reports, feature requests%2$s and %3$spull requests (especially with test cases)%4$s.', 'wp-geometa' ), '<a href="https://github.com/BrilliantPlugins/wp-geometa/issues" target="_blank">', '</a>','<a href="https://github.com/BrilliantPlugins/wp-geometa/pulls" target="_blank">', '</a>' );
+		print ' ';
+		printf( esc_html__( 'If you need assistance implementing your GIS solution, please %1$scontact us%2$s with details about what you\'d like to do.' , 'wp-geometa' ),  '<a href="https://luminfire.com/contact-us/" target="_blank">', '</a>' );
+		print '</p><p>';
+
+		print '<h4>' . esc_html__( 'Our Sites' , 'wp-geometa' ) . '</h4>';
+		print '<ul>';
+		print '<li><a href="https://luminfire.com" target="_blank">LuminFire.com — ' . esc_html__( 'Our home on the web' , 'wp-geometa' ) . '</a></li>';
+		print '<li><a href="https://github.com/BrilliantPlugins/wp-geometa" target="_blank">' . esc_html__( 'WP-GeoMeta on GitHub' , 'wp-geometa' ) . '</a></li>';
+		// print '<li><a href="http://wherepress.com/" target="_blank">' . esc_html__( 'WherePress.com — Our WordPress/GIS Blog Site' , 'wp-geometa' ) . '</a></li>';
+		print '</ul>';
+
+		print '<h4>' . esc_html__( 'Documentation' , 'wp-geometa' ) . '</h4>';
+		print '<ul>';
+		print '<li><a href="https://dev.mysql.com/doc/refman/5.7/en/spatial-analysis-functions.html" target="_blank">' . esc_html__( 'MySQL (5.7) Spatial Analysis Functions Documentation', 'wp-geometa' ) . '</a></li>';
+		print '<li><a href="https://mariadb.com/kb/en/mariadb/gis-functionality/" target="_blank">' . esc_html__( 'MariaDB Geographic Features Documentation' , 'wp-geometa' ) . '</a></li>';
+		print '<li><a href="https://mariadb.com/kb/en/mariadb/mysqlmariadb-spatial-support-matrix/" target="_blank">' . esc_html__( 'MySQL/MariaDB Spatial Support Matrix' , 'wp-geometa' ) . '</a></li>';
+		print '<li>' . sprintf( esc_html__( '%1$sAdd%2$s, %3$sUpdate%4$s and %5$sDelete%6$s post meta' , 'wp-geometa' ), '<a href="https://codex.wordpress.org/Function_Reference/add_post_meta" target="_blank">', '</a>', '<a href="https://codex.wordpress.org/Function_Reference/update_post_meta" target="_blank">', '</a>', '<a href="https://codex.wordpress.org/Function_Reference/delete_post_meta" target="_blank">', '</a>' ) . '</li>';
+		print '<li>' . sprintf( esc_html__( '%1$sWP_Query%2$s and %3$sWP_Meta_Query%4$s' , 'wp-geometa' ),'<a href="https://codex.wordpress.org/Class_Reference/WP_Query#Custom_Field_Parameters" target="_blank">','</a>', '<a href="https://codex.wordpress.org/Class_Reference/WP_Meta_Query" target="_blank">','</a>' ) . '</li>';
+		print '<li><a href="http://geojson.org/" target="_blank">' . esc_html__( 'GeoJSON Specification' , 'wp-geometa' ) . '</a></li>';
+		print '<li><a href="http://leafletjs.com/" target="_blank">' . esc_html__( 'Leaflet.js - Our recommended map software' , 'wp-geometa' ) . '</a></li>';
+		print '</ul>';
+
+		print '<h4>' . esc_html__( 'GIS Communities' , 'wp-geometa' ) . '</h4>';
+		print '<ul>';
+		print '<li><a href="http://gis.stackexchange.com/" target="_blank">' . esc_html__( 'GIS StackExchange' , 'wp-geometa' ) . '</a></li>';
+		print '<li><a href="http://www.thespatialcommunity.com/" target="_blank">The Spatial Community</a></li>';
+		print '</ul></p></div>';
+	}
+
+	/**
 	 * Turn latlng data into GeoJSON for the dashbaord sample map.
 	 *
 	 * @param array  $record A single database query result array.
@@ -1150,5 +1235,13 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 		}
 
 		return $record;
+	}
+
+	/**
+	 * Allow json upload.
+	 */
+	public function upload_mimes( $mimes ) {
+		$mimes['json'] = 'application/json';
+		return $mimes;
 	}
 }

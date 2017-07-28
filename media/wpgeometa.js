@@ -84,9 +84,13 @@ jQuery(document).on('leafletphp/loaded',function(e,mapobj){
 			);
 		}
 	});
+});
 
-	jQuery('.wpgmtabctrl li').on('click', wpgmeta_change_tab);
-	jQuery('.wpgmmenulink').on('click', wpgmeta_change_tab);
+
+jQuery(document).ready(function(){
+	jQuery('.wpgmtabctrl li').on('click', wpgmeta_change_tab );
+	jQuery('.wpgmmenulink').on('click', wpgmeta_change_tab );
+	jQuery('#wpgeometa_import').on('submit', wpgeometa_import_file );
 });
 
 function wpgmeta_change_tab(e) {
@@ -100,4 +104,44 @@ function wpgmeta_change_tab(e) {
 		wpgmleaflet.map.invalidateSize();
 	}
 	return false;
+}
+
+function wpgeometa_import_file(e) {
+	var f = e.target;
+	var action = jQuery(f).attr('action');
+	var fd = new FormData(f);
+	try {
+		var submitted = jQuery.ajax({
+			url: action,
+			type: "POST",
+			data: fd,
+			processData: false,
+			contentType: false
+		});
+		submitted.then( wpgeometa_import_loop_success , wpgeometa_import_loop_failure );
+	} catch (err){
+		// Do nothing.
+		console.log(err);
+	}
+	return false;
+}
+
+function wpgeometa_import_loop_success( success ) {
+	if ( success.data.total === success.data.processed ) {
+		jQuery( '#wpgm_import_progressbar .label' ).text( '100 %' );
+		jQuery( '#wpgm_import_progressbar .colorbar' ).width( '100%' );
+		return;
+	}
+
+	var percentage = parseInt(success.data.processed / success.data.total * 100);
+
+	jQuery( '#wpgm_import_progressbar .label' ).text( percentage + ' %' );
+	jQuery( '#wpgm_import_progressbar .colorbar' ).width( percentage + '%' );
+	
+	jQuery.post( success.data.post_action, success.data ).then( wpgeometa_import_loop_success, wpgeometa_import_loop_failure );
+}
+
+function wpgeometa_import_loop_failure( failure ) {
+	jQuery( '#wpgm_import_progressbar .label' ).text( 'Upload Failed' );
+	jQuery( '#wpgm_import_progressbar .colorbar' ).width( '0%' );
 }

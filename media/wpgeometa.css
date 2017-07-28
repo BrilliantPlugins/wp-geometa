@@ -346,3 +346,29 @@ ul.wpgmtabctrl {
 	content: '*';
 	position: absolute;
 }
+
+#wpgm_import_progressbar {
+	height: 30px;
+	border: 1px solid black;
+	margin-top: 10px;
+}
+
+#wpgm_import_progressbar .label {
+	float: left;
+	margin-top: 5px;
+	text-align: center;
+	width: 100%;
+	font-weight: bold;
+}
+
+#wpgm_import_progressbar .colorbar {
+	width: 0%;
+	height: 100%;
+
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#7db9e8+0,2989d8+100 */
+	background: #7db9e8; /* Old browsers */
+	background: -moz-linear-gradient(-45deg, #7db9e8 0%, #2989d8 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(-45deg, #7db9e8 0%,#2989d8 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(135deg, #7db9e8 0%,#2989d8 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7db9e8', endColorstr='#2989d8',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
