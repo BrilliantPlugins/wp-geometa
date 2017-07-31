@@ -298,7 +298,7 @@ class WP_GeoMeta_Dash {
 		add_filter( 'upload_mimes', array( $this, 'upload_mimes' ) );
 
 		if ( !defined( 'WPGM_IMPORT_LIMIT' ) ) {
-			define( 'WPGM_IMPORT_LIMIT', 100 );
+			define( 'WPGM_IMPORT_LIMIT', 10 );
 		}
 	}
 
@@ -515,7 +515,7 @@ class WP_GeoMeta_Dash {
 		else if (  1 === version_compare( $latest_version, $geometa_dash_version ) && 0 === version_compare( WP_GEOMETA_VERSION, $latest_version ) ) {
 			$this->make_status_block( 'fair', esc_html__( 'Out Of Date.' , 'wp-geometa' ), sprintf( esc_html__( 'A plugin you are using is providing the most recent version of the WP-GeoMeta-Lib (%1$s), but this plugin is out of date.', 'wp-geometa' ), WP_GEOMETA_VERSION ) );
 		} 
-		
+
 		// Poor: There are updates and no plugin has them.
 		else {
 			$this->make_status_block( 'poor', esc_html__( 'Out Of Date!' , 'wp-geometa' ), sprintf( esc_html__( 'You are running an outdated version of WP-GeoMeta-Lib (%1$s). Please upgrade to %2$s!', 'wp-geometa' ), WP_GEOMETA_VERSION, $latest_version ) );
@@ -676,15 +676,15 @@ class WP_GeoMeta_Dash {
 				geo.meta_key
 				ORDER BY t.name, geo.meta_key';
 
-foreach ( $wpdb->get_results( $q, ARRAY_A ) as $termmeta ) { // @codingStandardsIgnoreLine
+			foreach ( $wpdb->get_results( $q, ARRAY_A ) as $termmeta ) { // @codingStandardsIgnoreLine
 
-	$found_data[] = array(
-		'name' => $termmeta['name'] . ' (term)',
-		'type' => 'user',
-		'the_meta_key' => $termmeta['meta_key'],
-		'quantity' => $termmeta['quantity'],
-	);
-}
+				$found_data[] = array(
+					'name' => $termmeta['name'] . ' (term)',
+					'type' => 'user',
+					'the_meta_key' => $termmeta['meta_key'],
+					'quantity' => $termmeta['quantity'],
+				);
+			}
 		}
 
 		if ( in_array( 'comment', $found_tables, true ) ) {
@@ -697,14 +697,14 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $termmeta ) { // @codingStandards
 				GROUP BY 
 				meta_key';
 
-foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStandardsIgnoreLine
-	$found_data[] = array(
-		'name' => 'Comments',
-		'type' => 'comment',
-		'the_meta_key' => $commentmeta['meta_key'],
-		'quantity' => $commentmeta['quantity'],
-	);
-}
+			foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStandardsIgnoreLine
+				$found_data[] = array(
+					'name' => 'Comments',
+					'type' => 'comment',
+					'the_meta_key' => $commentmeta['meta_key'],
+					'quantity' => $commentmeta['quantity'],
+				);
+			}
 		}
 
 		foreach ( $found_data as &$data ) {
@@ -893,7 +893,6 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	 * Start the GeoJSON import.
 	 */
 	public function wp_ajax_wpgm_start_geojson_import() {
-
 		// Either upload or determine the ID of the source file.
 		if ( !empty( $_FILES['spatialimport'] ) ) {
 			$media_id = media_handle_sideload( $_FILES['spatialimport'], 0, 'WP-GeoMeta spatial import ' . date('Y-m-d h:i:s') );
@@ -909,6 +908,10 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 		// Get the file path.
 		$file_path = get_attached_file( $media_id, true );
 
+		if ( empty( $file_path ) ) {
+			wp_send_json_error( array( 'msg' => 'File Path Not Found.'), 404 );
+		}
+
 		// And its contents.
 		$file = file_get_contents( $file_path );
 
@@ -921,21 +924,195 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 
 		$json = json_decode( $json_string, true );
 
-		$processed = ( empty( $_POST['processed'] ) ? 0 : $_POST['processed'] );
-		$total = count( $json['features'] );
-
-		for ( $i = 0; ( $i < WPGM_IMPORT_LIMIT && $processed < $total ); $i++ ) {
-			$json['features'][$i];
-			$processed++;
-		}
-
-		wp_send_json_success( array( 
+		$response = array(
 			'post_action' => admin_url('admin-ajax.php'),
 			'action' => $_POST['action'],
 			'media_id' => $media_id,
 			'total' => count( $json['features'] ),
-			'processed' => $processed
-		));
+			'processed' => ( empty( $_POST['processed'] ) ? 0 : $_POST['processed'] ),
+			'mapping' => ( empty($_POST['mapping']) ? array() : $_POST['mapping'] ),
+			'geojson_fields' => ( empty( $_POST['geojson_fields'] ) ? array() : $_POST['geojson_fields'] ),
+			'wp_types' => ( empty( $_POST['wp_types'] ) ? array() : $_POST['wp_types'] ),
+		);
+
+		// If mapping isn't set, then this is the first post (with the file upload) and we need to build the types array.
+		if ( !array_key_exists( 'mapping', $_POST ) ) {
+			$this->make_wp_types_array( $json, $response ); // $response passed by reference and modified.
+			wp_send_json_success( $response );
+		}
+
+		$new_max = $response['processed'] + WPGM_IMPORT_LIMIT;
+		for ( $i = $response['processed']; ( $i < $new_max && $response['processed'] < $response['total'] ); $i++ ) {
+			$feature = $json['features'][$i];
+			$worked = $this->import_feature( $feature, $response );
+			if ( $worked ) {
+				$response['processed']++;
+			} else {
+				wp_send_json_error( array( 'msg' => "Failed to import record", "feature" => $feature ), 500 );
+			}
+		}
+
+		wp_send_json_success( $response );
+	}
+
+	private function make_wp_types_array( $json, &$response ) {
+		global $wpdb;
+
+		// Capture a small sample of GeoJSON properties.
+		for ( $i = 0;$i < 3; $i++ ) {
+			if ( !empty( $json['features'][$i] ) ) {
+
+				// Also check for the optional id property.
+				if ( !empty( $json['features'][$i]['id'] ) ) {
+					$response['geojson_fields'][] = 'geojson://id';
+				}
+
+				if ( empty( $json['features'][$i]['properties'] ) ) {
+					continue;
+				}
+
+				ksort( $json['features'][$i]['properties'] );
+
+				foreach( $json['features'][$i]['properties'] as $property => $value ) {
+					$response['geojson_fields'][] = 'geojson://property/' . $property;
+				}
+			}
+		}
+
+		$response['geojson_fields'] = array_unique( $response['geojson_fields'] );
+		sort($response['geojson_fields']);
+
+		// Now capture all the WP types we can put GeoJSON into.
+
+		// Users.
+		// Handle importing and updating users.
+		$response['wp_types']['user'] = array(
+			'type' => 'user',
+			'label' => esc_html__( 'Users (users)', 'wp-geometa' ),
+			'fields' => array(
+				'user://ID' => esc_html__('ID', 'wp-geometa' ),
+				'user://user_login' => esc_html__('Login', 'wp-geometa' ),
+				'user://user_pass' => esc_html__('Password', 'wp-geometa' ),
+				'user://user_nicename' => esc_html__('Nicename', 'wp-geometa' ),
+				'user://user_email' => esc_html__('Email', 'wp-geometa' ),
+				'user://user_url' => esc_html__('URL', 'wp-geometa' ),
+				'user://user_registered' => esc_html__('Registered', 'wp-geometa' ),
+				'user://user_activation_key' => esc_html__('Activation Key', 'wp-geometa' ),
+				'user://user_status' => esc_html__('Status', 'wp-geometa' ),
+				'user://display_name' => esc_html__('Display Name', 'wp-geometa' ),
+			),
+			'meta' => $wpdb->get_col( 'SELECT DISTINCT meta_key FROM ' . $wpdb->usermeta . ' ORDER BY meta_key' ),
+			'geometa' => $wpdb->get_col( 'SELECT DISTINCT meta_key FROM ' . $wpdb->usermeta . '_geo ORDER BY meta_key' ),
+		);
+
+		// Comments
+		// We're not going to do comments right now because the odds of them having the post ID that the comment is for is so low.
+		// If they've already got that, then they probably can figure out how to write their own custom script.
+		// $response['wp_types']['comment'] = array(
+		// 	'label' => esc_html__( 'Comments', 'wp-geometa' ),
+		// 	'fields' => array(
+		// 		'comment://comment_ID' => esc_html__('ID', 'wp-geometa' ),
+		// 		'comment://comment_post_ID' => esc_html__('Post ID', 'wp-geometa' ),
+		// 		'comment://comment_author' => esc_html__('Author', 'wp-geometa' ),
+		// 		'comment://comment_author_email' => esc_html__('Author Email', 'wp-geometa' ),
+		// 		'comment://comment_author_url' => esc_html__('Author URL', 'wp-geometa' ),
+		// 		'comment://comment_author_IP' => esc_html__('Author ID', 'wp-geometa' ),
+		// 		'comment://comment_date' => esc_html__('Date', 'wp-geometa' ),
+		// 		'comment://comment_date_gmt' => esc_html__('Date GMT', 'wp-geometa' ),
+		// 		'comment://comment_content' => esc_html__('Content', 'wp-geometa' ),
+		// 		'comment://comment_karma' => esc_html__('Karma', 'wp-geometa' ),
+		// 		'comment://comment_approved' => esc_html__('Approved', 'wp-geometa' ),
+		// 		'comment://comment_agent' => esc_html__('Agent', 'wp-geometa' ),
+		// 		'comment://comment_type' => esc_html__('Type', 'wp-geometa' ),
+		// 		'comment://comment_parent' => esc_html__('Parent', 'wp-geometa' ),
+		// 		'comment://user_id' => esc_html__('User ID', 'wp-geometa' ),
+		// 	),
+		// 	'meta' => $wpdb->get_col( 'SELECT DISTINCT meta_key FROM ' . $wpdb->commentmeta . ' ORDER BY meta_key' ),
+		// 	'geometa' => $wpdb->get_col( 'SELECT DISTINCT meta_key FROM ' . $wpdb->commentmeta . '_geo ORDER BY meta_key' ),
+		// );
+
+		// Terms
+		// Too complicated for now.
+		// $response['wp_types']['term'] = array(
+		// 	'label' => esc_html__( 'Term', 'wp-geometa' ),
+		// 	'fields' => array(),
+		// 	'meta' => $wpdb->get_col( 'SELECT DISTINCT meta_key FROM ' . $wpdb->termmeta . ' ORDER BY meta_key' ),
+		// 	'geometa' => $wpdb->get_col( 'SELECT DISTINCT meta_key FROM ' . $wpdb->termmeta . '_geo ORDER BY meta_key' ),
+		// );
+
+		// Posts
+		$post_type_objects = get_post_types( 
+			array(
+			),
+			'objects'
+		);
+
+		$unsupported_post_types = array(
+			'acf-field',
+			'acf-field-group',
+			'attachment',
+			'revision',
+			'nav_menu_item',
+			'custom_css',
+			'customize_changeset',
+		);
+
+		foreach( $unsupported_post_types as $unsup ) {
+			unset( $post_type_objects[$unsup] );
+		}
+
+		foreach( $post_type_objects as $post_type => $object ) {
+			$response['wp_types'][$post_type] = array(
+				'type' => 'post',
+				'label' => $object->label . ' (post)',
+				'fields' => array(
+					"post://ID" => "ID",
+					"post://post_author" => "Author",
+					"post://post_date" => "Date",
+					"post://post_date_gmt" => "Date (GMT)",
+					"post://post_content" => "Content",
+					"post://post_title" => "Title",
+					"post://post_excerpt" => "Excerpt",
+					"post://post_status" => "Status",
+					"post://comment_status" => "Status",
+					"post://ping_status" => "Ping Status",
+					"post://post_password" => "Password",
+					"post://post_name" => "Name",
+					"post://to_ping" => "To Ping",
+					"post://pinged" => "Pinged",
+					"post://post_modified" => "Modified Time",
+					"post://post_modified_gmt" => "Modified Time (GMT)",
+					"post://post_content_filtered" => "Post Content Filtered",
+					"post://post_parent" => "Parent",
+					"post://guid" => "GUID",
+					"post://menu_order" => "Menu Order",
+					"post://post_type" => "Type",
+					"post://post_mime_type" => "Mime Type",
+					"post://comment_count" => "Commment Count",
+				),
+			'meta' => $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT(pm.meta_key) 
+				FROM {$wpdb->posts} p
+				LEFT JOIN {$wpdb->postmeta} pm
+				ON p.ID = pm.post_id 
+				WHERE p.post_type = '%s' 
+				AND pm.meta_key != '' 
+				ORDER BY meta_key", array( $post_type ) )
+			),
+			'geometa' => $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT(pm.meta_key) 
+					FROM {$wpdb->posts} p
+					LEFT JOIN {$wpdb->postmeta}_geo pm
+					ON p.ID = pm.post_id 
+					WHERE p.post_type = '%s' 
+					AND pm.meta_key != '' 
+					ORDER BY meta_key", array( $post_type ) )
+				),
+			);
+		}
+
+		ksort( $response['wp_types'] );
+		foreach ( $response['wp_types'] as $type => $data ) {
+			$response['wp_types'][$type]['meta'] = array_diff_assoc($response['wp_types'][$type]['meta'], $response['wp_types'][$type]['geometa'] );
+		}
 	}
 
 	/**
@@ -969,7 +1146,7 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 
 		$map = new LeafletPHP(array(
 			'scrollWheelZoom' => false
-			),'wpgmleaflet');
+		),'wpgmleaflet');
 
 		print $map;
 
@@ -1125,14 +1302,20 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 		print '<div class="label">0%</div>';
 		print '<div class="colorbar"></div>';
 		print '</div>';
+		print '<p>';
+		print esc_html__('Create new Users or Posts (including Pages and Custom Post Types) using this importer. For more complex import operations you will need to write a custom script.', 'wp-geometa' );
+		print '</p>';
 		print '<form action="' . admin_url('admin-ajax.php') . '" id="wpgeometa_import" method="POST" enctype="multipart/form-data">';
-		print '<label for="spatialimport">Select a GeoJSON file here: </label>';
+		print '<label for="spatialimport">' . esc_html__('Select a GeoJSON file here', 'wp-geometa' ) . ': </label>';
 		print '<input type="hidden" name="action" value="wpgm_start_geojson_import">';
 		print '<input type="file" name="spatialimport"><br>';
-		print "TODO: List add/update / select post type or users or taxonomies";
-		print "Also, list what to do with GeoJSON properties";
-		print '<input type="submit" value="Upload">';
+		print '<input type="submit" value="' . esc_attr__('Upload') . '">';
 		print '</form>';
+		print '<div id="wpgm_import_configuration">';
+		print '<label for="importtype">Which type of data are you uploading? </label>';
+		print '<select name="importtype"></select>';
+		print '<div id="wpgm_mapping_area"></div>';
+		print '</div>';
 		print '</div>';
 	}
 
@@ -1243,5 +1426,122 @@ foreach ( $wpdb->get_results( $q, ARRAY_A ) as $commentmeta ) { // @codingStanda
 	public function upload_mimes( $mimes ) {
 		$mimes['json'] = 'application/json';
 		return $mimes;
+	}
+
+	/**
+	 * Import a single record.
+	 */
+	public function import_feature( $feature, $response ) {
+		// Start with the lookup	
+		switch( $response['wp_types'][$response['mapping']['post_type']]['type'] ) {
+			case 'post':
+				return $this->import_feature_post( $feature, $response );
+				break;
+			case 'user':
+				return $this->import_feature_user( $feature, $response );
+				break;
+			default:
+				return false;
+		}
+	}
+
+	/**
+	 * Import post.
+	 */
+	public function import_feature_post( $feature, $response ) {
+		global $wpdb;
+		$mapping = $response['mapping'];
+
+		// Collect data for post update/insert.
+		$postar = array(
+			'post_type' => $mapping['post_type'],
+			'post_status' => 'publish',
+			);
+		$meta_map = array();
+		foreach( $mapping['fields'] as $geojsonfield => $postfield ){
+			$geojsonfield = parse_url( $geojsonfield );
+			$postfield = parse_url( $postfield );
+
+			if ( 'property' === $geojsonfield['host'] && !empty( $feature['properties'][trim($geojsonfield['path'],'/')])) {
+				$geojson_val = $feature['properties'][trim($geojsonfield['path'],'/')];
+			} else if ( 'property' !== $geojsonfield['host'] && !empty( $feature[$geojsonfield['host']])) {
+				$geojson_val = 	$feature[$geojsonfield['host']];
+			} else {
+				continue;
+			}
+
+			if ( 'standard' === $postfield['scheme'] ) {
+				$meta_map[$postfield['host']] = $geojson_val;
+			} else if ( 'post' === $postfield['scheme'] ) {
+				$postar[ $postfield['host'] ] = $geojson_val;
+			}
+		}
+
+		// Query existing posts, if required.
+		$res = null;
+		if ( !empty( $mapping['upserts']['search_field'] ) && !empty( $mapping['upserts']['value_field'] ) ) {
+			$geojsonfield = parse_url( $mapping['upserts']['search_field'] );
+			$postfield = parse_url( $mapping['upserts']['value_field'] );
+			$geojson_val = null;
+
+			if ( 'property' === $geojsonfield['host'] && !empty( $feature['properties'][trim($geojsonfield['path'],'/')])) {
+				$geojson_val = $feature['properties'][trim($geojsonfield['path'],'/')];
+			} else if ( 'property' !== $geojsonfield['host'] && !empty( $feature[$geojsonfield['host']])) {
+				$geojson_val = 	$feature[$geojsonfield['host']];
+			}
+
+			if ( !empty( $geojson_val ) ) {
+
+				if ( empty( $postfield['host'] ) ) { // Meta key
+					$q = "SELECT p.ID FROM " . $wpdb->posts . " p LEFT JOIN " . $wpdb->postmeta . " pm ON (p.ID=pm.post_id) WHERE p.post_type=%s AND pm.meta_key=%s AND pm.meta_value=%s";
+					$res = $wpdb->get_col( $wpdb->prepare( $q, array( $mapping['post_type'] , $postfield['path'], $geojson_val ) ) );
+				} else if ( preg_match( '/^[^a-b_]+$/', $postfield['host']) ) {
+					return false;
+				} else {
+					$post_field = $postfield['host'];
+					$q = "SELECT p.ID FROM " . $wpdb->posts . " p WHERE post_type=%s AND $post_field=%s";
+					$res = $wpdb->get_col( $wpdb->prepare( $q, array( $mapping['post_type'] , $geojson_val ) ) );
+				}
+			}
+		} else {
+			$mapping['upserts']['not_found_action'] = 'create';
+		}
+		
+		// If we didn't find a post (or weren't asked to) and we're supposed to create, then create one now.
+		if ( empty( $res ) && 'create' === $mapping['upserts']['not_found_action'] ) {
+			$post_id = wp_insert_post( $postar );
+			if ( is_wp_error( $post_id ) ) {
+				return false;
+			}
+			$res = array( $post_id );
+		} else if ( empty( $res ) ) {
+			return true; // No posts saved, but that's what was supposed to happen.
+		}
+
+		// Now update each post with the new values from GeoJSON, even if we just created the object.
+		foreach( $res as $post_id ) {
+
+			$post_update = $postar; 
+			$post_update['ID'] = $post_id;
+			$update_res = wp_update_post( $post_update );
+
+			if ( is_wp_error( $update_res ) ) {
+				return false;
+			}
+
+			foreach( $meta_map as $meta_key => $meta_val ) {
+				update_post_meta( $post_id, $meta_key, $meta_val );
+			}
+			update_post_meta( $post_id, $mapping['geometa_key'], wp_json_encode($feature) );
+		}
+
+		return count( $res );
+	}
+
+	/**
+	 * Import usser.
+	 */
+	public function import_feature_user( $feature, $mapping ) {
+		error_log("Not implemented yet");
 	}
 }

@@ -54,6 +54,8 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 = 0.3.4 = 
  * Fixed accessing property of null object on dashboard.
  * Added GeoJSON import utility.
+ * Use and detect hashes in dashboard URL so page reload can go back to
+ original tab.
 
 = 0.3.3 = 
  * Updated wp-geometa-lib to 0.3.3
