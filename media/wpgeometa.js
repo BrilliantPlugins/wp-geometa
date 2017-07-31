@@ -263,6 +263,8 @@ function wpgeometa_build_mapping_ui() {
 	html += '<option value="ignore">Ignore Data</option>';
 	html += '</select>';
 
+	html += '<p><strong>Notice</strong>: If the update search query matches multiple records, all found records will be updated.</p>';
+
 	// Build the mapping table.	
 	html += '<table><tr><th>GeoJSON Field</th><th>Destination Field</th></tr>';
 	for( i = 0; i < data.geojson_fields.length; i++ ){

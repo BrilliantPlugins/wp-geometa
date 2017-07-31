@@ -1005,41 +1005,6 @@ class WP_GeoMeta_Dash {
 			'geometa' => $wpdb->get_col( 'SELECT DISTINCT meta_key FROM ' . $wpdb->usermeta . '_geo ORDER BY meta_key' ),
 		);
 
-		// Comments
-		// We're not going to do comments right now because the odds of them having the post ID that the comment is for is so low.
-		// If they've already got that, then they probably can figure out how to write their own custom script.
-		// $response['wp_types']['comment'] = array(
-		// 	'label' => esc_html__( 'Comments', 'wp-geometa' ),
-		// 	'fields' => array(
-		// 		'comment://comment_ID' => esc_html__('ID', 'wp-geometa' ),
-		// 		'comment://comment_post_ID' => esc_html__('Post ID', 'wp-geometa' ),
-		// 		'comment://comment_author' => esc_html__('Author', 'wp-geometa' ),
-		// 		'comment://comment_author_email' => esc_html__('Author Email', 'wp-geometa' ),
-		// 		'comment://comment_author_url' => esc_html__('Author URL', 'wp-geometa' ),
-		// 		'comment://comment_author_IP' => esc_html__('Author ID', 'wp-geometa' ),
-		// 		'comment://comment_date' => esc_html__('Date', 'wp-geometa' ),
-		// 		'comment://comment_date_gmt' => esc_html__('Date GMT', 'wp-geometa' ),
-		// 		'comment://comment_content' => esc_html__('Content', 'wp-geometa' ),
-		// 		'comment://comment_karma' => esc_html__('Karma', 'wp-geometa' ),
-		// 		'comment://comment_approved' => esc_html__('Approved', 'wp-geometa' ),
-		// 		'comment://comment_agent' => esc_html__('Agent', 'wp-geometa' ),
-		// 		'comment://comment_type' => esc_html__('Type', 'wp-geometa' ),
-		// 		'comment://comment_parent' => esc_html__('Parent', 'wp-geometa' ),
-		// 		'comment://user_id' => esc_html__('User ID', 'wp-geometa' ),
-		// 	),
-		// 	'meta' => $wpdb->get_col( 'SELECT DISTINCT meta_key FROM ' . $wpdb->commentmeta . ' ORDER BY meta_key' ),
-		// 	'geometa' => $wpdb->get_col( 'SELECT DISTINCT meta_key FROM ' . $wpdb->commentmeta . '_geo ORDER BY meta_key' ),
-		// );
-
-		// Terms
-		// Too complicated for now.
-		// $response['wp_types']['term'] = array(
-		// 	'label' => esc_html__( 'Term', 'wp-geometa' ),
-		// 	'fields' => array(),
-		// 	'meta' => $wpdb->get_col( 'SELECT DISTINCT meta_key FROM ' . $wpdb->termmeta . ' ORDER BY meta_key' ),
-		// 	'geometa' => $wpdb->get_col( 'SELECT DISTINCT meta_key FROM ' . $wpdb->termmeta . '_geo ORDER BY meta_key' ),
-		// );
-
 		// Posts
 		$post_type_objects = get_post_types( 
 			array(
@@ -1541,7 +1506,109 @@ class WP_GeoMeta_Dash {
 	/**
 	 * Import usser.
 	 */
-	public function import_feature_user( $feature, $mapping ) {
-		error_log("Not implemented yet");
+	public function import_feature_user( $feature, $response ) {
+		global $wpdb;
+
+		$mapping = $response['mapping'];
+
+		// Collect data for post update/insert.
+		$userar = array();
+
+		$meta_map = array();
+		foreach( $mapping['fields'] as $geojsonfield => $userfield ){
+			$geojsonfield = parse_url( $geojsonfield );
+			$userfield = parse_url( $userfield );
+
+			if ( 'property' === $geojsonfield['host'] && !empty( $feature['properties'][trim($geojsonfield['path'],'/')])) {
+				$geojson_val = $feature['properties'][trim($geojsonfield['path'],'/')];
+			} else if ( 'property' !== $geojsonfield['host'] && !empty( $feature[$geojsonfield['host']])) {
+				$geojson_val = 	$feature[$geojsonfield['host']];
+			} else {
+				continue;
+			}
+
+			if ( 'standard' === $userfield['scheme'] ) {
+				$meta_map[$userfield['host']] = $geojson_val;
+			} else if ( 'user' === $userfield['scheme'] ) {
+				$userar[ $userfield['host'] ] = $geojson_val;
+			}
+		}
+
+		// Query existing user, if required.
+		$res = null;
+		if ( !empty( $mapping['upserts']['search_field'] ) && !empty( $mapping['upserts']['value_field'] ) ) {
+			$geojsonfield = parse_url( $mapping['upserts']['search_field'] );
+			$userfield = parse_url( $mapping['upserts']['value_field'] );
+			$geojson_val = null;
+
+			if ( 'property' === $geojsonfield['host'] && !empty( $feature['properties'][trim($geojsonfield['path'],'/')])) {
+				$geojson_val = $feature['properties'][trim($geojsonfield['path'],'/')];
+			} else if ( 'property' !== $geojsonfield['host'] && !empty( $feature[$geojsonfield['host']])) {
+				$geojson_val = 	$feature[$geojsonfield['host']];
+			}
+
+			if ( !empty( $geojson_val ) ) {
+
+				if ( empty( $userfield['host'] ) ) { // Meta key
+					$q = "SELECT u.ID FROM " . $wpdb->users . " u LEFT JOIN " . $wpdb->usermeta . " um ON (u.ID=um.user_id) WHERE um.meta_key=%s AND um.meta_value=%s";
+					$res = $wpdb->get_col( $wpdb->prepare( $q, array( $userfield['path'], $geojson_val ) ) );
+				} else if ( preg_match( '/^[^a-b_]+$/', $userfield['host']) ) {
+					return false;
+				} else {
+					$user_field = $userfield['host'];
+
+					if ( 'user_login' === $user_field ) {
+						$geojson_val = sanitize_user( $geojson_val, true );
+					}
+
+					$q = "SELECT u.ID FROM " . $wpdb->users . " u WHERE $user_field=%s";
+					$res = $wpdb->get_col( $wpdb->prepare( $q, array( $geojson_val ) ) );
+				}
+			}
+		} else {
+			$mapping['upserts']['not_found_action'] = 'create';
+		}
+		
+		// If we didn't find a post (or weren't asked to) and we're supposed to create, then create one now.
+		if ( empty( $res ) && 'create' === $mapping['upserts']['not_found_action'] ) {
+
+			if ( empty( $userar['user_login'] ) && !empty( $userar['user_email'] ) ) {
+				$userar['user_login'] = $userar['user_email'];
+			} else if ( empty( $userar['user_login'] ) ) {
+				error_log("wp_insert_user requires a user_login parameter. Please set one in wp-geometa import.");
+				return false;
+			}
+
+			if ( empty( $userar['user_pass'] ) ) {
+				$userar['user_pass'] = wp_generate_password();
+			}
+
+			$user_id = wp_insert_user( $userar );
+			if ( is_wp_error( $user_id ) ) {
+				return false;
+			}
+			$res = array( $user_id );
+		} else if ( empty( $res ) ) {
+			return true; // No posts saved, but that's what was supposed to happen.
+		}
+
+		// Now update each post with the new values from GeoJSON, even if we just created the object.
+		foreach( $res as $user_id ) {
+
+			$user_update = $userar; 
+			$user_update['ID'] = $user_id;
+			$update_res = wp_update_user( $user_update );
+
+			if ( is_wp_error( $update_res ) ) {
+				return false;
+			}
+
+			foreach( $meta_map as $meta_key => $meta_val ) {
+				update_user_meta( $user_id, $meta_key, $meta_val );
+			}
+			update_user_meta( $user_id, $mapping['geometa_key'], wp_json_encode($feature) );
+		}
+
+		return count( $res );
 	}
 }
