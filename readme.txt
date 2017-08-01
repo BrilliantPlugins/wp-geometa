@@ -4,7 +4,7 @@ Donate link: https://LuminFire.com/contact-us/make-a-payment/
 Tags: GIS, geo, spatial, mysql, mariadb, geography, mapping, meta, metadata
 Requires at least: 4.4.0
 Tested up to: 4.8
-Stable tag: 0.3.3 
+Stable tag: 0.3.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
