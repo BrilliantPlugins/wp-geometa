@@ -124,13 +124,9 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 
 == Developers ==
 
-WP-GeoMeta is tested and developed in the open over at
-[GitHub](https://github.com/BrilliantPlugins/wp-geometa). Stable versions are
-pushed to  the WordPress plugin repository. 
+WP-GeoMeta is tested and developed in the open over at [GitHub](https://github.com/BrilliantPlugins/wp-geometa). Stable versions are pushed to  the WordPress plugin repository. 
 
-There is more developer documentation in the GitHub repository and I'd love 
-to get pull requests and bug reports over there (but I'll take them via SVN 
-too if that's what you like better).
+There is more developer documentation in the GitHub repository and I'd love to get pull requests and bug reports over there (but I'll take them via SVN too if that's what you like better).
 
 == Upgrade Notice ==
 
