@@ -32,6 +32,8 @@ This plugin provides a dashboard where you can see your existing spatial data an
 
 ![The System Status tab in WP-GeoMeta shows if your spatial support is up to date.](assets/screenshot-3.png)
 
+![Importing GeoJSON Data](assets/screenshot-5.png)
+
 
 Usage
 -----
