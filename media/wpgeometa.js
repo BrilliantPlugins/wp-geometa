@@ -142,6 +142,7 @@ function wpgeometa_change_tab(target) {
  */
 function wpgeometa_import_file(e) {
 	jQuery('#wpgm_import_configuration').hide();
+	jQuery('#wpgm_mapping_area').html( '' );
 	var f = e.target;
 	var action = jQuery(f).attr('action');
 	var fd = new FormData(f);
@@ -220,10 +221,10 @@ function wpgeometa_build_mapping_ui() {
 		}
 
 		html += '</optgroup>';
-		html += '</select><input type="text" class="wpgm_actual_value" placeholder="New Meta Key">';
+		html += '</select><input type="text" class="wpgm_actual_value wpgm_geometa_value" placeholder="New Meta Key">';
 		html += '</span>';
 	} else {
-		html += '<input type="text" value="geom" class="wpgm_geometa_value" placeholder="New GeoMeta Key">';
+		html += '<input type="text" value="geom" class="wpgm_geometa_value " placeholder="New GeoMeta Key">';
 	}
 	html += '<br>';
 
@@ -288,14 +289,14 @@ function wpgeometa_build_mapping_ui() {
 function wpgeometa_import_loop_success( success ) {
 	if ( success.data.total === success.data.processed ) {
 		jQuery( '#wpgm_import_progressbar .label' ).text( '100 %' );
-		jQuery( '#wpgm_import_progressbar .colorbar' ).width( '100%' );
+		jQuery( '#wpgm_import_progressbar' ).css( 'background-size', '100% 100%' );
 		return;
 	}
 
 	var percentage = parseInt(success.data.processed / success.data.total * 100, 10);
 
 	jQuery( '#wpgm_import_progressbar .label' ).text( percentage + ' %' );
-	jQuery( '#wpgm_import_progressbar .colorbar' ).width( percentage + '%' );
+	jQuery( '#wpgm_import_progressbar' ).css( 'background-size', percentage + '% 100%' );
 	
 	jQuery.post( success.data.post_action, success.data ).then( wpgeometa_import_loop_success, wpgeometa_import_loop_failure );
 }
@@ -303,9 +304,14 @@ function wpgeometa_import_loop_success( success ) {
 /**
  * Handle upload failure.
  */
-function wpgeometa_import_loop_failure() {
-	jQuery( '#wpgm_import_progressbar .label' ).text( 'Upload Failed' );
-	jQuery( '#wpgm_import_progressbar .colorbar' ).width( '0%' );
+function wpgeometa_import_loop_failure( failure ) {
+	jQuery( '#wpgm_import_progressbar' ).css( 'background-size', '0% 100%' );
+
+	if ( failure !== undefined && failure.responseJSON !== undefined && failure.responseJSON.data !== undefined && failure.responseJSON.data.msg !== undefined ) {
+		jQuery( '#wpgm_import_progressbar .label' ).text( failure.responseJSON.data.msg );
+	} else {
+		jQuery( '#wpgm_import_progressbar .label' ).text( 'Upload Failed' );
+	}
 }
 
 /**
@@ -326,10 +332,8 @@ function wpgeometa_select_widget_handler( e ) {
  * Collect the mapping the user made and start the import loop.
 */
 function wpgeometa_import_step_two() {
-
-
-	jQuery( '#wpgm_import_progressbar .label' ).text( 0 + ' %' );
-	jQuery( '#wpgm_import_progressbar .colorbar' ).width( 0 + '%' );
+	jQuery( '#wpgm_import_progressbar .label' ).text('0 %' );
+	jQuery( '#wpgm_import_progressbar' ).css( 'background-size', '0% 100%' );
 
 	var formdiv = jQuery('#wpgm_import_configuration');
 	var data = formdiv.data( 'upload' );

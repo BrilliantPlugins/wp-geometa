@@ -1406,6 +1406,9 @@ class WP_GeoMeta_Dash {
 				return $this->import_feature_user( $feature, $response );
 				break;
 			default:
+				if ( wp_doing_ajax() ) {
+					wp_send_json_error( array( 'msg' => 'I don\'t know how to import to that content type.' ), 500 );
+				}
 				return false;
 		}
 	}
@@ -1460,11 +1463,19 @@ class WP_GeoMeta_Dash {
 				if ( empty( $postfield['host'] ) ) { // Meta key
 					$q = "SELECT p.ID FROM " . $wpdb->posts . " p LEFT JOIN " . $wpdb->postmeta . " pm ON (p.ID=pm.post_id) WHERE p.post_type=%s AND pm.meta_key=%s AND pm.meta_value=%s";
 					$res = $wpdb->get_col( $wpdb->prepare( $q, array( $mapping['post_type'] , $postfield['path'], $geojson_val ) ) );
-				} else if ( preg_match( '/^[^a-b_]+$/', $postfield['host']) ) {
+				} else if ( preg_match( '/[^a-z_]/', $postfield['host']) ) {
+					if ( wp_doing_ajax() ) {
+						wp_send_json_error( array( 'msg' => 'Specified lookup field doesn\'t look valid' ), 400 );
+					}
 					return false;
 				} else {
 					$post_field = $postfield['host'];
 					$q = "SELECT p.ID FROM " . $wpdb->posts . " p WHERE post_type=%s AND $post_field=%s";
+
+					$sanitized = sanitize_post( array( $post_field => $geojson_val ), 'db' );
+
+					$geojson_val = $sanitized[ $post_field ];
+
 					$res = $wpdb->get_col( $wpdb->prepare( $q, array( $mapping['post_type'] , $geojson_val ) ) );
 				}
 			}
@@ -1476,6 +1487,9 @@ class WP_GeoMeta_Dash {
 		if ( empty( $res ) && 'create' === $mapping['upserts']['not_found_action'] ) {
 			$post_id = wp_insert_post( $postar );
 			if ( is_wp_error( $post_id ) ) {
+				if ( wp_doing_ajax() ) {
+					wp_send_json_error( array( 'msg' => 'Could not create post.' ), 500 ) ;
+				}
 				return false;
 			}
 			$res = array( $post_id );
@@ -1491,6 +1505,9 @@ class WP_GeoMeta_Dash {
 			$update_res = wp_update_post( $post_update );
 
 			if ( is_wp_error( $update_res ) ) {
+				if ( wp_doing_ajax() ) {
+					wp_send_json_error( array( 'msg' => 'Could not update post.' ), 500 ) ;
+				}
 				return false;
 			}
 
@@ -1552,7 +1569,10 @@ class WP_GeoMeta_Dash {
 				if ( empty( $userfield['host'] ) ) { // Meta key
 					$q = "SELECT u.ID FROM " . $wpdb->users . " u LEFT JOIN " . $wpdb->usermeta . " um ON (u.ID=um.user_id) WHERE um.meta_key=%s AND um.meta_value=%s";
 					$res = $wpdb->get_col( $wpdb->prepare( $q, array( $userfield['path'], $geojson_val ) ) );
-				} else if ( preg_match( '/^[^a-b_]+$/', $userfield['host']) ) {
+				} else if ( preg_match( '/[^a-z_]/', $userfield['host']) ) {
+					if ( wp_doing_ajax() ) {
+						wp_send_json_error( array( 'msg' => 'Specified lookup field doesn\'t look valid' ), 400 );
+					}
 					return false;
 				} else {
 					$user_field = $userfield['host'];
@@ -1575,6 +1595,9 @@ class WP_GeoMeta_Dash {
 			if ( empty( $userar['user_login'] ) && !empty( $userar['user_email'] ) ) {
 				$userar['user_login'] = $userar['user_email'];
 			} else if ( empty( $userar['user_login'] ) ) {
+				if ( wp_doing_ajax() ) {
+					wp_send_json_error( array( 'msg' => 'You must map a field to the user_login or user_email parameter.' ), 400 );
+				}
 				error_log("wp_insert_user requires a user_login parameter. Please set one in wp-geometa import.");
 				return false;
 			}
@@ -1585,6 +1608,9 @@ class WP_GeoMeta_Dash {
 
 			$user_id = wp_insert_user( $userar );
 			if ( is_wp_error( $user_id ) ) {
+				if ( wp_doing_ajax() ) {
+					wp_send_json_error( array( 'msg' => 'Could not create user.' ), 500 );
+				}
 				return false;
 			}
 			$res = array( $user_id );
@@ -1600,6 +1626,9 @@ class WP_GeoMeta_Dash {
 			$update_res = wp_update_user( $user_update );
 
 			if ( is_wp_error( $update_res ) ) {
+				if ( wp_doing_ajax() ) {
+					wp_send_json_error( array( 'msg' => 'Could not update user.' ), 500) ;
+				}
 				return false;
 			}
 
