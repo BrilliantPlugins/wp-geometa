@@ -131,7 +131,7 @@ function wpgeometa_change_tab(target) {
 	jQuery('.wpgmtab.shown').removeClass('shown');
 	jQuery('.wpgmtab[data-tab="' + target + '"]').addClass('shown');
 
-	if ( target === 'yourmeta' ) {
+	if ( target === 'yourmeta' && window.wpgmleaflet.map !== undefined ) {
 		window.wpgmleaflet.map.invalidateSize();
 	}
 	document.location.hash = target;
