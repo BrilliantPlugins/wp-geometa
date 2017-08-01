@@ -348,25 +348,25 @@ ul.wpgmtabctrl {
 }
 
 #wpgm_import_progressbar {
-    border: 1px solid black;
-    margin-top: 10px;
-    
-        /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#7db9e8+0,2989d8+100 */
-    background: #7db9e8; /* Old browsers */
-    background: -moz-linear-gradient(-45deg, #7db9e8 0%, #2989d8 100%); /* FF3.6-15 */
-    background: -webkit-linear-gradient(-45deg, #7db9e8 0%,#2989d8 100%); /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(135deg, #7db9e8 0%,#2989d8 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7db9e8', endColorstr='#2989d8',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
-    background-size: 0% 100%;
-    background-repeat: no-repeat;
+	border: 1px solid black;
+	margin-top: 10px;
+
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#7db9e8+0,2989d8+100 */
+	background: #7db9e8; /* Old browsers */
+	background: -moz-linear-gradient(-45deg, #7db9e8 0%, #2989d8 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(-45deg, #7db9e8 0%,#2989d8 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(135deg, #7db9e8 0%,#2989d8 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7db9e8', endColorstr='#2989d8',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+	background-size: 0% 100%;
+	background-repeat: no-repeat;
 }
 
 #wpgm_import_progressbar .label {
-    margin-top: 5px;
-    text-align: center;
-    width: 100%;
-    font-weight: bold;
-    line-height: 30px;
+	margin-top: 5px;
+	text-align: center;
+	width: 100%;
+	font-weight: bold;
+	line-height: 30px;
 }
 
 #wpgm_import_configuration {
@@ -383,4 +383,16 @@ ul.wpgmtabctrl {
 	-webkit-box-shadow: 0px 0px 5px 0px rgba(255,0,0,1);
 	-moz-box-shadow: 0px 0px 5px 0px rgba(255,0,0,1);
 	box-shadow: 0px 0px 5px 0px rgba(255,0,0,1);
+}
+
+#wpgeometa_import.working::after {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	content: '';
+	margin-left: 10px;
+	background-color: blue;
+	position: relative;
+	top: 4px;
+	background: rgba(0, 0, 0, 0) url("wheel.gif") no-repeat scroll 0 0 / contain ;
 }

@@ -501,7 +501,8 @@ class WP_GeoMeta_Dash {
 
 
 		// Poor. We have the latest, but it's not in use. This is unexpected.
-		if ( -1 === version_compare( WP_GEOMETA_VERSION, $geometa_dash_version ) ) {
+		$installs = $this->get_list_of_installs();
+		if ( count( $installs ) > 1 && -1 === version_compare( WP_GEOMETA_VERSION, $geometa_dash_version ) ) {
 			$this->make_status_block( 'poor', esc_html__( 'Odd Situation!' , 'wp-geometa' ), sprintf( esc_html__( 'You have the latest version of WP-GeoMeta, but another plugin is providing an older version WP-GeoMeta-Lib Please update the plugin(s) not providing version %1$s in the list below!', 'wp-geometa' ), $latest_version ) );
 		}
 
@@ -1390,6 +1391,7 @@ class WP_GeoMeta_Dash {
 	 */
 	public function upload_mimes( $mimes ) {
 		$mimes['json'] = 'application/json';
+		$mimes['geojson'] = 'application/json';
 		return $mimes;
 	}
 

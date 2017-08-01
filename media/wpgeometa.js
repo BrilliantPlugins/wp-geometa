@@ -98,6 +98,7 @@ jQuery(document).ready(function(){
 	jQuery('#wpgeometa_import').on('submit', wpgeometa_import_file );
 	jQuery('#wpgm_import_configuration').on('change', 'select.wpgm_select_widget', wpgeometa_select_widget_handler );
 	jQuery('#wpgm_import_configuration').on('click', 'input.wpgm_import_step_two', wpgeometa_import_step_two );
+	jQuery('#wpgm_import_configuration').on('click', 'input.wpgm_cancel_step_two', wpgeometa_cancel_step_two );
 
 	/**
 	 * Detect existing hash and change tabs.
@@ -142,19 +143,26 @@ function wpgeometa_change_tab(target) {
  */
 function wpgeometa_import_file(e) {
 	jQuery('#wpgm_import_configuration').hide();
+	jQuery( '#wpgm_import_progressbar .label' ).text( '...uploading...' );
 	jQuery('#wpgm_mapping_area').html( '' );
 	var f = e.target;
+	jQuery(f).addClass('working');
 	var action = jQuery(f).attr('action');
 	var fd = new FormData(f);
+
+	if ( wpgeometa_import_file.submitted !== undefined ) {
+		wpgeometa_import_file.submitted.abort();
+	}
+
 	try {
-		var submitted = jQuery.ajax({
+		wpgeometa_import_file.submitted = jQuery.ajax({
 			url: action,
 			type: 'POST',
 			data: fd,
 			processData: false,
 			contentType: false
 		});
-		submitted.then( wpgeometa_import_mapping_setup, wpgeometa_import_loop_failure );
+		wpgeometa_import_file.submitted.then( wpgeometa_import_mapping_setup, wpgeometa_import_loop_failure );
 	} catch (err){
 		// Do nothing.
 		// console.log(err);
@@ -177,6 +185,8 @@ function wpgeometa_import_mapping_setup( success ) {
 	jQuery('#wpgm_import_configuration select[name="importtype"]').on( 'change', wpgeometa_build_mapping_ui );
 
 	jQuery('#wpgm_import_configuration').show();
+
+	jQuery('#wpgeometa_import').removeClass('working');
 }
 
 function wpgeometa_build_mapping_ui() {
@@ -284,9 +294,32 @@ function wpgeometa_build_mapping_ui() {
 }
 
 /**
+ * Handle cancel request.
+ */
+function wpgeometa_cancel_step_two() {
+	wpgeometa_import_loop_success.cancel = true;
+	jQuery( '#wpgm_import_configuration .wpgm_cancel_step_two').attr('value','Canceling...');
+}
+
+/**
  * Handle upload success loop.
  */
 function wpgeometa_import_loop_success( success ) {
+
+	if ( wpgeometa_import_loop_success.cancel !== undefined && wpgeometa_import_loop_success.cancel === true ) {
+		wpgeometa_import_loop_success.cancel = false;
+		jQuery( '#wpgm_import_configuration .wpgm_cancel_step_two').remove();
+		wpgeometa_import_loop_failure( {
+			responseJSON : {
+				data: {
+					msg: 'Upload canceled'
+				}
+			}
+		});
+		return false;
+	}
+
+
 	if ( success.data.total === success.data.processed ) {
 		jQuery( '#wpgm_import_progressbar .label' ).text( '100 %' );
 		jQuery( '#wpgm_import_progressbar' ).css( 'background-size', '100% 100%' );
@@ -295,7 +328,7 @@ function wpgeometa_import_loop_success( success ) {
 
 	var percentage = parseInt(success.data.processed / success.data.total * 100, 10);
 
-	jQuery( '#wpgm_import_progressbar .label' ).text( percentage + ' %' );
+	jQuery( '#wpgm_import_progressbar .label' ).text( percentage + ' % (' + success.data.processed + '/' + success.data.total + ')' );
 	jQuery( '#wpgm_import_progressbar' ).css( 'background-size', percentage + '% 100%' );
 	
 	jQuery.post( success.data.post_action, success.data ).then( wpgeometa_import_loop_success, wpgeometa_import_loop_failure );
@@ -312,6 +345,8 @@ function wpgeometa_import_loop_failure( failure ) {
 	} else {
 		jQuery( '#wpgm_import_progressbar .label' ).text( 'Upload Failed' );
 	}
+
+	jQuery('#wpgeometa_import').removeClass('working');
 }
 
 /**
@@ -332,6 +367,9 @@ function wpgeometa_select_widget_handler( e ) {
  * Collect the mapping the user made and start the import loop.
 */
 function wpgeometa_import_step_two() {
+
+	jQuery( '#wpgm_import_configuration .wpgm_import_step_two').after('<input type="submit" value="Cancel" class="wpgm_cancel_step_two">');
+
 	jQuery( '#wpgm_import_progressbar .label' ).text('0 %' );
 	jQuery( '#wpgm_import_progressbar' ).css( 'background-size', '0% 100%' );
 
