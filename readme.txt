@@ -48,14 +48,14 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 2. A list of all spatial functions supported by your version of MySQL
 3. WP GeoMeta system status page
 4. Built-in regression tests
+5. GeoJSON Import Functionality
 
 == Changelog ==
 
 = 0.3.4 = 
  * Fixed accessing property of null object on dashboard.
  * Added GeoJSON import utility.
- * Use and detect hashes in dashboard URL so page reload can go back to
- original tab.
+ * Use and detect hashes in dashboard URL so page reload can go back to original tab.
 
 = 0.3.3 = 
  * Updated wp-geometa-lib to 0.3.3
@@ -130,7 +130,7 @@ pushed to  the WordPress plugin repository.
 
 There is more developer documentation in the GitHub repository and I'd love 
 to get pull requests and bug reports over there (but I'll take them via SVN 
-too if that's what you like better!).
+too if that's what you like better).
 
 == Upgrade Notice ==
 

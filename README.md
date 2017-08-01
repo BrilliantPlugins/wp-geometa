@@ -57,9 +57,8 @@ Read GeoJSON back from the post;
 
 ### Querying
 
-Querying is done through the WP_Query meta_query argument. See
-[WP Spatial Capabilities Check](https://wordpress.org/plugins/wp-spatial-capabilities-check/) 
-to generate a list of supported spatial functions for your system. 
+Querying is done through the WP_Query meta_query argument. See the _Your Functions_ tab to 
+see which spatial functions your server supports.
 
 There are three styles of queries supported, to cover three different classes of spatial functions
 
@@ -288,5 +287,5 @@ spatial operators.
 
 Quotes
 -----
- * "The ACF of Geo Queries" -- Nick
- * "No matter where you go, there you are"
+ * "Love how this plugin handles spatial data automatically, and integrates with Advanced Custom Fields!" -- [Nick Ciske](https://wordpress.org/support/topic/awesome-plugin-wish-it-was-in-core/)
+ * "This plugin deserves more kudos it is fantastic, although more beneficial if you are on mysql 5.7 or greater." -- [shawfactor](https://wordpress.org/support/topic/great-plugin-13892/)
