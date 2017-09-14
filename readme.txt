@@ -52,6 +52,10 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 
 == Changelog ==
 
+= 0.3.5 =
+ * Upgraded leaflet-php library.
+ * Upgraded wp-geometa-lib library.
+
 = 0.3.4 = 
  * Fixed accessing property of null object on dashboard.
  * Added GeoJSON import utility.
