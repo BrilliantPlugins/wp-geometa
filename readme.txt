@@ -1,10 +1,10 @@
 === WP-GeoMeta ===
-Contributors: stuporglue, luminfire 
+Contributors: stuporglue, luminfire, andywalz
 Donate link: https://LuminFire.com/contact-us/make-a-payment/
 Tags: GIS, geo, spatial, mysql, mariadb, geography, mapping, meta, metadata
 Requires at least: 4.4.0
-Tested up to: 4.8
-Stable tag: 0.3.4
+Tested up to: 4.9
+Stable tag: trunk
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,6 +55,7 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 = 0.3.5 =
  * Upgraded leaflet-php library.
  * Upgraded wp-geometa-lib library.
+ * Tested with WP 4.9
 
 = 0.3.4 = 
  * Fixed accessing property of null object on dashboard.
