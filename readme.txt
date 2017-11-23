@@ -52,6 +52,10 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 
 == Changelog ==
 
+= 0.3.6 =
+ * Upgraded leaflet-php library.
+ * Handle non UTF-8 GeoJSON imports.
+
 = 0.3.5 =
  * Upgraded leaflet-php library.
  * Upgraded wp-geometa-lib library.
