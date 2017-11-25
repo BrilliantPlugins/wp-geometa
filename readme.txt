@@ -55,6 +55,8 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 = 0.3.6 =
  * Upgraded leaflet-php library.
  * Handle non UTF-8 GeoJSON imports.
+ * Show a sample value next to GeoJSON field names when uploading.
+ * Better GeoJSON upload error handling.
 
 = 0.3.5 =
  * Upgraded leaflet-php library.

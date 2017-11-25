@@ -965,7 +965,7 @@ class WP_GeoMeta_Dash {
 
 				// Also check for the optional id property.
 				if ( !empty( $json['features'][$i]['id'] ) ) {
-					$response['geojson_fields'][] = 'geojson://id';
+					$response['geojson_fields']['geojson://id'] = $json['features'][$i]['id'];
 				}
 
 				if ( empty( $json['features'][$i]['properties'] ) ) {
@@ -975,13 +975,12 @@ class WP_GeoMeta_Dash {
 				ksort( $json['features'][$i]['properties'] );
 
 				foreach( $json['features'][$i]['properties'] as $property => $value ) {
-					$response['geojson_fields'][] = 'geojson://property/' . $property;
+					$response['geojson_fields']['geojson://property/' . $property] = $value;
 				}
 			}
 		}
 
-		$response['geojson_fields'] = array_unique( $response['geojson_fields'] );
-		sort($response['geojson_fields']);
+		ksort($response['geojson_fields']);
 
 		// Now capture all the WP types we can put GeoJSON into.
 
@@ -1021,6 +1020,7 @@ class WP_GeoMeta_Dash {
 			'nav_menu_item',
 			'custom_css',
 			'customize_changeset',
+			'oembed_cache',
 		);
 
 		foreach( $unsupported_post_types as $unsup ) {

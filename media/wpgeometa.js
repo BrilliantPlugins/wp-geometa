@@ -242,14 +242,17 @@ function wpgeometa_build_mapping_ui() {
 	html += 'For updates look for ';
 	html += '<select class="wpgm_upsert_value_field">';
 	html += '<option value="">—</option>';
-	for( var i = 0; i < data.geojson_fields.length; i++ ){
-		field = data.geojson_fields[i].split('://')[1].trim('/').split('/');
+
+	var field;
+	for( var key in data.geojson_fields ) {
+		field = key.split('://')[1].trim('/').split('/');
 		if ( field[0] === 'property' ) {
-			html += '<option value="' + data.geojson_fields[i] + '">' + field[1] + '</option>';
+			html += '<option value="' + key + '">' + field[1] + '</option>';
 		} else {                                                                                            
-			html += '<option value="' + data.geojson_fields[i] + '">' + field[0] + '</option>';
+			html += '<option value="' + key + '">' + field[0] + '</option>';
 		}
 	}
+
 	html += '</select>';
 	html += ' in ';
 	html += '<select class="wpgm_upsert_key_field">';
@@ -278,14 +281,17 @@ function wpgeometa_build_mapping_ui() {
 
 	// Build the mapping table.	
 	html += '<table><tr><th>GeoJSON Field</th><th>Destination Field</th></tr>';
-	for( i = 0; i < data.geojson_fields.length; i++ ){
-		field = data.geojson_fields[i].split('://')[1].trim('/').split('/');
+
+	var field;
+	for( var key in data.geojson_fields ) {
+		field = key.split('://')[1].trim('/').split('/');
 		if ( field[0] === 'property' ) {
-			html += '<tr data-fieldname="' + field[1] + '" data-geojson="' + data.geojson_fields[i] + '"><td>' + field[1] + ' (property)</td><td>' + select_widget + '</td></tr>';
+			html += '<tr data-fieldname="' + field[1] + '" data-geojson="' + key + '"><td>' + field[1] + ' (property, eg. <i>' + data.geojson_fields[key] + '</i>)</td><td>' + select_widget + '</td></tr>';
 		} else {                                                                                            
-			html += '<tr data-fieldname="' + field[0] + '" data-geojson="' + data.geojson_fields[i] + '"><td>' + field[0] + '</td><td>' + select_widget + '</td></tr>';
+			html += '<tr data-fieldname="' + field[0] + '" data-geojson="' + key + '"><td>' + field[0] + ' (eg. <i>' + data.geojson_fields[key] +'</i>)</td><td>' + select_widget + '</td></tr>';
 		}
 	}
+
 	html += '</table>';
 
 	// Submit button.
@@ -368,8 +374,6 @@ function wpgeometa_select_widget_handler( e ) {
 */
 function wpgeometa_import_step_two() {
 
-	jQuery( '#wpgm_import_configuration .wpgm_import_step_two').after('<input type="submit" value="Cancel" class="wpgm_cancel_step_two">');
-
 	jQuery( '#wpgm_import_progressbar .label' ).text('0 %' );
 	jQuery( '#wpgm_import_progressbar' ).css( 'background-size', '0% 100%' );
 
@@ -387,7 +391,7 @@ function wpgeometa_import_step_two() {
 	mapping.fields = {};
 
 	if ( mapping.geometa_key === '' ) {
-		formdiv.find('.wpgm_geometa_value').addClass('error');
+		formdiv.find('.wpgm_geometa_value').addClass('error').parent().find('select').addClass('error');
 		return false;
 	}
 
@@ -405,5 +409,6 @@ function wpgeometa_import_step_two() {
 	}
 
 	data.mapping = mapping;
+	jQuery( '#wpgm_import_configuration .wpgm_import_step_two').after('<input type="submit" value="Cancel" class="wpgm_cancel_step_two">');
 	jQuery.post( data.post_action, data ).then( wpgeometa_import_loop_success, wpgeometa_import_loop_failure );
 }
