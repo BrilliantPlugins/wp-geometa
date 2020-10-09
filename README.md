@@ -1,4 +1,5 @@
-# This plugin is not activetly maintained.
+| :warning: This plugin is not actively maintained :warning: |
+| --- |
 
 WP-GeoMeta
 ===========
