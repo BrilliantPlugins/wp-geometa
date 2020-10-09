@@ -1,3 +1,5 @@
+# This plugin is not activetly maintained.
+
 WP-GeoMeta
 ===========
 
