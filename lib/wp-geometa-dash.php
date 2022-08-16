@@ -769,7 +769,7 @@ class WP_GeoMeta_Dash {
 			t.' . $table_id . ' AS the_id,
 			m.meta_key,
 			m.meta_value,
-			AsText(geo.meta_value) AS geo_meta_value,
+			ST_AsText(geo.meta_value) AS geo_meta_value,
 			geo.meta_key AS geo_meta_key
 			FROM 	
 			' . $wpdb->$metatype . ' m,
