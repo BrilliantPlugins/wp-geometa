@@ -11,7 +11,7 @@
  * Description: Store and search spatial metadata while taking advantage of MySQL spatial types and indexes.
  * Author: Michael Moore
  * Author URI: http://LuminFire.com
- * Version: 0.3.5
+ * Version: 0.4.0
  * Text Domain: wp-geometa
  * Domain Path: /lang
  *

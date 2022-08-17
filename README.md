@@ -165,35 +165,22 @@ orderby with named meta clauses should work. It's a new feature though, so send 
 Server Requirements
 -------------------
 
-### WordPress
-This plugin supports storing spatial metadata for posts, users, comments and
-terms. 
+### WordPress 
 
-Setting, getting and querying values should work in 4.1 with some missing functionality. 
-Running orderby doesn't work until 4.2
-Searching term metadata arrived in WordPress 4.4, but other
-functionality should still work in older versions of WordPress.
+Supports WordPress 6+
 
-MySQL 5.6.1 or higher is strongly recommended. Lower than MySQL 5.1.72 is untested.
+### MySQL
 
-WP_GeoMeta will probably work on MySQL 5.4, but spatial support was pretty weak 
-before version 5.6.1. 
-
-Before MySQL 5.6.1 spatial functions worked against the mininum bounding rectangle 
-instead of the actual geometry.
-
-MySQL 5.7 brough spatial indexes to InnoDB tables. Before that only MyISAM tables
-supported spatial indexes. Anything else required a full table scan. 
-
-If you are using MySQL 5.7, good for you, and consider converting your geo tables
-to InnoDB! (and let me know how it goes).
+Supports MySQL 5.7+
 
 ### PHP
-PHP 5.2.4 and higher are supported, just like WordPress's minimum version.
-Please report any PHP errors you come across and we'll fix them up.
+
+Supports PHP 7.4+
 
 Frequently Asked Questions
 --------------------------
+
+This [talk](https://luminfire.com/2017/08/28/spatially-enable-wordpress-wp-geometa-lib/) by [Michael Moore](https://github.com/stuporglue) and accompanying [slides](https://luminfire.com/wp-content/uploads/2017/08/Spatially_Enable_WordPress_With_WP-GeoMeta-Lib.pdf) give an excellent overview of the project.
 
 ### What spatial comparisons are supported?
 
