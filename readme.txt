@@ -1,9 +1,10 @@
 === WP-GeoMeta ===
-Contributors: stuporglue, luminfire, andywalz
+Contributors: stuporglue, luminfire, andywalz, morehawes
 Donate link: https://LuminFire.com/contact-us/make-a-payment/
 Tags: GIS, geo, spatial, mysql, mariadb, geography, mapping, meta, metadata
-Requires at least: 4.4.0
-Tested up to: 4.9
+Requires PHP: 7.4
+Requires at least: 6.0
+Tested up to: 6.0
 Stable tag: trunk
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -51,6 +52,11 @@ For fast and short questions you can [contact me](https://twitter.com/stuporglue
 5. GeoJSON Import Functionality
 
 == Changelog ==
+
+= 0.4.0 =
+ * Tests passing up to PHP 8 / WP 6 / MySQL 8.
+ * [WP-GeoMeta-Lib](https://github.com/BrilliantPlugins/wp-geometa-lib) updated to v0.4.0, addressing several [open issues](https://github.com/BrilliantPlugins/wp-geometa/issues)).
+ * Numerous fixes, mostly migrating now-removed MySQL spacial functions with their ST_ equivalents [more info](https://dev.mysql.com/doc/refman/5.7/en/spatial-relation-functions-object-shapes.html).
 
 = 0.3.6 =
  * Upgraded leaflet-php library.

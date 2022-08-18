@@ -535,13 +535,25 @@ class WP_GeoMeta_Dash {
 
 		$total_meta = 0;
 		$total_geo = 0;
-
+		
+		//We are comparing each meta table (wp_postmeta, wp_termmeta, wp_usermeta, wp_commentmeta)
+		//with it's _geo "partner" (wp_postmeta_geo, wp_termmeta_geo, wp_usermeta_geo, wp_commentmeta_geo)
 		foreach ( $wpgm->meta_types as $meta_type ) {
 			$metatable = _get_meta_table( $meta_type );
 			$geotable = $metatable . '_geo';
 
-			$num_meta = $wpdb->get_var( "SELECT COUNT(*) FROM $metatable WHERE $metatable.meta_value LIKE '%{%Feature%geometry%}%'" ); // @codingStandardsIgnoreLine
+			// Count rows containing GeoJSON in the WP meta table
+			// WordPress has some security rules surrounding using wildcards in queries.
+			// See https://developer.wordpress.org/reference/classes/wpdb/prepare/
+			$sql = $wpdb->prepare("
+				SELECT COUNT(*)
+				FROM {$metatable}
+				WHERE 
+					meta_value LIKE '%s'	
+			", '%{%Feature%geometry%}%');		
 
+			$num_meta = $wpdb->get_var( $sql );
+			
 			$total_meta += $num_meta;
 
 			if ( 0 === $num_meta ) {
@@ -550,7 +562,9 @@ class WP_GeoMeta_Dash {
 			}
 
 			if ( in_array( $meta_type, $this->table_types_found, true ) ) {
-				$num_geo = $wpdb->get_var( "SELECT COUNT(*) FROM $geotable" ); // @codingStandardsIgnoreLine
+				// Count rows in the _geo table
+				$sql = $wpdb->prepare("SELECT COUNT(*) FROM {$geotable}");
+				$num_geo = $wpdb->get_var( $sql );
 
 				$total_geo += $num_geo;
 			} else {
@@ -568,7 +582,9 @@ class WP_GeoMeta_Dash {
 		if ( 0 === $total_meta ) {
 			$total_percent = 100;
 		} else {
-			$total_percent = (int) ($total_geo / $total_meta * 100);
+			//A float prevents small percentages (between 0 and 1) being rounded off
+			//We round to 2 DP for presentation (i.e. 0.01%)
+			$total_percent = (float) round($total_geo / $total_meta * 100, 2);
 		}
 
 		if ( 100 === $total_percent ) {
@@ -753,7 +769,7 @@ class WP_GeoMeta_Dash {
 			t.' . $table_id . ' AS the_id,
 			m.meta_key,
 			m.meta_value,
-			AsText(geo.meta_value) AS geo_meta_value,
+			ST_AsText(geo.meta_value) AS geo_meta_value,
 			geo.meta_key AS geo_meta_key
 			FROM 	
 			' . $wpdb->$metatype . ' m,
