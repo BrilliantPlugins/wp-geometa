@@ -1,0 +1,9 @@
+- name: WordPress Plugin Deploy
+  # You may pin to the exact commit or the version.
+  # uses: 10up/action-wordpress-plugin-deploy@54bd289b8525fd23a5c365ec369185f2966529c2
+  uses: 10up/action-wordpress-plugin-deploy@2.3.0
+  with:
+    # Generate package zip file?
+    generate-zip: false # optional
+    # Run the deployment process without committing.
+    dry-run: true# optional
